@@ -17,15 +17,15 @@ RUN echo "🔨 构建模式: $VITE_BUILD_MODE"
 RUN echo "📁 检查配置文件:" && ls -la vite.config.* && \
     echo "📁 检查环境文件:" && ls -la .env*
 
-RUN if [ -n "$VITE_BUILD_MODE" ]; then \
+RUN set -eux; \
+    if [ -n "$VITE_BUILD_MODE" ]; then \
         echo "🏗️ 使用指定的构建模式: $VITE_BUILD_MODE"; \
-        npx vite build --mode $VITE_BUILD_MODE; \
-        echo "✅ $VITE_BUILD_MODE 模式构建完成"; \
+        npx vite build --mode "$VITE_BUILD_MODE"; \
     else \
         echo "🚀 VITE_BUILD_MODE 未设置，使用默认模式: production"; \
         npx vite build --mode production; \
-        echo "✅ production 模式构建完成"; \
-    fi
+    fi; \
+    test -d dist && ls -la dist | head -20 && echo "✅ dist 已生成"
 
 # ------------------------------------------------------------
 # 阶段 2：OpenResty + OpenSSL 3 + luaossl

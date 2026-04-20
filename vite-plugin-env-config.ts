@@ -1,6 +1,6 @@
 import type { Plugin } from 'vite';
-import { writeFileSync } from 'fs';
-import { resolve } from 'path';
+import { mkdirSync, writeFileSync } from 'fs';
+import { join, resolve } from 'path';
 import { loadEnv } from 'vite';
 
 /**
@@ -10,22 +10,26 @@ import { loadEnv } from 'vite';
  */
 export function envConfigPlugin(): Plugin {
   let env: Record<string, string> = {};
-  
+  /** 构建输出目录（绝对路径），在 configResolved 中赋值 */
+  let distDir = '';
+
   return {
     name: 'vite-plugin-env-config',
     configResolved(config) {
       // 在配置解析时读取所有环境变量
       env = loadEnv(config.mode, config.envDir || process.cwd(), '');
+      distDir = resolve(config.root, config.build.outDir);
     },
     closeBundle() {
-      const outDir = resolve(process.cwd(), 'dist');
-      
+      // closeBundle 时 dist 可能尚未存在（与 Vite 落盘顺序有关），需先创建
+      mkdirSync(distDir, { recursive: true });
+
       // 处理 VITE_CONTEXT_PATH：确保以 / 结尾（除非是根路径）
       let contextPath = env.VITE_CONTEXT_PATH || '/';
       if (contextPath !== '/' && !contextPath.endsWith('/')) {
         contextPath = contextPath + '/';
       }
-      
+
       // 生成 env-config.js
       // 只对需要运行时替换的变量使用占位符，其他变量使用构建时的值
       const configContent = `// env-config.js
@@ -35,9 +39,8 @@ window._env_ = {
   VITE_SSO_BASE_URL: '__SSO_BASE_URL__',
 };
 `;
-      writeFileSync(resolve(outDir, 'env-config.js'), configContent, 'utf-8');
+      writeFileSync(join(distDir, 'env-config.js'), configContent, 'utf-8');
       console.log(`✅ env-config.js 已生成 (VITE_CONTEXT_PATH: ${contextPath})`);
     },
   };
 }
-

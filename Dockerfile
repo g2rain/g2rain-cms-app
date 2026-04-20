@@ -17,6 +17,9 @@ RUN echo "🔨 构建模式: $VITE_BUILD_MODE"
 RUN echo "📁 检查配置文件:" && ls -la vite.config.* && \
     echo "📁 检查环境文件:" && ls -la .env*
 
+# 生成 src/shared/config-util/config/*.json（本地常 gitignore，构建时由 route-map 生成；vite 会静态 import resources.json）
+RUN npm run build:config
+
 RUN set -eux; \
     if [ -n "$VITE_BUILD_MODE" ]; then \
         echo "🏗️ 使用指定的构建模式: $VITE_BUILD_MODE"; \

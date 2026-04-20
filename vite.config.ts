@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
   const rawBase = env.VITE_CONTEXT_PATH || '/';
   const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
   const backendOrigin = env.VITE_BACKEND_ORIGIN || 'http://localhost:8080';
-  const serverPort = parseInt(env.VITE_SERVER_PORT || '3001', 10);
+  const serverPort = parseInt(process.env.VITE_SERVER_PORT || '3001', 10);
 
   return {
     base: base,

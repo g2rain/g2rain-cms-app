@@ -1,7 +1,41 @@
 {
   "name": "g2rain-cms-app",
   "version": "0.1.0",
+  "description": "G2rain CMS qiankun micro-frontend sub-app (Vue 3 + Vite + Element Plus). Complements g2rain-app-template.",
   "private": false,
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/g2rain/g2rain-cms-app.git"
+  },
+  "homepage": "https://github.com/g2rain/g2rain-cms-app#readme",
+  "bugs": {
+    "url": "https://github.com/g2rain/g2rain/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "g2rain",
+    "cms",
+    "qiankun",
+    "micro-frontend",
+    "vue",
+    "vite",
+    "element-plus",
+    "pinia"
+  ],
+  "contributors": [
+    {
+      "name": "Jagger",
+      "email": "g2rain_developer@163.com",
+      "url": "https://www.g2rain.com/"
+    },
+    {
+      "name": "Alpha",
+      "url": "https://www.g2rain.com/"
+    }
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -39,6 +73,6 @@
     "typescript": "5.9.3",
     "vite": "^7.3.0",
     "vite-plugin-qiankun": "^1.0.15",
-    "vue-tsc": "^3.2.1"
+    "vue-tsc": "3.2.1"
   }
 }

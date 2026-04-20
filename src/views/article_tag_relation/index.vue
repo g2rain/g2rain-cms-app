@@ -128,7 +128,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus';
-import { ElMessageBox } from 'element-plus';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import { ArticleTagRelationApi } from './api';
 import type { ArticleTagRelation, ArticleTagRelationPayload, ArticleTagRelationQuery } from './type';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
@@ -189,8 +189,8 @@ const handleCreate = () => {
 const handleEdit = (row: ArticleTagRelation) => {
   isEdit.value = true;
   editForm.id = row.id;
-  editForm.articleId = row.articleId;
-  editForm.tagId = row.tagId;
+  editForm.articleId = String(row.articleId);
+  editForm.tagId = String(row.tagId);
   editDialogVisible.value = true;
 };
 
@@ -225,8 +225,8 @@ const submitEdit = async () => {
   if (!valid) return;
 
   const payload: ArticleTagRelationPayload = {
-    articleId: editForm.articleId,
-    tagId: editForm.tagId,
+    articleId: editForm.articleId !== '' ? Number(editForm.articleId) : undefined,
+    tagId: editForm.tagId !== '' ? Number(editForm.tagId) : undefined,
   };
 
   try {
@@ -253,6 +253,9 @@ const handleSortChange = (params: Record<string, string>) => {
 
 const loadData = async () => {
   try {
+    const articleId = queryForm.articleId ? Number(queryForm.articleId) : undefined;
+    const tagId = queryForm.tagId ? Number(queryForm.tagId) : undefined;
+
     // 构建查询条件（query 对象），包含基础查询参数和业务查询参数
     const query: ArticleTagRelationQuery = {
       // 基础查询参数（BaseSelectListDto）- 使用 Object.fromEntries 过滤无效值
@@ -262,8 +265,8 @@ const loadData = async () => {
         )
       ),
       // 业务查询字段
-      ...(queryForm.articleId ? { articleId: queryForm.articleId } : {}),
-      ...(queryForm.tagId ? { tagId: queryForm.tagId } : {}),
+      ...(articleId !== undefined ? { articleId } : {}),
+      ...(tagId !== undefined ? { tagId } : {}),
     };
     
     // 检查 query 对象是否有有效值

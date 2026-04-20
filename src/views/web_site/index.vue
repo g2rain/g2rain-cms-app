@@ -169,7 +169,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus';
-import { ElMessageBox } from 'element-plus';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import { WebSiteApi } from './api';
 import type { WebSite, WebSitePayload, WebSiteQuery } from './type';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
@@ -244,7 +244,7 @@ const handleCreate = () => {
 const handleEdit = (row: WebSite) => {
   isEdit.value = true;
   editForm.id = row.id;
-  editForm.organId = row.organId;
+  editForm.organId = String(row.organId);
   editForm.siteName = row.siteName;
   editForm.siteCode = row.siteCode;
   editForm.domain = row.domain ?? '';
@@ -284,7 +284,7 @@ const submitEdit = async () => {
   if (!valid) return;
 
   const payload: WebSitePayload = {
-    organId: editForm.organId,
+    organId: editForm.organId !== '' ? Number(editForm.organId) : undefined,
     siteName: editForm.siteName,
     siteCode: editForm.siteCode,
     domain: editForm.domain || null,
@@ -316,6 +316,8 @@ const handleSortChange = (params: Record<string, string>) => {
 
 const loadData = async () => {
   try {
+    const organId = queryForm.organId ? Number(queryForm.organId) : undefined;
+
     // 构建查询条件（query 对象），包含基础查询参数和业务查询参数
     const query: WebSiteQuery = {
       // 基础查询参数（BaseSelectListDto）- 使用 Object.fromEntries 过滤无效值
@@ -325,7 +327,7 @@ const loadData = async () => {
         )
       ),
       // 业务查询字段
-      ...(queryForm.organId ? { organId: queryForm.organId } : {}),
+      ...(organId !== undefined ? { organId } : {}),
       ...(queryForm.siteName ? { siteName: queryForm.siteName } : {}),
       ...(queryForm.siteCode ? { siteCode: queryForm.siteCode } : {}),
       ...(queryForm.domain ? { domain: queryForm.domain } : {}),

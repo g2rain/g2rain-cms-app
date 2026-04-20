@@ -159,7 +159,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus';
-import { ElMessageBox } from 'element-plus';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import { ArticleCategoryApi } from './api';
 import type { ArticleCategory, ArticleCategoryPayload, ArticleCategoryQuery } from './type';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
@@ -231,8 +231,8 @@ const handleCreate = () => {
 const handleEdit = (row: ArticleCategory) => {
   isEdit.value = true;
   editForm.id = row.id;
-  editForm.organId = row.organId;
-  editForm.spaceId = row.spaceId;
+  editForm.organId = String(row.organId);
+  editForm.spaceId = String(row.spaceId);
   editForm.categoryName = row.categoryName;
   editForm.categoryCode = row.categoryCode ?? '';
   editForm.status = row.status;
@@ -270,8 +270,8 @@ const submitEdit = async () => {
   if (!valid) return;
 
   const payload: ArticleCategoryPayload = {
-    organId: editForm.organId,
-    spaceId: editForm.spaceId,
+    organId: editForm.organId !== '' ? Number(editForm.organId) : undefined,
+    spaceId: editForm.spaceId !== '' ? Number(editForm.spaceId) : undefined,
     categoryName: editForm.categoryName,
     categoryCode: editForm.categoryCode || null,
     status: editForm.status,
@@ -301,6 +301,9 @@ const handleSortChange = (params: Record<string, string>) => {
 
 const loadData = async () => {
   try {
+    const organId = queryForm.organId ? Number(queryForm.organId) : undefined;
+    const spaceId = queryForm.spaceId ? Number(queryForm.spaceId) : undefined;
+
     // 构建查询条件（query 对象），包含基础查询参数和业务查询参数
     const query: ArticleCategoryQuery = {
       // 基础查询参数（BaseSelectListDto）- 使用 Object.fromEntries 过滤无效值
@@ -310,8 +313,8 @@ const loadData = async () => {
         )
       ),
       // 业务查询字段
-      ...(queryForm.organId ? { organId: queryForm.organId } : {}),
-      ...(queryForm.spaceId ? { spaceId: queryForm.spaceId } : {}),
+      ...(organId !== undefined ? { organId } : {}),
+      ...(spaceId !== undefined ? { spaceId } : {}),
       ...(queryForm.categoryName ? { categoryName: queryForm.categoryName } : {}),
       ...(queryForm.categoryCode ? { categoryCode: queryForm.categoryCode } : {}),
       ...(queryForm.status ? { status: queryForm.status } : {}),

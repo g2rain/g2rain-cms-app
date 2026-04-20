@@ -80,8 +80,8 @@ import en from 'element-plus/es/locale/lang/en'
  */
 export interface QueryFormData {
   id?: number
-  createTime?: [string, string]
-  updateTime?: [string, string]
+  createTime?: string[]
+  updateTime?: string[]
   sorts?: string[]
   // 允许扩展字段（比如 organId、applicationName 等）
   [key: string]: any
@@ -158,7 +158,7 @@ function onIdChange(v: string | number) {
 function useTimeRange(
   field: 'createTime' | 'updateTime'
 ) {
-  return computed<[string, string] | null>({
+  return computed<string[] | null>({
     get() {
       const value = props.modelValue[field]
 

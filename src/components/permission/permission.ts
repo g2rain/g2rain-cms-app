@@ -6,7 +6,7 @@
 import type { ApiPermissionProvider, PageElementPermissionProvider, PageElementStatus } from './types';
 
 function isMockMode(): boolean {
-  return String((import.meta.env as Record<string, unknown>).VITE_MOCK_ENABLED) === 'true';
+  return String(import.meta.env.VITE_MOCK_ENABLED) === 'true';
 }
 
 /**

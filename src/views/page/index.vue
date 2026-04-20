@@ -178,7 +178,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus';
-import { ElMessageBox } from 'element-plus';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import { PageApi } from './api';
 import type { Page, PagePayload, PageQuery } from './type';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
@@ -257,8 +257,8 @@ const handleCreate = () => {
 const handleEdit = (row: Page) => {
   isEdit.value = true;
   editForm.id = row.id;
-  editForm.organId = row.organId;
-  editForm.spaceId = row.spaceId;
+  editForm.organId = String(row.organId);
+  editForm.spaceId = String(row.spaceId);
   editForm.pageName = row.pageName;
   editForm.pageCode = row.pageCode ?? '';
   editForm.path = row.path ?? '';
@@ -298,8 +298,8 @@ const submitEdit = async () => {
   if (!valid) return;
 
   const payload: PagePayload = {
-    organId: editForm.organId,
-    spaceId: editForm.spaceId,
+    organId: editForm.organId !== '' ? Number(editForm.organId) : undefined,
+    spaceId: editForm.spaceId !== '' ? Number(editForm.spaceId) : undefined,
     pageName: editForm.pageName,
     pageCode: editForm.pageCode || null,
     path: editForm.path || null,
@@ -331,6 +331,9 @@ const handleSortChange = (params: Record<string, string>) => {
 
 const loadData = async () => {
   try {
+    const organId = queryForm.organId ? Number(queryForm.organId) : undefined;
+    const spaceId = queryForm.spaceId ? Number(queryForm.spaceId) : undefined;
+
     // 构建查询条件（query 对象），包含基础查询参数和业务查询参数
     const query: PageQuery = {
       // 基础查询参数（BaseSelectListDto）- 使用 Object.fromEntries 过滤无效值
@@ -340,8 +343,8 @@ const loadData = async () => {
         )
       ),
       // 业务查询字段
-      ...(queryForm.organId ? { organId: queryForm.organId } : {}),
-      ...(queryForm.spaceId ? { spaceId: queryForm.spaceId } : {}),
+      ...(organId !== undefined ? { organId } : {}),
+      ...(spaceId !== undefined ? { spaceId } : {}),
       ...(queryForm.pageName ? { pageName: queryForm.pageName } : {}),
       ...(queryForm.pageCode ? { pageCode: queryForm.pageCode } : {}),
       ...(queryForm.path ? { path: queryForm.path } : {}),

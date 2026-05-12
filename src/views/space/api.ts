@@ -69,5 +69,14 @@ export class SpaceApi {
     const http = getHttpClient('default');
     await http.delete(`/cms/space/${id}`);
   }
+
+  /**
+   * 更新space状态
+   * @param params 状态更新参数
+   */
+  static async updateStatus(params: { id: number; status: string }): Promise<void> {
+    const http = getHttpClient('default');
+    await http.post('/cms/space/update_status', params);
+  }
 }
 

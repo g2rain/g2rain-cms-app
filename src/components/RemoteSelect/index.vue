@@ -84,6 +84,18 @@ const userTypedSearch = ref(false);
 /** 最近一次 remote 请求对应的规范化关键字（与下方 params 一致）；打开下拉时重置，用于去重重复 remote */
 const lastRemoteQuery = ref<string | null>(null);
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+const prefetching = ref(false);
+
+const mergeOptions = (base: RemoteSelectOption[], incoming: RemoteSelectOption[]): RemoteSelectOption[] => {
+  const map = new Map<string | number, RemoteSelectOption>();
+  for (const item of base) {
+    map.set(getValue(item), item);
+  }
+  for (const item of incoming) {
+    map.set(getValue(item), item);
+  }
+  return Array.from(map.values());
+};
 
 /**
  * 防抖函数
@@ -178,9 +190,10 @@ const handleVisibleChange = async (visible: boolean) => {
   }
   if (!visible || !props.prefetchOnOpen) return;
   // 打开下拉时预取一次空关键字数据（避免用户必须先输入才出现选项）
-  if (options.value.length > 0) return;
+  if (options.value.length > 0 || prefetching.value) return;
 
   loading.value = true;
+  prefetching.value = true;
   try {
     const data = await props.fetchData({});
     options.value = data || [];
@@ -190,6 +203,24 @@ const handleVisibleChange = async (visible: boolean) => {
     options.value = [];
   } finally {
     loading.value = false;
+    prefetching.value = false;
+  }
+};
+
+const prefetchDefaultOptions = async () => {
+  if (!props.prefetchOnOpen || options.value.length > 0 || prefetching.value) return;
+  loading.value = true;
+  prefetching.value = true;
+  try {
+    const data = await props.fetchData({});
+    options.value = data || [];
+    lastRemoteQuery.value = '';
+  } catch (error) {
+    console.error('RemoteSelect prefetchDefaultOptions error:', error);
+    options.value = [];
+  } finally {
+    loading.value = false;
+    prefetching.value = false;
   }
 };
 
@@ -209,10 +240,9 @@ const loadInitialOption = async () => {
       : { key: String(selectedValue.value) };
     
     const data = await props.fetchData(params);
-    options.value = data || [];
+    options.value = mergeOptions(options.value, data || []);
   } catch (error) {
     console.error('RemoteSelect loadInitialOption error:', error);
-    options.value = [];
   } finally {
     loading.value = false;
   }
@@ -252,6 +282,7 @@ watch(
 
 // 组件挂载时，如果有初始值，加载对应的选项
 onMounted(() => {
+  prefetchDefaultOptions();
   if (selectedValue.value !== null && selectedValue.value !== undefined) {
     loadInitialOption();
   }

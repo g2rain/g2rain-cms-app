@@ -11,10 +11,26 @@
       >
         <!-- 业务特定查询字段 -->
         <el-form-item label="机构ID">
-          <el-input v-model="queryForm.organId" placeholder="请输入机构ID" clearable style="width: 200px" />
+          <OrganSelect
+            v-model="queryForm.organId"
+            :api-method="OrganApi.searchOrgans"
+            placeholder="请选择所属机构"
+            width="200px"
+            clearable
+          />
         </el-form-item>
         <el-form-item label="空间ID">
-          <el-input v-model="queryForm.spaceId" placeholder="请输入空间ID" clearable style="width: 200px" />
+          <ApiSelect
+            v-model="queryForm.spaceId"
+            :api-method="fetchSpaces"
+            value-key="id"
+            label-key="spaceName"
+            placeholder="请选择空间"
+            width="200px"
+            clearable
+            :allow-empty-keyword="true"
+            :prefetch-on-open="true"
+          />
         </el-form-item>
         <el-form-item label="分类名称">
           <el-input v-model="queryForm.categoryName" placeholder="请输入分类名称" clearable style="width: 200px" />
@@ -23,7 +39,14 @@
           <el-input v-model="queryForm.categoryCode" placeholder="请输入分类编码" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item label="状态">
-          <el-input v-model="queryForm.status" placeholder="请输入状态" clearable style="width: 200px" />
+          <DictSelect
+            v-model="queryForm.status"
+            :api-method="DictItemApi.select"
+            usage-code="STATUS"
+            placeholder="请选择状态"
+            clearable
+            width="200px"
+          />
         </el-form-item>
 
         <!-- 操作按钮 -->
@@ -57,7 +80,21 @@
       <el-table-column prop="spaceId" label="空间ID" width="140" />
       <el-table-column prop="categoryName" label="分类名称" width="180" />
       <el-table-column prop="categoryCode" label="分类编码" width="180" />
-      <el-table-column prop="status" label="状态" width="180" />
+      <el-table-column label="状态" width="180">
+        <template #default="{ row }">
+          <StatusSwitch
+            v-model="row.status"
+            permission="article_category:edit"
+            :active-value="'ACTIVE'"
+            :inactive-value="'INACTIVE'"
+            :options="[
+              { label: '启用', value: 'ACTIVE' },
+              { label: '禁用', value: 'INACTIVE' }
+            ]"
+            :api-method="({ nextValue }) => ArticleCategoryApi.save({ id: row.id, status: String(nextValue) }).then(() => undefined)"
+          />
+        </template>
+      </el-table-column>
       <TableColumn prop="createTime" label="创建时间" width="180" :sortable="true" />
       <TableColumn prop="updateTime" label="更新时间" width="180" :sortable="true" />
       <el-table-column label="操作" fixed="right" width="280">
@@ -101,10 +138,26 @@
         label-width="100px"
       >
         <el-form-item label="机构ID" prop="organId">
-          <el-input v-model="editForm.organId" placeholder="请输入机构ID" />
+          <OrganSelect
+            v-model="editForm.organId"
+            :api-method="OrganApi.searchOrgans"
+            placeholder="请选择所属机构"
+            width="100%"
+            clearable
+          />
         </el-form-item>
         <el-form-item label="空间ID" prop="spaceId">
-          <el-input v-model="editForm.spaceId" placeholder="请输入空间ID" />
+          <ApiSelect
+            v-model="editForm.spaceId"
+            :api-method="fetchSpaces"
+            value-key="id"
+            label-key="spaceName"
+            placeholder="请选择空间"
+            width="100%"
+            clearable
+            :allow-empty-keyword="true"
+            :prefetch-on-open="true"
+          />
         </el-form-item>
         <el-form-item label="分类名称" prop="categoryName">
           <el-input v-model="editForm.categoryName" placeholder="请输入分类名称" />
@@ -113,7 +166,14 @@
           <el-input v-model="editForm.categoryCode" placeholder="请输入分类编码" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-input v-model="editForm.status" placeholder="请输入状态" />
+          <DictSelect
+            v-model="editForm.status"
+            :api-method="DictItemApi.select"
+            usage-code="STATUS"
+            placeholder="请选择状态"
+            width="100%"
+            clearable
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -162,11 +222,34 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { ArticleCategoryApi } from './api';
 import type { ArticleCategory, ArticleCategoryPayload, ArticleCategoryQuery } from './type';
+import { SpaceApi } from '@/views/space/api';
+import { OrganApi } from '@/views/organ/api';
+import { DictItemApi } from '@/views/dict/api';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
 
-import { SortableTable, TableColumn, SortManagerButton, QueryForm, showErrorMessage } from '@/components';
+import { SortableTable, TableColumn, SortManagerButton, QueryForm, showErrorMessage, OrganSelect, ApiSelect, DictSelect, StatusSwitch } from '@/components';
 
 const tableData = ref<ArticleCategory[]>([]);
+
+const fetchSpaces = async (params: { key?: string; value?: number }) => {
+  // 按 ID 回显
+  if (params.value !== undefined && params.value !== null) {
+    try {
+      const item = await SpaceApi.getById(params.value);
+      return item ? [item] : [];
+    } catch {
+      return [];
+    }
+  }
+
+  // 默认列表 / 按名称搜索
+  const page = await SpaceApi.page({
+    pageNum: 1,
+    pageSize: 10,
+    ...(params.key ? { spaceName: params.key } : {}),
+  } as any);
+  return page.records || [];
+};
 
 // 基础查询表单（BaseSelectListDto）
 let baseQueryForm = reactive<BaseSelectListDto>({
@@ -178,8 +261,8 @@ let baseQueryForm = reactive<BaseSelectListDto>({
 
 // 业务特定查询表单
 const queryForm = reactive({
-  organId: '',
-  spaceId: '',
+  organId: null as number | null,
+  spaceId: null as number | null,
   categoryName: '',
   categoryCode: '',
   status: '',
@@ -204,24 +287,24 @@ const editFormRef = ref<FormInstance | null>(null);
 
 const editForm = reactive({
   id: 0,
-  organId: '',
-  spaceId: '',
+  organId: null as number | null,
+  spaceId: null as number | null,
   categoryName: '',
   categoryCode: '',
   status: '',
 });
 
 const editRules: FormRules = {
-  organId: [{ required: true, message: '请输入机构ID', trigger: 'blur' }],
-  spaceId: [{ required: true, message: '请输入空间ID', trigger: 'blur' }],
+  organId: [{ required: true, message: '请选择机构', trigger: 'change' }],
+  spaceId: [{ required: true, message: '请选择空间', trigger: 'change' }],
   categoryName: [{ required: true, message: '请输入分类名称', trigger: 'blur' }],
-  status: [{ required: true, message: '请输入状态', trigger: 'blur' }],
+  status: [{ required: true, message: '请选择状态', trigger: 'change' }],
 };
 
 const handleCreate = () => {
   isEdit.value = false;
-  editForm.organId = '';
-  editForm.spaceId = '';
+  editForm.organId = null;
+  editForm.spaceId = null;
   editForm.categoryName = '';
   editForm.categoryCode = '';
   editForm.status = '';
@@ -231,8 +314,8 @@ const handleCreate = () => {
 const handleEdit = (row: ArticleCategory) => {
   isEdit.value = true;
   editForm.id = row.id;
-  editForm.organId = String(row.organId);
-  editForm.spaceId = String(row.spaceId);
+  editForm.organId = row.organId ?? null;
+  editForm.spaceId = row.spaceId ?? null;
   editForm.categoryName = row.categoryName;
   editForm.categoryCode = row.categoryCode ?? '';
   editForm.status = row.status;
@@ -270,8 +353,8 @@ const submitEdit = async () => {
   if (!valid) return;
 
   const payload: ArticleCategoryPayload = {
-    organId: editForm.organId !== '' ? Number(editForm.organId) : undefined,
-    spaceId: editForm.spaceId !== '' ? Number(editForm.spaceId) : undefined,
+    organId: editForm.organId ?? undefined,
+    spaceId: editForm.spaceId ?? undefined,
     categoryName: editForm.categoryName,
     categoryCode: editForm.categoryCode || null,
     status: editForm.status,
@@ -301,8 +384,8 @@ const handleSortChange = (params: Record<string, string>) => {
 
 const loadData = async () => {
   try {
-    const organId = queryForm.organId ? Number(queryForm.organId) : undefined;
-    const spaceId = queryForm.spaceId ? Number(queryForm.spaceId) : undefined;
+    const organId = queryForm.organId ?? undefined;
+    const spaceId = queryForm.spaceId ?? undefined;
 
     // 构建查询条件（query 对象），包含基础查询参数和业务查询参数
     const query: ArticleCategoryQuery = {
@@ -361,8 +444,8 @@ const handleReset = () => {
   baseQueryForm.sorts = undefined;
   
   // 重置业务特定查询表单
-  queryForm.organId = '';
-  queryForm.spaceId = '';
+  queryForm.organId = null;
+  queryForm.spaceId = null;
   queryForm.categoryName = '';
   queryForm.categoryCode = '';
   queryForm.status = '';

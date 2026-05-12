@@ -11,7 +11,13 @@
       >
         <!-- 业务特定查询字段 -->
         <el-form-item label="机构ID">
-          <el-input v-model="queryForm.organId" placeholder="请输入机构ID" clearable style="width: 200px" />
+          <OrganSelect
+            v-model="queryForm.organId"
+            :api-method="OrganApi.searchOrgans"
+            placeholder="请选择所属机构"
+            width="200px"
+            clearable
+          />
         </el-form-item>
         <el-form-item label="站点名称">
           <el-input v-model="queryForm.siteName" placeholder="请输入站点名称" clearable style="width: 200px" />
@@ -26,7 +32,14 @@
           <el-input v-model="queryForm.description" placeholder="请输入站点描述" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item label="状态">
-          <el-input v-model="queryForm.status" placeholder="请输入状态" clearable style="width: 200px" />
+          <DictSelect
+            v-model="queryForm.status"
+            :api-method="DictItemApi.select"
+            usage-code="STATUS"
+            placeholder="请选择状态"
+            clearable
+            width="200px"
+          />
         </el-form-item>
 
         <!-- 操作按钮 -->
@@ -61,7 +74,32 @@
       <el-table-column prop="siteCode" label="站点编码" width="180" />
       <el-table-column prop="domain" label="站点域名" width="180" />
       <el-table-column prop="description" label="站点描述" width="180" />
-      <el-table-column prop="status" label="状态" width="180" />
+      <el-table-column label="状态" width="180">
+        <template #default="{ row }">
+          <StatusSwitch
+            v-model="row.status"
+            permission="web_site:edit"
+            :active-value="'ACTIVE'"
+            :inactive-value="'INACTIVE'"
+            :options="[
+              { label: '启用', value: 'ACTIVE' },
+              { label: '禁用', value: 'INACTIVE' },
+            ]"
+            :api-method="
+              ({ nextValue }) =>
+                WebSiteApi.save({
+                  id: row.id,
+                  organId: row.organId,
+                  siteName: row.siteName,
+                  siteCode: row.siteCode,
+                  domain: row.domain ?? null,
+                  description: row.description ?? null,
+                  status: String(nextValue),
+                }).then(() => undefined)
+            "
+          />
+        </template>
+      </el-table-column>
       <TableColumn prop="createTime" label="创建时间" width="180" :sortable="true" />
       <TableColumn prop="updateTime" label="更新时间" width="180" :sortable="true" />
       <el-table-column label="操作" fixed="right" width="280">
@@ -105,7 +143,13 @@
         label-width="100px"
       >
         <el-form-item label="机构ID" prop="organId">
-          <el-input v-model="editForm.organId" placeholder="请输入机构ID" />
+          <OrganSelect
+            v-model="editForm.organId"
+            :api-method="OrganApi.searchOrgans"
+            placeholder="请选择所属机构"
+            width="100%"
+            clearable
+          />
         </el-form-item>
         <el-form-item label="站点名称" prop="siteName">
           <el-input v-model="editForm.siteName" placeholder="请输入站点名称" />
@@ -120,7 +164,14 @@
           <el-input v-model="editForm.description" placeholder="请输入站点描述" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-input v-model="editForm.status" placeholder="请输入状态" />
+          <DictSelect
+            v-model="editForm.status"
+            :api-method="DictItemApi.select"
+            usage-code="STATUS"
+            placeholder="请选择状态"
+            clearable
+            width="100%"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -151,7 +202,11 @@
           {{ currentRow?.description }}
         </el-descriptions-item>
         <el-descriptions-item label="状态">
-          {{ currentRow?.status }}
+          <DictText
+            :value="currentRow?.status"
+            usage-code="STATUS"
+            :api-method="DictItemApi.select"
+          />
         </el-descriptions-item>
         <el-descriptions-item label="版本号">{{ currentRow?.version }}</el-descriptions-item>
         <el-descriptions-item label="创建时间">{{ currentRow?.createTime }}</el-descriptions-item>
@@ -174,7 +229,9 @@ import { WebSiteApi } from './api';
 import type { WebSite, WebSitePayload, WebSiteQuery } from './type';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
 
-import { SortableTable, TableColumn, SortManagerButton, QueryForm, showErrorMessage } from '@/components';
+import { SortableTable, TableColumn, SortManagerButton, QueryForm, OrganSelect, DictSelect, DictText, StatusSwitch, showErrorMessage } from '@/components';
+import { OrganApi } from '@/views/organ/api';
+import { DictItemApi } from '@/views/dict/api';
 
 const tableData = ref<WebSite[]>([]);
 
@@ -188,7 +245,7 @@ let baseQueryForm = reactive<BaseSelectListDto>({
 
 // 业务特定查询表单
 const queryForm = reactive({
-  organId: '',
+  organId: null as number | null,
   siteName: '',
   siteCode: '',
   domain: '',
@@ -215,7 +272,7 @@ const editFormRef = ref<FormInstance | null>(null);
 
 const editForm = reactive({
   id: 0,
-  organId: '',
+  organId: null as number | null,
   siteName: '',
   siteCode: '',
   domain: '',
@@ -224,15 +281,15 @@ const editForm = reactive({
 });
 
 const editRules: FormRules = {
-  organId: [{ required: true, message: '请输入机构ID', trigger: 'blur' }],
+  organId: [{ required: true, message: '请选择机构', trigger: 'change' }],
   siteName: [{ required: true, message: '请输入站点名称', trigger: 'blur' }],
   siteCode: [{ required: true, message: '请输入站点编码', trigger: 'blur' }],
-  status: [{ required: true, message: '请输入状态', trigger: 'blur' }],
+  status: [{ required: true, message: '请选择状态', trigger: 'change' }],
 };
 
 const handleCreate = () => {
   isEdit.value = false;
-  editForm.organId = '';
+  editForm.organId = null;
   editForm.siteName = '';
   editForm.siteCode = '';
   editForm.domain = '';
@@ -244,7 +301,7 @@ const handleCreate = () => {
 const handleEdit = (row: WebSite) => {
   isEdit.value = true;
   editForm.id = row.id;
-  editForm.organId = String(row.organId);
+  editForm.organId = row.organId ?? null;
   editForm.siteName = row.siteName;
   editForm.siteCode = row.siteCode;
   editForm.domain = row.domain ?? '';
@@ -284,7 +341,7 @@ const submitEdit = async () => {
   if (!valid) return;
 
   const payload: WebSitePayload = {
-    organId: editForm.organId !== '' ? Number(editForm.organId) : undefined,
+    organId: editForm.organId ?? undefined,
     siteName: editForm.siteName,
     siteCode: editForm.siteCode,
     domain: editForm.domain || null,
@@ -316,7 +373,7 @@ const handleSortChange = (params: Record<string, string>) => {
 
 const loadData = async () => {
   try {
-    const organId = queryForm.organId ? Number(queryForm.organId) : undefined;
+    const organId = queryForm.organId ?? undefined;
 
     // 构建查询条件（query 对象），包含基础查询参数和业务查询参数
     const query: WebSiteQuery = {
@@ -376,7 +433,7 @@ const handleReset = () => {
   baseQueryForm.sorts = undefined;
   
   // 重置业务特定查询表单
-  queryForm.organId = '';
+  queryForm.organId = null;
   queryForm.siteName = '';
   queryForm.siteCode = '';
   queryForm.domain = '';

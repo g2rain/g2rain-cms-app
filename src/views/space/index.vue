@@ -10,7 +10,13 @@
       >
         <!-- 业务特定查询字段 -->
         <el-form-item label="机构ID">
-          <el-input v-model="queryForm.organId" placeholder="请输入机构ID" clearable style="width: 200px" />
+          <OrganSelect
+            v-model="queryForm.organId"
+            :api-method="OrganApi.searchOrgans"
+            placeholder="请选择所属机构"
+            width="200px"
+            clearable
+          />
         </el-form-item>
         <el-form-item label="空间名称">
           <el-input v-model="queryForm.spaceName" placeholder="请输入空间名称" clearable style="width: 200px" />
@@ -19,10 +25,24 @@
           <el-input v-model="queryForm.spaceCode" placeholder="请输入空间编码" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item label="空间类型">
-          <el-input v-model="queryForm.spaceType" placeholder="请输入空间类型" clearable style="width: 200px" />
+          <DictSelect
+            v-model="queryForm.spaceType"
+            :api-method="DictItemApi.select"
+            usage-code="CMS_SPACE_SPACE_TYPE"
+            placeholder="请选择空间类型"
+            clearable
+            width="200px"
+          />
         </el-form-item>
         <el-form-item label="状态">
-          <el-input v-model="queryForm.status" placeholder="请输入状态" clearable style="width: 200px" />
+          <DictSelect
+            v-model="queryForm.status"
+            :api-method="DictItemApi.select"
+            usage-code="STATUS"
+            placeholder="请选择状态"
+            clearable
+            width="200px"
+          />
         </el-form-item>
 
         <!-- 操作按钮 -->
@@ -55,8 +75,26 @@
       <el-table-column prop="organId" label="机构ID" width="140" />
       <el-table-column prop="spaceName" label="空间名称" width="180" />
       <el-table-column prop="spaceCode" label="空间编码" width="180" />
-      <el-table-column prop="spaceType" label="空间类型" width="180" />
-      <el-table-column prop="status" label="状态" width="180" />
+      <el-table-column label="空间类型" width="180">
+        <template #default="{ row }">
+          <DictText :value="row.spaceType" usage-code="CMS_SPACE_SPACE_TYPE" :api-method="DictItemApi.select" />
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" width="180">
+        <template #default="{ row }">
+          <StatusSwitch
+            v-model="row.status"
+            permission="space:edit"
+            :active-value="'ACTIVE'"
+            :inactive-value="'INACTIVE'"
+            :options="[
+              { label: '启用', value: 'ACTIVE' },
+              { label: '禁用', value: 'INACTIVE' }
+            ]"
+            :api-method="({ nextValue }) => SpaceApi.updateStatus({ id: row.id, status: String(nextValue) })"
+          />
+        </template>
+      </el-table-column>
       <TableColumn prop="createTime" label="创建时间" width="180" :sortable="true" />
       <TableColumn prop="updateTime" label="更新时间" width="180" :sortable="true" />
       <el-table-column label="操作" fixed="right" width="280">
@@ -125,7 +163,14 @@
           />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-input v-model="editForm.status" placeholder="请输入状态" />
+          <DictSelect
+            v-model="editForm.status"
+            :api-method="DictItemApi.select"
+            usage-code="STATUS"
+            placeholder="请选择状态"
+            width="100%"
+            clearable
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -178,7 +223,7 @@ import { OrganApi } from '@/views/organ/api';
 import { DictItemApi } from '@/views/dict/api';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
 
-import { SortableTable, TableColumn, SortManagerButton, QueryForm, type QueryFormData, OrganSelect, DictSelect, showErrorMessage } from '@/components';
+import { SortableTable, TableColumn, SortManagerButton, QueryForm, type QueryFormData, OrganSelect, DictSelect, DictText, StatusSwitch, showErrorMessage } from '@/components';
 
 const tableData = ref<Space[]>([]);
 
@@ -192,7 +237,7 @@ let baseQueryForm = reactive<QueryFormData>({
 
 // 业务特定查询表单
 const queryForm = reactive({
-  organId: '',
+  organId: null as number | null,
   spaceName: '',
   spaceCode: '',
   spaceType: '',
@@ -316,7 +361,7 @@ const handleSortChange = (params: Record<string, string>) => {
 
 const loadData = async () => {
   try {
-    const organId = queryForm.organId ? Number(queryForm.organId) : undefined;
+    const organId = queryForm.organId ?? undefined;
 
     // 构建查询条件（query 对象），包含基础查询参数和业务查询参数
     const query: SpaceQuery = {
@@ -375,7 +420,7 @@ const handleReset = () => {
   baseQueryForm.sorts = undefined;
   
   // 重置业务特定查询表单
-  queryForm.organId = '';
+  queryForm.organId = null;
   queryForm.spaceName = '';
   queryForm.spaceCode = '';
   queryForm.spaceType = '';

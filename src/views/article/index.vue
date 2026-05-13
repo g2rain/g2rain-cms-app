@@ -3,11 +3,7 @@
     <!-- 查询表单 -->
     <el-card class="article-page__search" shadow="never">
       <!-- 基础查询表单（BaseSelectListDto） -->
-      <QueryForm
-        ref="queryFormRef"
-        v-model="baseQueryForm"
-        @search="handleSearch"
-      >
+      <QueryForm ref="queryFormRef" v-model="baseQueryForm" @search="handleSearch">
         <!-- 业务特定查询字段 -->
         <el-form-item label="机构ID">
           <OrganSelect
@@ -724,9 +720,7 @@ const submitEdit = async () => {
 // 处理排序变化
 const handleSortChange = (params: Record<string, string>) => {
   // 更新 QueryForm 的 sorts 字段
-  if (queryFormRef.value) {
-    queryFormRef.value.updateSorts(params);
-  }
+  queryFormRef.value?.updateSorts(params);
 };
 
 const loadData = async () => {

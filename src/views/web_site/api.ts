@@ -19,7 +19,7 @@ export class WebSiteApi {
    * @param params 查询参数（可选）
    * @returns web_site列表
    */
-  static async list(params?: { organId?: number; page?: number; size?: number }): Promise<WebSite[]> {
+  static async list(params?: WebSiteQuery): Promise<WebSite[]> {
     const http = getHttpClient('default');
     const res = await http.get<WebSite[]>('/cms/web_site/list', params);
     return res.data || [];
@@ -30,9 +30,7 @@ export class WebSiteApi {
    * @param params 查询参数（继承PageSelectListDto，包含基础查询和业务查询条件）
    * @returns 分页数据
    */
-  static async page(
-    params: WebSiteQuery & PageSelectListDto,
-  ): Promise<PageData<WebSite>> {
+  static async page(params: WebSiteQuery & PageSelectListDto): Promise<PageData<WebSite>> {
     const http = getHttpClient('default');
     const res = await http.get<PageData<WebSite>>('/cms/web_site/page', params);
     return res.data;

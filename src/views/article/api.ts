@@ -19,7 +19,7 @@ export class ArticleApi {
    * @param params 查询参数（可选）
    * @returns article列表
    */
-  static async list(params?: { organId?: number; page?: number; size?: number }): Promise<Article[]> {
+  static async list(params?: ArticleQuery): Promise<Article[]> {
     const http = getHttpClient('default');
     const res = await http.get<Article[]>('/cms/article/list', params);
     return res.data || [];
@@ -30,9 +30,7 @@ export class ArticleApi {
    * @param params 查询参数（继承PageSelectListDto，包含基础查询和业务查询条件）
    * @returns 分页数据
    */
-  static async page(
-    params: ArticleQuery & PageSelectListDto,
-  ): Promise<PageData<Article>> {
+  static async page(params: ArticleQuery & PageSelectListDto): Promise<PageData<Article>> {
     const http = getHttpClient('default');
     const res = await http.get<PageData<Article>>('/cms/article/page', params);
     return res.data;

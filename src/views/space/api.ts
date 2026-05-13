@@ -19,7 +19,7 @@ export class SpaceApi {
    * @param params 查询参数（可选）
    * @returns space列表
    */
-  static async list(params?: { organId?: number; page?: number; size?: number }): Promise<Space[]> {
+  static async list(params?: SpaceQuery): Promise<Space[]> {
     const http = getHttpClient('default');
     const res = await http.get<Space[]>('/cms/space/list', params);
     return res.data || [];
@@ -30,9 +30,7 @@ export class SpaceApi {
    * @param params 查询参数（继承PageSelectListDto，包含基础查询和业务查询条件）
    * @returns 分页数据
    */
-  static async page(
-    params: SpaceQuery & PageSelectListDto,
-  ): Promise<PageData<Space>> {
+  static async page(params: SpaceQuery & PageSelectListDto): Promise<PageData<Space>> {
     const http = getHttpClient('default');
     const res = await http.get<PageData<Space>>('/cms/space/page', params);
     return res.data;

@@ -80,8 +80,8 @@ import en from 'element-plus/es/locale/lang/en'
  */
 export interface QueryFormData {
   id?: number
-  createTime?: string[]
-  updateTime?: string[]
+  createTime?: [string, string]
+  updateTime?: [string, string]
   sorts?: string[]
   // 允许扩展字段（比如 organId、applicationName 等）
   [key: string]: any

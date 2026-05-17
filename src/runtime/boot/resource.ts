@@ -3,12 +3,7 @@
  * 负责加载和管理应用资源（页面、页面元素、API端点）
  */
 
-import type {
-  ApplicationResources,
-  ResourcePage,
-  ResourcePageElement,
-  ResourceApiEndpoint,
-} from './types';
+import type { ApplicationResources, ResourcePage, ResourcePageElement, ResourceApiEndpoint } from './types';
 import { getHttpClient } from '@/components/http';
 
 import { env } from '@shared/env';
@@ -45,20 +40,8 @@ class ResourceManager {
 
     try {
       // 通过单个接口加载所有资源
-      const http = getHttpClient('default');
-      // DEV 临时措施：强制资源接口走本地 mock（与 http 拦截器约定 header 一致）
-      // 注意：这里不读取任何 mock 相关 env 开关，仅判断是否为开发模式
-      const response = await http.get<ApplicationResources>(
-        RESOURCES_API_PATH,
-        undefined,
-        import.meta.env.DEV
-          ? {
-              headers: {
-                'x-g2rain-mock': 'true',
-              },
-            }
-          : undefined,
-      );
+      let http = getHttpClient('default');
+      const response = await http.get<ApplicationResources>(RESOURCES_API_PATH);
 
       this.resources = {
         pages: response.data?.pages || [],
@@ -72,21 +55,6 @@ class ResourceManager {
         pageElements: this.resources.pageElements.length,
         apiEndpoints: this.resources.apiEndpoints.length,
       });
-
-      if (import.meta.env.DEV) {
-        const body = response as unknown as Record<string, unknown>;
-        const inner = body?.data as Record<string, unknown> | undefined;
-        console.log('[ResourceManager][DEV] Result 结构自检', {
-          topLevelKeys: body ? Object.keys(body) : [],
-          dataKeys: inner && typeof inner === 'object' ? Object.keys(inner) : [],
-          linkPaths: this.resources.pages.map((p) => p.linkPath),
-        });
-        if (this.resources.pages.length === 0) {
-          console.warn(
-            '[ResourceManager][DEV] pages 为空：动态路由不会注册。若使用 Mock，请确认 /basis/authority/resources 命中且 data.pages 非空；并确认 Result 未多包一层。',
-          );
-        }
-      }
     } catch (error) {
       console.error('[ResourceManager] 资源加载失败:', error);
       throw error;

@@ -8,6 +8,8 @@ import type { Result } from '../types';
 import { mockMenuList, authMockDataMap, IAM_PUBLIC_KEY, IAM_KEY_ID } from './data/auth.data';
 import { testMockDataMap } from './data/test.api';
 import resourcesConfig from '@shared/config-util/config/resources.json';
+import { normalizeResourceApiEndpoint } from '@/runtime/boot/types';
+import type { ResourceApiEndpoint } from '@/runtime/boot/types';
 
 interface ResourcePageMock {
   pageName: string;
@@ -24,17 +26,10 @@ interface ResourcePageElementMock {
   status: string;
 }
 
-interface ResourceApiEndpointMock {
-  apiName: string;
-  apiUrl: string;
-  requestMethod: string;
-  apiTag: string;
-}
-
 interface ApplicationResourcesMock {
   pages: ResourcePageMock[];
   pageElements: ResourcePageElementMock[];
-  apiEndpoints: ResourceApiEndpointMock[];
+  apiEndpoints: ResourceApiEndpoint[];
 }
 
 function createResult<T>(data: T): Result<T> {
@@ -74,25 +69,17 @@ export const mockDataMap: MockDataMap = {
 
   // GET /basis/authority/resources - 资源接口
   // 从 config 读取 pages/pageElements/apiEndpoints 数据
-  '/basis/authority/resources': ((config) => {
+  '/basis/authority/resources': (() => {
     const pages = (resourcesConfig.pages ?? []) as ResourcePageMock[];
     const pageElements = (resourcesConfig.pageElements ?? []) as ResourcePageElementMock[];
-    const apiEndpoints = (resourcesConfig.apiEndpoints ?? []) as ResourceApiEndpointMock[];
+    const apiEndpoints = (resourcesConfig.apiEndpoints ?? []).map((item) =>
+      normalizeResourceApiEndpoint(item as Record<string, unknown>),
+    );
     const resources: ApplicationResourcesMock = {
       pages,
       pageElements,
       apiEndpoints,
     };
-    if (import.meta.env.DEV) {
-      console.log('[mock:data] /basis/authority/resources命中', {
-        requestUrl: config.url,
-        baseURL: config.baseURL,
-        pagesCount: pages.length,
-        pageElementsCount: pageElements.length,
-        apiEndpointsCount: apiEndpoints.length,
-        linkPaths: pages.map((p) => p.linkPath),
-      });
-    }
     return createResult(resources);
   }) as MockDataFunction,
 

@@ -5,88 +5,88 @@
       <!-- 基础查询表单（BaseSelectListDto） -->
       <QueryForm ref="queryFormRef" v-model="baseQueryForm" @search="handleSearch">
         <!-- 业务特定查询字段 -->
-        <el-form-item label="机构ID">
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_ORGAN_ID', '机构ID')">
           <OrganSelect
             v-model="queryForm.organId"
             :api-method="OrganApi.searchOrgans"
-            placeholder="请选择所属机构"
+            :placeholder="$t('CMS_ARTICLE_PH_ORGAN', '请选择所属机构')"
             width="200px"
             clearable
           />
         </el-form-item>
-        <el-form-item label="空间ID">
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_SPACE_ID', '空间ID')">
           <ApiSelect
             v-model="queryForm.spaceId"
             :api-method="fetchSpaces"
             value-key="id"
             label-key="spaceName"
-            placeholder="请选择空间"
+            :placeholder="$t('CMS_ARTICLE_PH_SPACE', '请选择空间')"
             clearable
             width="200px"
             :allow-empty-keyword="true"
             :prefetch-on-open="true"
           />
         </el-form-item>
-        <el-form-item label="分类ID">
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_CATEGORY_ID', '分类ID')">
           <ApiSelect
             v-model="queryForm.categoryId"
             :api-method="fetchCategories"
             value-key="id"
             label-key="categoryName"
-            placeholder="请选择分类"
+            :placeholder="$t('CMS_ARTICLE_PH_CATEGORY', '请选择分类')"
             clearable
             width="200px"
             :allow-empty-keyword="true"
             :prefetch-on-open="true"
           />
         </el-form-item>
-        <el-form-item label="来源应用ID">
-          <el-input v-model="queryForm.sourceApplicationId" placeholder="请输入来源应用ID" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_SOURCE_APP_ID', '来源应用ID')">
+          <el-input v-model="queryForm.sourceApplicationId" :placeholder="$t('CMS_ARTICLE_PH_SOURCE_APP_ID', '请输入来源应用ID')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item label="来源追踪ID">
-          <el-input v-model="queryForm.sourceTraceId" placeholder="请输入来源追踪ID" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_SOURCE_TRACE_ID', '来源追踪ID')">
+          <el-input v-model="queryForm.sourceTraceId" :placeholder="$t('CMS_ARTICLE_PH_SOURCE_TRACE_ID', '请输入来源追踪ID')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item label="标题">
-          <el-input v-model="queryForm.title" placeholder="请输入标题" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_TITLE', '标题')">
+          <el-input v-model="queryForm.title" :placeholder="$t('CMS_ARTICLE_PH_TITLE', '请输入标题')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item label="摘要">
-          <el-input v-model="queryForm.summary" placeholder="请输入摘要" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_SUMMARY', '摘要')">
+          <el-input v-model="queryForm.summary" :placeholder="$t('CMS_ARTICLE_PH_SUMMARY', '请输入摘要')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item label="封面">
-          <el-input v-model="queryForm.cover" placeholder="请输入封面" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_COVER', '封面')">
+          <el-input v-model="queryForm.cover" :placeholder="$t('CMS_ARTICLE_PH_COVER', '请输入封面')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item label="内容类型">
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_CONTENT_TYPE', '内容类型')">
           <DictSelect
             v-model="queryForm.contentType"
             :api-method="DictItemApi.select"
             usage-code="CMS_ARTICLE_CONTENT_TYPE"
-            placeholder="请选择内容类型"
+            :placeholder="$t('CMS_ARTICLE_PH_CONTENT_TYPE', '请选择内容类型')"
             clearable
             width="200px"
           />
         </el-form-item>
-        <el-form-item label="作者">
-          <el-input v-model="queryForm.author" placeholder="请输入作者" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_AUTHOR', '作者')">
+          <el-input v-model="queryForm.author" :placeholder="$t('CMS_ARTICLE_PH_AUTHOR', '请输入作者')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item :label="$t('G2_FIELD_STATUS', '状态')">
           <DictSelect
             v-model="queryForm.status"
             :api-method="DictItemApi.select"
             usage-code="CMS_ARTICLE_STATUS"
-            placeholder="请选择状态"
+            :placeholder="$t('G2_PH_SELECT', '请选择')"
             clearable
             width="200px"
           />
         </el-form-item>
-        <el-form-item label="发布时间">
-          <el-input v-model="queryForm.publishTime" placeholder="请输入发布时间" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_PUBLISH_TIME', '发布时间')">
+          <el-input v-model="queryForm.publishTime" :placeholder="$t('CMS_ARTICLE_PH_PUBLISH_TIME', '请输入发布时间')" clearable style="width: 200px" />
         </el-form-item>
 
         <!-- 操作按钮 -->
         <template #actions>
           <el-form-item>
-            <el-button type="primary" @click="handleSearch">查询</el-button>
-            <el-button @click="handleReset">重置</el-button>
+            <el-button type="primary" @click="handleSearch">{{ $t('G2_BTN_QUERY', '查询') }}</el-button>
+            <el-button @click="handleReset">{{ $t('G2_BTN_RESET', '重置') }}</el-button>
           </el-form-item>
         </template>
       </QueryForm>
@@ -95,9 +95,9 @@
     <!-- 标题和操作按钮 -->
     <div class="article-page__header">
       <div class="article-page__title-group">
-        <h2>管理各类article数据</h2>
+        <h2>{{ $t('CMS_ARTICLE_TITLE', '管理文章数据') }}</h2>
       </div>
-      <el-button type="primary" v-permission="'article:add'" @click="handleCreate">新增article</el-button>
+      <el-button type="primary" v-permission="'article:add'" @click="handleCreate">{{ $t('CMS_ARTICLE_BTN_ADD', '新增文章') }}</el-button>
     </div>
 
     <SortableTable
@@ -108,40 +108,40 @@
       :enable-multi-sort="true"
       @sort-change="handleSortChange"
     >
-      <el-table-column prop="id" label="ID" width="120" />
-      <el-table-column prop="organId" label="机构ID" width="140" />
-      <el-table-column prop="spaceId" label="空间ID" width="140" />
-      <el-table-column prop="categoryId" label="分类ID" width="140" />
-      <el-table-column prop="title" label="标题" width="180" />
-      <el-table-column prop="summary" label="摘要" width="180" />
-      <el-table-column prop="cover" label="封面" width="180" />
-      <el-table-column label="内容类型" width="180">
+      <el-table-column prop="id" :label="$t('G2_FIELD_ID', 'ID')" width="120" />
+      <el-table-column prop="organId" :label="$t('CMS_ARTICLE_FIELD_ORGAN_ID', '机构ID')" width="140" />
+      <el-table-column prop="spaceId" :label="$t('CMS_ARTICLE_FIELD_SPACE_ID', '空间ID')" width="140" />
+      <el-table-column prop="categoryId" :label="$t('CMS_ARTICLE_FIELD_CATEGORY_ID', '分类ID')" width="140" />
+      <el-table-column prop="title" :label="$t('CMS_ARTICLE_FIELD_TITLE', '标题')" width="180" />
+      <el-table-column prop="summary" :label="$t('CMS_ARTICLE_FIELD_SUMMARY', '摘要')" width="180" />
+      <el-table-column prop="cover" :label="$t('CMS_ARTICLE_FIELD_COVER', '封面')" width="180" />
+      <el-table-column :label="$t('CMS_ARTICLE_FIELD_CONTENT_TYPE', '内容类型')" width="180">
         <template #default="{ row }">
           <DictText :value="row.contentType" usage-code="CMS_ARTICLE_CONTENT_TYPE" :api-method="DictItemApi.select" />
         </template>
       </el-table-column>
-      <el-table-column prop="author" label="作者" width="180" />
-      <el-table-column label="状态" width="180">
+      <el-table-column prop="author" :label="$t('CMS_ARTICLE_FIELD_AUTHOR', '作者')" width="180" />
+      <el-table-column :label="$t('G2_FIELD_STATUS', '状态')" width="180">
         <template #default="{ row }">
           <DictText :value="row.status" usage-code="CMS_ARTICLE_STATUS" :api-method="DictItemApi.select" />
         </template>
       </el-table-column>
-      <el-table-column prop="publishTime" label="发布时间" width="180" />
-      <el-table-column prop="sourceApplicationId" label="来源应用ID" width="140" />
-      <el-table-column prop="sourceTraceId" label="来源追踪ID" width="180" />
-      <TableColumn prop="createTime" label="创建时间" width="180" :sortable="true" />
-      <TableColumn prop="updateTime" label="更新时间" width="180" :sortable="true" />
-      <el-table-column label="操作" fixed="right" width="360">
+      <el-table-column prop="publishTime" :label="$t('CMS_ARTICLE_FIELD_PUBLISH_TIME', '发布时间')" width="180" />
+      <el-table-column prop="sourceApplicationId" :label="$t('CMS_ARTICLE_FIELD_SOURCE_APP_ID', '来源应用ID')" width="140" />
+      <el-table-column prop="sourceTraceId" :label="$t('CMS_ARTICLE_FIELD_SOURCE_TRACE_ID', '来源追踪ID')" width="180" />
+      <TableColumn prop="createTime" :label="$t('G2_FIELD_CREATE_TIME', '创建时间')" width="180" :sortable="true" />
+      <TableColumn prop="updateTime" :label="$t('G2_FIELD_UPDATE_TIME', '更新时间')" width="180" :sortable="true" />
+      <el-table-column :label="$t('G2_FIELD_ACTION', '操作')" fixed="right" width="360">
         <template #default="{ row }">
-          <el-button type="primary" link size="small" @click="handleView(row)">明细</el-button>
-          <el-button type="primary" v-permission="'article:edit'" link size="small" :disabled="row.contentType !== 'MARKDOWN'" @click="handleEditContent(row)">编辑内容</el-button>
-          <el-button type="primary" v-permission="'article:edit'" link size="small" :disabled="row.contentType !== 'MARKDOWN'" @click="handleOpenTagDrawer(row)">新增标签</el-button>
-          <el-button type="primary" v-permission="'article:edit'" link size="small" @click="handleEdit(row)">编辑</el-button>
-          <el-button type="danger" v-permission="'article:delete'" link size="small" @click="handleDelete(row)">删除</el-button>
+          <el-button type="primary" link size="small" @click="handleView(row)">{{ $t('G2_BTN_DETAIL', '明细') }}</el-button>
+          <el-button type="primary" v-permission="'article:edit'" link size="small" :disabled="row.contentType !== 'MARKDOWN'" @click="handleEditContent(row)">{{ $t('CMS_ARTICLE_BTN_EDIT_CONTENT', '编辑内容') }}</el-button>
+          <el-button type="primary" v-permission="'article:edit'" link size="small" :disabled="row.contentType !== 'MARKDOWN'" @click="handleOpenTagDrawer(row)">{{ $t('CMS_ARTICLE_BTN_ADD_TAG', '新增标签') }}</el-button>
+          <el-button type="primary" v-permission="'article:edit'" link size="small" @click="handleEdit(row)">{{ $t('G2_BTN_EDIT', '编辑') }}</el-button>
+          <el-button type="danger" v-permission="'article:delete'" link size="small" @click="handleDelete(row)">{{ $t('G2_BTN_DELETE', '删除') }}</el-button>
         </template>
         <template #header>
           <div style="display: flex; align-items: center; gap: 8px;">
-            <span>操作</span>
+            <span>{{ $t('G2_FIELD_ACTION', '操作') }}</span>
             <SortManagerButton />
           </div>
         </template>
@@ -164,7 +164,7 @@
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog
       v-model="editDialogVisible"
-      :title="isEdit ? '编辑article' : '新增article'"
+      :title="editDialogTitle"
       width="520px"
     >
       <el-form
@@ -173,122 +173,122 @@
         :rules="editRules"
         label-width="100px"
       >
-        <el-form-item label="机构ID" prop="organId">
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_ORGAN_ID', '机构ID')" prop="organId">
           <OrganSelect
             v-model="editForm.organId"
             :api-method="OrganApi.searchOrgans"
-            placeholder="请选择所属机构"
+            :placeholder="$t('CMS_ARTICLE_PH_ORGAN', '请选择所属机构')"
             width="100%"
             clearable
           />
         </el-form-item>
-        <el-form-item label="空间ID" prop="spaceId">
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_SPACE_ID', '空间ID')" prop="spaceId">
           <ApiSelect
             v-model="editForm.spaceId"
             :api-method="fetchSpaces"
             value-key="id"
             label-key="spaceName"
-            placeholder="请选择空间"
+            :placeholder="$t('CMS_ARTICLE_PH_SPACE', '请选择空间')"
             clearable
             width="100%"
             :allow-empty-keyword="true"
             :prefetch-on-open="true"
           />
         </el-form-item>
-        <el-form-item label="分类ID" prop="categoryId">
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_CATEGORY_ID', '分类ID')" prop="categoryId">
           <ApiSelect
             v-model="editForm.categoryId"
             :api-method="fetchCategories"
             value-key="id"
             label-key="categoryName"
-            placeholder="请选择分类"
+            :placeholder="$t('CMS_ARTICLE_PH_CATEGORY', '请选择分类')"
             clearable
             width="100%"
             :allow-empty-keyword="true"
             :prefetch-on-open="true"
           />
         </el-form-item>
-        <el-form-item label="标题" prop="title">
-          <el-input v-model="editForm.title" placeholder="请输入标题" />
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_TITLE', '标题')" prop="title">
+          <el-input v-model="editForm.title" :placeholder="$t('CMS_ARTICLE_PH_TITLE', '请输入标题')" />
         </el-form-item>
-        <el-form-item label="摘要" prop="summary">
-          <el-input v-model="editForm.summary" placeholder="请输入摘要" />
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_SUMMARY', '摘要')" prop="summary">
+          <el-input v-model="editForm.summary" :placeholder="$t('CMS_ARTICLE_PH_SUMMARY', '请输入摘要')" />
         </el-form-item>
-        <el-form-item label="封面" prop="cover">
-          <el-input v-model="editForm.cover" placeholder="请输入封面" />
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_COVER', '封面')" prop="cover">
+          <el-input v-model="editForm.cover" :placeholder="$t('CMS_ARTICLE_PH_COVER', '请输入封面')" />
         </el-form-item>
-        <el-form-item label="内容类型" prop="contentType">
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_CONTENT_TYPE', '内容类型')" prop="contentType">
           <el-input v-model="editForm.contentType" disabled />
         </el-form-item>
-        <el-form-item label="作者" prop="author">
-          <el-input v-model="editForm.author" placeholder="请输入作者" />
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_AUTHOR', '作者')" prop="author">
+          <el-input v-model="editForm.author" :placeholder="$t('CMS_ARTICLE_PH_AUTHOR', '请输入作者')" />
         </el-form-item>
-        <el-form-item label="状态" prop="status">
+        <el-form-item :label="$t('G2_FIELD_STATUS', '状态')" prop="status">
           <el-input v-model="editForm.status" disabled />
         </el-form-item>
-        <el-form-item label="来源追踪ID" prop="sourceTraceId">
+        <el-form-item :label="$t('CMS_ARTICLE_FIELD_SOURCE_TRACE_ID', '来源追踪ID')" prop="sourceTraceId">
           <el-input
             v-model="editForm.sourceTraceId"
             disabled
-            placeholder="系统自动生成，不可修改"
+            :placeholder="$t('CMS_ARTICLE_PH_SOURCE_TRACE_AUTO', '系统自动生成，不可修改')"
           />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="editDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="submitEdit">保 存</el-button>
+          <el-button @click="editDialogVisible = false">{{ $t('G2_BTN_CANCEL', '取消') }}</el-button>
+          <el-button type="primary" @click="submitEdit">{{ $t('G2_BTN_SAVE', '保存') }}</el-button>
         </span>
       </template>
     </el-dialog>
 
     <!-- 明细弹窗 -->
-    <el-dialog v-model="detailDialogVisible" title="article明细" width="520px">
+    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_ARTICLE_DLG_DETAIL', '文章明细')" width="520px">
       <el-descriptions :column="1" border>
-        <el-descriptions-item label="ID">{{ currentRow?.id }}</el-descriptions-item>
-        <el-descriptions-item label="机构ID">
+        <el-descriptions-item :label="$t('G2_FIELD_ID', 'ID')">{{ currentRow?.id }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('CMS_ARTICLE_FIELD_ORGAN_ID', '机构ID')">
           {{ currentRow?.organId }}
         </el-descriptions-item>
-        <el-descriptions-item label="空间ID">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_FIELD_SPACE_ID', '空间ID')">
           {{ currentRow?.spaceId }}
         </el-descriptions-item>
-        <el-descriptions-item label="分类ID">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_FIELD_CATEGORY_ID', '分类ID')">
           {{ currentRow?.categoryId }}
         </el-descriptions-item>
-        <el-descriptions-item label="标题">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_FIELD_TITLE', '标题')">
           {{ currentRow?.title }}
         </el-descriptions-item>
-        <el-descriptions-item label="作者">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_FIELD_AUTHOR', '作者')">
           {{ currentRow?.author }}
         </el-descriptions-item>
-        <el-descriptions-item label="状态">
+        <el-descriptions-item :label="$t('G2_FIELD_STATUS', '状态')">
           {{ currentRow?.status }}
         </el-descriptions-item>
-        <el-descriptions-item label="发布时间">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_FIELD_PUBLISH_TIME', '发布时间')">
           {{ currentRow?.publishTime }}
         </el-descriptions-item>
-        <el-descriptions-item label="摘要">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_FIELD_SUMMARY', '摘要')">
           {{ currentRow?.summary }}
         </el-descriptions-item>
-        <el-descriptions-item label="封面">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_FIELD_COVER', '封面')">
           {{ currentRow?.cover }}
         </el-descriptions-item>
-        <el-descriptions-item label="内容类型">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_FIELD_CONTENT_TYPE', '内容类型')">
           {{ currentRow?.contentType }}
         </el-descriptions-item>
-        <el-descriptions-item label="来源应用ID">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_FIELD_SOURCE_APP_ID', '来源应用ID')">
           {{ currentRow?.sourceApplicationId }}
         </el-descriptions-item>
-        <el-descriptions-item label="来源追踪ID">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_FIELD_SOURCE_TRACE_ID', '来源追踪ID')">
           {{ currentRow?.sourceTraceId }}
         </el-descriptions-item>
-        <el-descriptions-item label="版本号">{{ currentRow?.version }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ currentRow?.createTime }}</el-descriptions-item>
-        <el-descriptions-item label="更新时间">{{ currentRow?.updateTime }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('CMS_ARTICLE_FIELD_VERSION', '版本号')">{{ currentRow?.version }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('G2_FIELD_CREATE_TIME', '创建时间')">{{ currentRow?.createTime }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('G2_FIELD_UPDATE_TIME', '更新时间')">{{ currentRow?.updateTime }}</el-descriptions-item>
       </el-descriptions>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="detailDialogVisible = false">关 闭</el-button>
+          <el-button type="primary" @click="detailDialogVisible = false">{{ $t('G2_BTN_CLOSE', '关闭') }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -296,7 +296,7 @@
     <!-- Markdown 内容编辑弹窗 -->
     <el-dialog
       v-model="contentDialogVisible"
-      :title="`编辑内容 - ${contentTargetArticle?.title || ''}`"
+      :title="contentDialogTitle"
       fullscreen
       custom-class="content-editor-dialog"
       header-class="content-editor-dialog__header"
@@ -316,8 +316,8 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="contentDialogVisible = false">取 消</el-button>
-          <el-button type="primary" :loading="contentSaving" @click="handleSaveContent">保 存</el-button>
+          <el-button @click="contentDialogVisible = false">{{ $t('G2_BTN_CANCEL', '取消') }}</el-button>
+          <el-button type="primary" :loading="contentSaving" @click="handleSaveContent">{{ $t('G2_BTN_SAVE', '保存') }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -325,14 +325,14 @@
     <!-- 文章标签绑定抽屉 -->
     <el-drawer
       v-model="tagDrawerVisible"
-      title="新增标签"
+      :title="$t('CMS_ARTICLE_DLG_ADD_TAG', '新增标签')"
       direction="rtl"
       size="520px"
       destroy-on-close
     >
       <div class="article-tag-drawer">
         <el-alert
-          :title="`当前文章：${tagTargetArticle?.title || ''}（ID: ${tagTargetArticle?.id ?? '-'}）`"
+          :title="tagAlertTitle"
           type="info"
           :closable="false"
           style="margin-bottom: 12px"
@@ -340,12 +340,12 @@
         <div class="article-tag-drawer__query">
           <el-input
             v-model="tagQueryName"
-            placeholder="请输入标签名称"
+            :placeholder="$t('CMS_ARTICLE_PH_TAG_NAME', '请输入标签名称')"
             clearable
             style="width: 220px"
             @keyup.enter="loadTagOptions"
           />
-          <el-button type="primary" @click="loadTagOptions">查询</el-button>
+          <el-button type="primary" @click="loadTagOptions">{{ $t('G2_BTN_QUERY', '查询') }}</el-button>
         </div>
         <el-table
           v-loading="tagLoading"
@@ -355,14 +355,14 @@
           @selection-change="handleTagSelectionChange"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="id" label="标签ID" width="100" />
-          <el-table-column prop="tagName" label="标签名称" min-width="180" />
+          <el-table-column prop="id" :label="$t('CMS_ARTICLE_FIELD_TAG_ID', '标签ID')" width="100" />
+          <el-table-column prop="tagName" :label="$t('CMS_ARTICLE_FIELD_TAG_NAME', '标签名称')" min-width="180" />
         </el-table>
       </div>
       <template #footer>
         <div class="article-tag-drawer__footer">
-          <el-button @click="tagDrawerVisible = false">取消</el-button>
-          <el-button type="primary" :loading="tagSubmitLoading" @click="handleSubmitTags">提交</el-button>
+          <el-button @click="tagDrawerVisible = false">{{ $t('G2_BTN_CANCEL', '取消') }}</el-button>
+          <el-button type="primary" :loading="tagSubmitLoading" @click="handleSubmitTags">{{ $t('CMS_ARTICLE_BTN_SUBMIT', '提交') }}</el-button>
         </div>
       </template>
     </el-drawer>
@@ -370,9 +370,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { t } from '@platform/i18n';
 import { ArticleApi } from './api';
 import type { Article, ArticlePayload, ArticleQuery } from './type';
 import { ArticleTagRelationApi } from '@/views/article_tag_relation/api';
@@ -494,15 +495,34 @@ const editForm = reactive({
   publishTime: '',
 });
 
-const editRules: FormRules = {
-  organId: [{ required: true, message: '请选择机构', trigger: 'change' }],
-  spaceId: [{ required: true, message: '请选择空间', trigger: 'change' }],
-  categoryId: [{ required: true, message: '请选择分类', trigger: 'change' }],
-  title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
-  contentType: [{ required: true, message: '内容类型固定为 MARKDOWN', trigger: 'blur' }],
-  content: [{ required: true, message: '请输入内容', trigger: 'blur' }],
-  status: [{ required: true, message: '状态固定为 DRAFT', trigger: 'blur' }],
-};
+const editDialogTitle = computed(() =>
+  isEdit.value ? t('CMS_ARTICLE_DLG_EDIT', '编辑文章') : t('CMS_ARTICLE_DLG_ADD', '新增文章'),
+);
+
+const contentDialogTitle = computed(() => {
+  const title = contentTargetArticle.value?.title || '';
+  return title
+    ? `${t('CMS_ARTICLE_DLG_EDIT_CONTENT', '编辑内容')} - ${title}`
+    : t('CMS_ARTICLE_DLG_EDIT_CONTENT', '编辑内容');
+});
+
+const tagAlertTitle = computed(() => {
+  const article = tagTargetArticle.value;
+  return t(
+    'CMS_ARTICLE_ALERT_CURRENT',
+    `当前文章：${article?.title || ''}（ID: ${article?.id ?? '-'}）`,
+  );
+});
+
+const editRules = computed<FormRules>(() => ({
+  organId: [{ required: true, message: t('CMS_ARTICLE_VLD_ORGAN', '请选择机构'), trigger: 'change' }],
+  spaceId: [{ required: true, message: t('CMS_ARTICLE_VLD_SPACE', '请选择空间'), trigger: 'change' }],
+  categoryId: [{ required: true, message: t('CMS_ARTICLE_VLD_CATEGORY', '请选择分类'), trigger: 'change' }],
+  title: [{ required: true, message: t('CMS_ARTICLE_PH_TITLE', '请输入标题'), trigger: 'blur' }],
+  contentType: [{ required: true, message: t('CMS_ARTICLE_VLD_CONTENT_TYPE', '内容类型固定为 MARKDOWN'), trigger: 'blur' }],
+  content: [{ required: true, message: t('CMS_ARTICLE_VLD_CONTENT', '请输入内容'), trigger: 'blur' }],
+  status: [{ required: true, message: t('CMS_ARTICLE_VLD_STATUS', '状态固定为 DRAFT'), trigger: 'blur' }],
+}));
 
 const generateSourceTraceId = () => {
   return Generator.random();
@@ -559,7 +579,7 @@ const handleEditContent = async (row: Article) => {
     contentEditorKey.value += 1;
     contentDialogVisible.value = true;
   } catch (error: any) {
-    showErrorMessage(error || '加载文章内容失败');
+    showErrorMessage(error || t('CMS_ARTICLE_MSG_CONTENT_LOAD_FAIL', '加载文章内容失败'));
   }
 };
 
@@ -573,7 +593,7 @@ const handleContentDialogClosed = () => {
 
 const handleSaveContent = async () => {
   if (!contentTargetArticle.value?.id) {
-    ElMessage.warning('未选择文章');
+    ElMessage.warning(t('CMS_ARTICLE_MSG_NO_ARTICLE', '未选择文章'));
     return;
   }
 
@@ -597,11 +617,11 @@ const handleSaveContent = async () => {
   contentSaving.value = true;
   try {
     await ArticleApi.save(payload);
-    ElMessage.success('内容保存成功');
+    ElMessage.success(t('CMS_ARTICLE_MSG_CONTENT_SAVE_OK', '内容保存成功'));
     contentDialogVisible.value = false;
     await loadData();
   } catch (error: any) {
-    showErrorMessage(error || '内容保存失败');
+    showErrorMessage(error || t('CMS_ARTICLE_MSG_CONTENT_SAVE_FAIL', '内容保存失败'));
   } finally {
     contentSaving.value = false;
   }
@@ -625,7 +645,7 @@ const loadTagOptions = async () => {
     });
     tagOptions.value = pageData.records || [];
   } catch (error: any) {
-    showErrorMessage(error || '加载标签列表失败');
+    showErrorMessage(error || t('CMS_ARTICLE_MSG_TAG_LOAD_FAIL', '加载标签列表失败'));
     tagOptions.value = [];
   } finally {
     tagLoading.value = false;
@@ -639,11 +659,11 @@ const handleTagSelectionChange = (rows: Tag[]) => {
 const handleSubmitTags = async () => {
   const articleId = tagTargetArticle.value?.id;
   if (!articleId) {
-    ElMessage.warning('未选择文章');
+    ElMessage.warning(t('CMS_ARTICLE_MSG_NO_ARTICLE', '未选择文章'));
     return;
   }
   if (selectedTagIds.value.length === 0) {
-    ElMessage.warning('请至少选择一个标签');
+    ElMessage.warning(t('CMS_ARTICLE_MSG_SELECT_TAG', '请至少选择一个标签'));
     return;
   }
 
@@ -653,19 +673,21 @@ const handleSubmitTags = async () => {
       articleId,
       tagIds: selectedTagIds.value,
     });
-    ElMessage.success('添加标签成功');
+    ElMessage.success(t('CMS_ARTICLE_MSG_TAG_ADD_OK', '添加标签成功'));
     tagDrawerVisible.value = false;
   } catch (error: any) {
-    showErrorMessage(error || '添加标签失败');
+    showErrorMessage(error || t('CMS_ARTICLE_MSG_TAG_ADD_FAIL', '添加标签失败'));
   } finally {
     tagSubmitLoading.value = false;
   }
 };
 
 const handleDelete = (row: Article) => {
-  ElMessageBox.confirm(`确认删除article「${row.id}」吗？`, '提示', {
-    type: 'warning',
-  })
+  ElMessageBox.confirm(
+    t('CMS_ARTICLE_DEL_CONFIRM', `确认删除文章「${row.id}」吗？`),
+    t('G2_LBL_TIP', '提示'),
+    { type: 'warning' },
+  )
     .then(async () => {
       try {
         await ArticleApi.remove(row.id);
@@ -674,9 +696,9 @@ const handleDelete = (row: Article) => {
           pagination.pageNum--;
         }
         await loadData();
-        ElMessage.success('删除成功');
+        ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
       } catch (error: any) {
-        showErrorMessage(error || '删除失败');
+        showErrorMessage(error || t('G2_MSG_DELETE_FAIL', '删除失败'));
       }
     })
     .catch(() => {});
@@ -709,11 +731,11 @@ const submitEdit = async () => {
       payload.id = editForm.id;
     }
     await ArticleApi.save(payload);
-    ElMessage.success(isEdit.value ? '更新成功' : '新增成功');
+    ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
     await loadData();
     editDialogVisible.value = false;
   } catch (error: any) {
-    showErrorMessage(error || '保存失败');
+    showErrorMessage(error || t('G2_MSG_SAVE_FAIL', '保存失败'));
   }
 };
 
@@ -775,7 +797,7 @@ const loadData = async () => {
     tableData.value = pageData.records;
     pagination.total = pageData.total;
   } catch (error: any) {
-    showErrorMessage(error || '加载列表失败');
+    showErrorMessage(error || t('G2_MSG_LOAD_FAIL', '加载列表失败'));
   }
 };
 
@@ -936,4 +958,3 @@ onMounted(() => {
   box-sizing: border-box;
 }
 </style>
-

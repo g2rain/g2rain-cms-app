@@ -20,6 +20,9 @@ export * from './permission';
 // ==================== 远程搜索选择组件 ====================
 export * from './RemoteSelect';
 
+// ==================== Markdown 编辑器组件 ====================
+export * from './MarkdownEditor';
+
 // ==================== 其他组件模块 ====================
 // 后续添加新组件时，按照以下格式添加：
 // export * from './YourComponent';

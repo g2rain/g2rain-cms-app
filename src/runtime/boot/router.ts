@@ -16,13 +16,6 @@ import { getRouteComponent } from '@/views/route-map';
 export function generateRoutesFromPages(pages: ResourcePage[]): RouteRecordRaw[] {
   const routes: RouteRecordRaw[] = [];
 
-  if (import.meta.env.DEV) {
-    console.log('[generateRoutesFromPages][DEV] 输入 pages', {
-      count: pages.length,
-      linkPaths: pages.map((p) => p.linkPath),
-    });
-  }
-
   for (const page of pages) {
     // 生成路由名称（从 pageCode 转换，如 'user' -> 'User'）
     const routeName = page.pageCode
@@ -50,10 +43,6 @@ export function generateRoutesFromPages(pages: ResourcePage[]): RouteRecordRaw[]
     routes.push(route);
   }
 
-  if (import.meta.env.DEV) {
-    console.log('[generateRoutesFromPages][DEV] 已生成路由', routes.map((r) => ({ path: r.path, name: r.name })));
-  }
-
   return routes;
 }
 
@@ -76,10 +65,7 @@ function getDynamicComponent(linkPath: string): () => Promise<any> {
  * @returns 组件导入路径（如 '@/views/user/index.vue'）
  */
 function getComponentPathFromLinkPath(linkPath: string): string {
-  const pathParts = linkPath
-    .replace(/^\//, '')
-    .split('/')
-    .filter(Boolean);
+  const pathParts = linkPath.replace(/^\//, '').split('/').filter(Boolean);
 
   if (pathParts.length === 0) {
     return '@/views/Home.vue';

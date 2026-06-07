@@ -59,7 +59,6 @@ export interface ArticleQuery extends BaseSelectListDto {
   summary?: string | null;
   cover?: string | null;
   contentType?: string;
-  content?: string;
   author?: string | null;
   status?: string;
   publishTime?: string | null;

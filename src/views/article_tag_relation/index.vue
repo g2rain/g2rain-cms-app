@@ -9,18 +9,18 @@
         @search="handleSearch"
       >
         <!-- 业务特定查询字段 -->
-        <el-form-item label="文章ID">
-          <el-input v-model="queryForm.articleId" placeholder="请输入文章ID" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_ARTICLE_ID', '文章ID')">
+          <el-input v-model="queryForm.articleId" :placeholder="$t('CMS_ARTICLE_TAG_RELATION_PH_ARTICLE_ID', '请输入文章ID')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item label="标签ID">
-          <el-input v-model="queryForm.tagId" placeholder="请输入标签ID" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_TAG_ID', '标签ID')">
+          <el-input v-model="queryForm.tagId" :placeholder="$t('CMS_ARTICLE_TAG_RELATION_PH_TAG_ID', '请输入标签ID')" clearable style="width: 200px" />
         </el-form-item>
 
         <!-- 操作按钮 -->
         <template #actions>
           <el-form-item>
-            <el-button type="primary" @click="handleSearch">查询</el-button>
-            <el-button @click="handleReset">重置</el-button>
+            <el-button type="primary" @click="handleSearch">{{ $t('G2_BTN_QUERY', '查询') }}</el-button>
+            <el-button @click="handleReset">{{ $t('G2_BTN_RESET', '重置') }}</el-button>
           </el-form-item>
         </template>
       </QueryForm>
@@ -29,9 +29,9 @@
     <!-- 标题和操作按钮 -->
     <div class="article_tag_relation-page__header">
       <div class="article_tag_relation-page__title-group">
-        <h2>管理各类article_tag_relation数据</h2>
+        <h2>{{ $t('CMS_ARTICLE_TAG_RELATION_TITLE', '管理各类article_tag_relation数据') }}</h2>
       </div>
-      <el-button type="primary" v-permission="'article_tag_relation:add'" @click="handleCreate">新增article_tag_relation</el-button>
+      <el-button type="primary" v-permission="'article_tag_relation:add'" @click="handleCreate">{{ $t('CMS_ARTICLE_TAG_RELATION_BTN_ADD', '新增article_tag_relation') }}</el-button>
     </div>
 
     <SortableTable
@@ -42,20 +42,20 @@
       :enable-multi-sort="true"
       @sort-change="handleSortChange"
     >
-      <el-table-column prop="id" label="ID" width="120" />
-      <el-table-column prop="articleId" label="文章ID" width="140" />
-      <el-table-column prop="tagId" label="标签ID" width="140" />
-      <TableColumn prop="createTime" label="创建时间" width="180" :sortable="true" />
-      <TableColumn prop="updateTime" label="更新时间" width="180" :sortable="true" />
-      <el-table-column label="操作" fixed="right" width="280">
+      <el-table-column prop="id" :label="$t('G2_FIELD_ID', 'ID')" width="120" />
+      <el-table-column prop="articleId" :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_ARTICLE_ID', '文章ID')" width="140" />
+      <el-table-column prop="tagId" :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_TAG_ID', '标签ID')" width="140" />
+      <TableColumn prop="createTime" :label="$t('G2_FIELD_CREATE_TIME', '创建时间')" width="180" :sortable="true" />
+      <TableColumn prop="updateTime" :label="$t('G2_FIELD_UPDATE_TIME', '更新时间')" width="180" :sortable="true" />
+      <el-table-column :label="$t('G2_FIELD_ACTION', '操作')" fixed="right" width="280">
         <template #default="{ row }">
-          <el-button type="primary" link size="small" @click="handleView(row)">明细</el-button>
-          <el-button type="primary" v-permission="'article_tag_relation:edit'" link size="small" @click="handleEdit(row)">编辑</el-button>
-          <el-button type="danger" v-permission="'article_tag_relation:delete'" link size="small" @click="handleDelete(row)">删除</el-button>
+          <el-button type="primary" link size="small" @click="handleView(row)">{{ $t('G2_BTN_DETAIL', '明细') }}</el-button>
+          <el-button type="primary" v-permission="'article_tag_relation:edit'" link size="small" @click="handleEdit(row)">{{ $t('G2_BTN_EDIT', '编辑') }}</el-button>
+          <el-button type="danger" v-permission="'article_tag_relation:delete'" link size="small" @click="handleDelete(row)">{{ $t('G2_BTN_DELETE', '删除') }}</el-button>
         </template>
         <template #header>
           <div style="display: flex; align-items: center; gap: 8px;">
-            <span>操作</span>
+            <span>{{ $t('G2_FIELD_ACTION', '操作') }}</span>
             <SortManagerButton />
           </div>
         </template>
@@ -78,7 +78,7 @@
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog
       v-model="editDialogVisible"
-      :title="isEdit ? '编辑article_tag_relation' : '新增article_tag_relation'"
+      :title="isEdit ? $t('CMS_ARTICLE_TAG_RELATION_DLG_EDIT', '编辑article_tag_relation') : $t('CMS_ARTICLE_TAG_RELATION_DLG_ADD', '新增article_tag_relation')"
       width="520px"
     >
       <el-form
@@ -87,38 +87,38 @@
         :rules="editRules"
         label-width="100px"
       >
-        <el-form-item label="文章ID" prop="articleId">
-          <el-input v-model="editForm.articleId" placeholder="请输入文章ID" />
+        <el-form-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_ARTICLE_ID', '文章ID')" prop="articleId">
+          <el-input v-model="editForm.articleId" :placeholder="$t('CMS_ARTICLE_TAG_RELATION_PH_ARTICLE_ID', '请输入文章ID')" />
         </el-form-item>
-        <el-form-item label="标签ID" prop="tagId">
-          <el-input v-model="editForm.tagId" placeholder="请输入标签ID" />
+        <el-form-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_TAG_ID', '标签ID')" prop="tagId">
+          <el-input v-model="editForm.tagId" :placeholder="$t('CMS_ARTICLE_TAG_RELATION_PH_TAG_ID', '请输入标签ID')" />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="editDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="submitEdit">保 存</el-button>
+          <el-button @click="editDialogVisible = false">{{ $t('G2_BTN_CANCEL', '取消') }}</el-button>
+          <el-button type="primary" @click="submitEdit">{{ $t('G2_BTN_SAVE', '保存') }}</el-button>
         </span>
       </template>
     </el-dialog>
 
     <!-- 明细弹窗 -->
-    <el-dialog v-model="detailDialogVisible" title="article_tag_relation明细" width="520px">
+    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_ARTICLE_TAG_RELATION_DETAIL', 'article_tag_relation明细')" width="520px">
       <el-descriptions :column="1" border>
-        <el-descriptions-item label="ID">{{ currentRow?.id }}</el-descriptions-item>
-        <el-descriptions-item label="文章ID">
+        <el-descriptions-item :label="$t('G2_FIELD_ID', 'ID')">{{ currentRow?.id }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_ARTICLE_ID', '文章ID')">
           {{ currentRow?.articleId }}
         </el-descriptions-item>
-        <el-descriptions-item label="标签ID">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_TAG_ID', '标签ID')">
           {{ currentRow?.tagId }}
         </el-descriptions-item>
-        <el-descriptions-item label="版本号">{{ currentRow?.version }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ currentRow?.createTime }}</el-descriptions-item>
-        <el-descriptions-item label="更新时间">{{ currentRow?.updateTime }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('G2_FIELD_VERSION', '版本号')">{{ currentRow?.version }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('G2_FIELD_CREATE_TIME', '创建时间')">{{ currentRow?.createTime }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('G2_FIELD_UPDATE_TIME', '更新时间')">{{ currentRow?.updateTime }}</el-descriptions-item>
       </el-descriptions>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="detailDialogVisible = false">关 闭</el-button>
+          <el-button type="primary" @click="detailDialogVisible = false">{{ $t('G2_BTN_CLOSE', '关闭') }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -126,9 +126,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
+import { t } from '@platform/i18n';
 import { ArticleTagRelationApi } from './api';
 import type { ArticleTagRelation, ArticleTagRelationPayload, ArticleTagRelationQuery } from './type';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
@@ -174,10 +175,10 @@ const editForm = reactive({
   tagId: '',
 });
 
-const editRules: FormRules = {
-  articleId: [{ required: true, message: '请输入文章ID', trigger: 'blur' }],
-  tagId: [{ required: true, message: '请输入标签ID', trigger: 'blur' }],
-};
+const editRules = computed<FormRules>(() => ({
+  articleId: [{ required: true, message: t('CMS_ARTICLE_TAG_RELATION_VLD_ARTICLE_ID', '请输入文章ID'), trigger: 'blur' }],
+  tagId: [{ required: true, message: t('CMS_ARTICLE_TAG_RELATION_VLD_TAG_ID', '请输入标签ID'), trigger: 'blur' }],
+}));
 
 const handleCreate = () => {
   isEdit.value = false;
@@ -200,9 +201,11 @@ const handleView = (row: ArticleTagRelation) => {
 };
 
 const handleDelete = (row: ArticleTagRelation) => {
-  ElMessageBox.confirm(`确认删除article_tag_relation「${row.id}」吗？`, '提示', {
-    type: 'warning',
-  })
+  ElMessageBox.confirm(
+    t('CMS_ARTICLE_TAG_RELATION_DEL_CONFIRM', `确认删除article_tag_relation「${row.id}」吗？`),
+    t('G2_LBL_TIP', '提示'),
+    { type: 'warning' },
+  )
     .then(async () => {
       try {
         await ArticleTagRelationApi.remove(row.id);
@@ -211,9 +214,9 @@ const handleDelete = (row: ArticleTagRelation) => {
           pagination.pageNum--;
         }
         await loadData();
-        ElMessage.success('删除成功');
+        ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
       } catch (error: any) {
-        showErrorMessage(error || '删除失败');
+        showErrorMessage(error || t('G2_MSG_DELETE_FAIL', '删除失败'));
       }
     })
     .catch(() => {});
@@ -235,11 +238,11 @@ const submitEdit = async () => {
       payload.id = editForm.id;
     }
     await ArticleTagRelationApi.save(payload);
-    ElMessage.success(isEdit.value ? '更新成功' : '新增成功');
+    ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
     await loadData();
     editDialogVisible.value = false;
   } catch (error: any) {
-    showErrorMessage(error || '保存失败');
+    showErrorMessage(error || t('G2_MSG_SAVE_FAIL', '保存失败'));
   }
 };
 
@@ -291,7 +294,7 @@ const loadData = async () => {
     tableData.value = pageData.records;
     pagination.total = pageData.total;
   } catch (error: any) {
-    showErrorMessage(error || '加载列表失败');
+    showErrorMessage(error || t('G2_MSG_LOAD_FAIL', '加载列表失败'));
   }
 };
 
@@ -385,4 +388,3 @@ onMounted(() => {
   margin-top: 16px;
 }
 </style>
-

@@ -19,7 +19,7 @@ export class TagApi {
    * @param params 查询参数（可选）
    * @returns tag列表
    */
-  static async list(params?: { organId?: number; page?: number; size?: number }): Promise<Tag[]> {
+  static async list(params?: TagQuery): Promise<Tag[]> {
     const http = getHttpClient('default');
     const res = await http.get<Tag[]>('/cms/tag/list', params);
     return res.data || [];
@@ -30,9 +30,7 @@ export class TagApi {
    * @param params 查询参数（继承PageSelectListDto，包含基础查询和业务查询条件）
    * @returns 分页数据
    */
-  static async page(
-    params: TagQuery & PageSelectListDto,
-  ): Promise<PageData<Tag>> {
+  static async page(params: TagQuery & PageSelectListDto): Promise<PageData<Tag>> {
     const http = getHttpClient('default');
     const res = await http.get<PageData<Tag>>('/cms/tag/page', params);
     return res.data;

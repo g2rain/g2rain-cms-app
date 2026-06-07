@@ -19,7 +19,7 @@ export class ChannelApi {
    * @param params 查询参数（可选）
    * @returns channel列表
    */
-  static async list(params?: { organId?: number; page?: number; size?: number }): Promise<Channel[]> {
+  static async list(params?: ChannelQuery): Promise<Channel[]> {
     const http = getHttpClient('default');
     const res = await http.get<Channel[]>('/cms/channel/list', params);
     return res.data || [];
@@ -30,9 +30,7 @@ export class ChannelApi {
    * @param params 查询参数（继承PageSelectListDto，包含基础查询和业务查询条件）
    * @returns 分页数据
    */
-  static async page(
-    params: ChannelQuery & PageSelectListDto,
-  ): Promise<PageData<Channel>> {
+  static async page(params: ChannelQuery & PageSelectListDto): Promise<PageData<Channel>> {
     const http = getHttpClient('default');
     const res = await http.get<PageData<Channel>>('/cms/channel/page', params);
     return res.data;

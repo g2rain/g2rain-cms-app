@@ -7,23 +7,12 @@ import { env } from '@shared/env';
  * @param config 请求配置
  * @returns Mock 响应数据
  */
-export async function getMockResponse(
-  config: InternalAxiosRequestConfig,
-): Promise<AxiosResponse> {
+export async function getMockResponse(config: InternalAxiosRequestConfig): Promise<AxiosResponse> {
   const url = config.url || '';
   const headers = config.headers || {};
-  const headerMockEnabled =
-    headers['x-g2rain-mock'] === 'true' || headers['X-G2rain-Mock'] === 'true';
+  const headerMockEnabled = headers['x-g2rain-mock'] === 'true' || headers['X-G2rain-Mock'] === 'true';
 
   const mockData = await mockManager.getMockData(url, config);
-
-  if (import.meta.env.DEV && url.includes('basis/authority/resources')) {
-    console.log('[mock:http] getMockResponse 查找资源接口', {
-      url,
-      baseURL: config.baseURL,
-      hit: Boolean(mockData),
-    });
-  }
 
   if (mockData) {
     // 检查是否是特殊格式的 mock 响应（包含 data 和 headers）
@@ -66,10 +55,6 @@ export async function getMockResponse(
     throw new Error(`Mock data not found for URL: ${url}`);
   }
 
-  if (import.meta.env.DEV && url.includes('basis/authority/resources')) {
-    console.warn('[mock:http] 资源接口未匹配到 Mock（将尝试真实请求）', { url, baseURL: config.baseURL });
-  }
-
   // 如果环境变量开启了 mock，但 mock 数据不存在，抛出错误（会在 adapter 中捕获并继续正常请求）
   throw new Error('Mock data not found');
 }
@@ -83,8 +68,7 @@ export function shouldUseMock(config: InternalAxiosRequestConfig): boolean {
   const headers = config.headers || {};
 
   // 检查 header 中的 x-g2rain-mock
-  const headerMockEnabled =
-    headers['x-g2rain-mock'] === 'true' || headers['X-G2rain-Mock'] === 'true';
+  const headerMockEnabled = headers['x-g2rain-mock'] === 'true' || headers['X-G2rain-Mock'] === 'true';
 
   // 检查环境变量中的 mock 开关
   const envMockEnabled = env.VITE_MOCK_ENABLED;

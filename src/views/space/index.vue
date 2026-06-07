@@ -9,27 +9,47 @@
         @search="handleSearch"
       >
         <!-- 业务特定查询字段 -->
-        <el-form-item label="机构ID">
-          <el-input v-model="queryForm.organId" placeholder="请输入机构ID" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_SPACE_FIELD_ORGAN_ID', '机构ID')">
+          <OrganSelect
+            v-model="queryForm.organId"
+            :api-method="OrganApi.searchOrgans"
+            :placeholder="$t('CMS_SPACE_PH_ORGAN', '请选择所属机构')"
+            width="200px"
+            clearable
+          />
         </el-form-item>
-        <el-form-item label="空间名称">
-          <el-input v-model="queryForm.spaceName" placeholder="请输入空间名称" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_SPACE_FIELD_SPACE_NAME', '空间名称')">
+          <el-input v-model="queryForm.spaceName" :placeholder="$t('CMS_SPACE_PH_SPACE_NAME', '请输入空间名称')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item label="空间编码">
-          <el-input v-model="queryForm.spaceCode" placeholder="请输入空间编码" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_SPACE_FIELD_SPACE_CODE', '空间编码')">
+          <el-input v-model="queryForm.spaceCode" :placeholder="$t('CMS_SPACE_PH_SPACE_CODE', '请输入空间编码')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item label="空间类型">
-          <el-input v-model="queryForm.spaceType" placeholder="请输入空间类型" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_SPACE_FIELD_SPACE_TYPE', '空间类型')">
+          <DictSelect
+            v-model="queryForm.spaceType"
+            :api-method="DictItemApi.select"
+            usage-code="CMS_SPACE_SPACE_TYPE"
+            :placeholder="$t('CMS_SPACE_PH_SPACE_TYPE', '请选择空间类型')"
+            clearable
+            width="200px"
+          />
         </el-form-item>
-        <el-form-item label="状态">
-          <el-input v-model="queryForm.status" placeholder="请输入状态" clearable style="width: 200px" />
+        <el-form-item :label="$t('G2_FIELD_STATUS', '状态')">
+          <DictSelect
+            v-model="queryForm.status"
+            :api-method="DictItemApi.select"
+            usage-code="STATUS"
+            :placeholder="$t('CMS_SPACE_PH_STATUS', '请选择状态')"
+            clearable
+            width="200px"
+          />
         </el-form-item>
 
         <!-- 操作按钮 -->
         <template #actions>
           <el-form-item>
-            <el-button type="primary" @click="handleSearch">查询</el-button>
-            <el-button @click="handleReset">重置</el-button>
+            <el-button type="primary" @click="handleSearch">{{ $t('G2_BTN_QUERY', '查询') }}</el-button>
+            <el-button @click="handleReset">{{ $t('G2_BTN_RESET', '重置') }}</el-button>
           </el-form-item>
         </template>
       </QueryForm>
@@ -38,9 +58,9 @@
     <!-- 标题和操作按钮 -->
     <div class="space-page__header">
       <div class="space-page__title-group">
-        <h2>管理各类space数据</h2>
+        <h2>{{ $t('CMS_SPACE_TITLE', '管理各类space数据') }}</h2>
       </div>
-      <el-button type="primary" v-permission="'space:add'" @click="handleCreate">新增space</el-button>
+      <el-button type="primary" v-permission="'space:add'" @click="handleCreate">{{ $t('CMS_SPACE_BTN_ADD', '新增space') }}</el-button>
     </div>
 
     <SortableTable
@@ -51,23 +71,38 @@
       :enable-multi-sort="true"
       @sort-change="handleSortChange"
     >
-      <el-table-column prop="id" label="ID" width="120" />
-      <el-table-column prop="organId" label="机构ID" width="140" />
-      <el-table-column prop="spaceName" label="空间名称" width="180" />
-      <el-table-column prop="spaceCode" label="空间编码" width="180" />
-      <el-table-column prop="spaceType" label="空间类型" width="180" />
-      <el-table-column prop="status" label="状态" width="180" />
-      <TableColumn prop="createTime" label="创建时间" width="180" :sortable="true" />
-      <TableColumn prop="updateTime" label="更新时间" width="180" :sortable="true" />
-      <el-table-column label="操作" fixed="right" width="280">
+      <el-table-column prop="id" :label="$t('G2_FIELD_ID', 'ID')" width="120" />
+      <el-table-column prop="organId" :label="$t('CMS_SPACE_FIELD_ORGAN_ID', '机构ID')" width="140" />
+      <el-table-column prop="spaceName" :label="$t('CMS_SPACE_FIELD_SPACE_NAME', '空间名称')" width="180" />
+      <el-table-column prop="spaceCode" :label="$t('CMS_SPACE_FIELD_SPACE_CODE', '空间编码')" width="180" />
+      <el-table-column :label="$t('CMS_SPACE_FIELD_SPACE_TYPE', '空间类型')" width="180">
         <template #default="{ row }">
-          <el-button type="primary" link size="small" @click="handleView(row)">明细</el-button>
-          <el-button type="primary" v-permission="'space:edit'" link size="small" @click="handleEdit(row)">编辑</el-button>
-          <el-button type="danger" v-permission="'space:delete'" link size="small" @click="handleDelete(row)">删除</el-button>
+          <DictText :value="row.spaceType" usage-code="CMS_SPACE_SPACE_TYPE" :api-method="DictItemApi.select" />
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('G2_FIELD_STATUS', '状态')" width="180">
+        <template #default="{ row }">
+          <StatusSwitch
+            v-model="row.status"
+            v-permission="'space:status_update'"
+            :active-value="'ACTIVE'"
+            :inactive-value="'INACTIVE'"
+            usage-code="STATUS"
+            :api-method="({ nextValue }) => SpaceApi.updateStatus({ id: row.id, status: String(nextValue) })"
+          />
+        </template>
+      </el-table-column>
+      <TableColumn prop="createTime" :label="$t('G2_FIELD_CREATE_TIME', '创建时间')" width="180" :sortable="true" />
+      <TableColumn prop="updateTime" :label="$t('G2_FIELD_UPDATE_TIME', '更新时间')" width="180" :sortable="true" />
+      <el-table-column :label="$t('G2_FIELD_ACTION', '操作')" fixed="right" width="280">
+        <template #default="{ row }">
+          <el-button type="primary" link size="small" @click="handleView(row)">{{ $t('G2_BTN_DETAIL', '明细') }}</el-button>
+          <el-button type="primary" v-permission="'space:edit'" link size="small" @click="handleEdit(row)">{{ $t('G2_BTN_EDIT', '编辑') }}</el-button>
+          <el-button type="danger" v-permission="'space:delete'" link size="small" @click="handleDelete(row)">{{ $t('G2_BTN_DELETE', '删除') }}</el-button>
         </template>
         <template #header>
           <div style="display: flex; align-items: center; gap: 8px;">
-            <span>操作</span>
+            <span>{{ $t('G2_FIELD_ACTION', '操作') }}</span>
             <SortManagerButton />
           </div>
         </template>
@@ -90,7 +125,7 @@
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog
       v-model="editDialogVisible"
-      :title="isEdit ? '编辑space' : '新增space'"
+      :title="isEdit ? $t('CMS_SPACE_DLG_EDIT', '编辑space') : $t('CMS_SPACE_DLG_ADD', '新增space')"
       width="520px"
     >
       <el-form
@@ -99,69 +134,76 @@
         :rules="editRules"
         label-width="100px"
       >
-        <el-form-item label="机构ID" prop="organId">
+        <el-form-item :label="$t('CMS_SPACE_FIELD_ORGAN_ID', '机构ID')" prop="organId">
           <OrganSelect
             v-model="editForm.organId"
             :api-method="OrganApi.searchOrgans"
-            placeholder="请选择所属机构"
+            :placeholder="$t('CMS_SPACE_PH_ORGAN', '请选择所属机构')"
             width="100%"
             clearable
           />
         </el-form-item>
-        <el-form-item label="空间名称" prop="spaceName">
-          <el-input v-model="editForm.spaceName" placeholder="请输入空间名称" />
+        <el-form-item :label="$t('CMS_SPACE_FIELD_SPACE_NAME', '空间名称')" prop="spaceName">
+          <el-input v-model="editForm.spaceName" :placeholder="$t('CMS_SPACE_PH_SPACE_NAME', '请输入空间名称')" />
         </el-form-item>
-        <el-form-item label="空间编码" prop="spaceCode">
-          <el-input v-model="editForm.spaceCode" placeholder="请输入空间编码" />
+        <el-form-item :label="$t('CMS_SPACE_FIELD_SPACE_CODE', '空间编码')" prop="spaceCode">
+          <el-input v-model="editForm.spaceCode" :placeholder="$t('CMS_SPACE_PH_SPACE_CODE', '请输入空间编码')" />
         </el-form-item>
-        <el-form-item label="空间类型" prop="spaceType">
+        <el-form-item :label="$t('CMS_SPACE_FIELD_SPACE_TYPE', '空间类型')" prop="spaceType">
           <DictSelect
             v-model="editForm.spaceType"
             :api-method="DictItemApi.select"
             usage-code="CMS_SPACE_SPACE_TYPE"
-            placeholder="请选择空间类型"
+            :placeholder="$t('CMS_SPACE_PH_SPACE_TYPE', '请选择空间类型')"
             width="100%"
             clearable
           />
         </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-input v-model="editForm.status" placeholder="请输入状态" />
+        <el-form-item :label="$t('G2_FIELD_STATUS', '状态')" prop="status">
+          <DictSelect
+            v-model="editForm.status"
+            :api-method="DictItemApi.select"
+            usage-code="STATUS"
+            :placeholder="$t('CMS_SPACE_PH_STATUS', '请选择状态')"
+            width="100%"
+            clearable
+          />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="editDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="submitEdit">保 存</el-button>
+          <el-button @click="editDialogVisible = false">{{ $t('G2_BTN_CANCEL', '取消') }}</el-button>
+          <el-button type="primary" @click="submitEdit">{{ $t('G2_BTN_SAVE', '保存') }}</el-button>
         </span>
       </template>
     </el-dialog>
 
     <!-- 明细弹窗 -->
-    <el-dialog v-model="detailDialogVisible" title="space明细" width="520px">
+    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_SPACE_DETAIL', 'space明细')" width="520px">
       <el-descriptions :column="1" border>
-        <el-descriptions-item label="ID">{{ currentRow?.id }}</el-descriptions-item>
-        <el-descriptions-item label="机构ID">
+        <el-descriptions-item :label="$t('G2_FIELD_ID', 'ID')">{{ currentRow?.id }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('CMS_SPACE_FIELD_ORGAN_ID', '机构ID')">
           {{ currentRow?.organId }}
         </el-descriptions-item>
-        <el-descriptions-item label="空间名称">
+        <el-descriptions-item :label="$t('CMS_SPACE_FIELD_SPACE_NAME', '空间名称')">
           {{ currentRow?.spaceName }}
         </el-descriptions-item>
-        <el-descriptions-item label="空间编码">
+        <el-descriptions-item :label="$t('CMS_SPACE_FIELD_SPACE_CODE', '空间编码')">
           {{ currentRow?.spaceCode }}
         </el-descriptions-item>
-        <el-descriptions-item label="空间类型">
+        <el-descriptions-item :label="$t('CMS_SPACE_FIELD_SPACE_TYPE', '空间类型')">
           {{ currentRow?.spaceType }}
         </el-descriptions-item>
-        <el-descriptions-item label="状态">
+        <el-descriptions-item :label="$t('G2_FIELD_STATUS', '状态')">
           {{ currentRow?.status }}
         </el-descriptions-item>
-        <el-descriptions-item label="版本号">{{ currentRow?.version }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ currentRow?.createTime }}</el-descriptions-item>
-        <el-descriptions-item label="更新时间">{{ currentRow?.updateTime }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('G2_FIELD_VERSION', '版本号')">{{ currentRow?.version }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('G2_FIELD_CREATE_TIME', '创建时间')">{{ currentRow?.createTime }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('G2_FIELD_UPDATE_TIME', '更新时间')">{{ currentRow?.updateTime }}</el-descriptions-item>
       </el-descriptions>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="detailDialogVisible = false">关 闭</el-button>
+          <el-button type="primary" @click="detailDialogVisible = false">{{ $t('G2_BTN_CLOSE', '关闭') }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -169,16 +211,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { t } from '@platform/i18n';
 import { SpaceApi } from './api';
 import type { Space, SpacePayload, SpaceQuery } from './type';
 import { OrganApi } from '@/views/organ/api';
 import { DictItemApi } from '@/views/dict/api';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
 
-import { SortableTable, TableColumn, SortManagerButton, QueryForm, type QueryFormData, OrganSelect, DictSelect, showErrorMessage } from '@/components';
+import { SortableTable, TableColumn, SortManagerButton, QueryForm, type QueryFormData, OrganSelect, DictSelect, DictText, StatusSwitch, showErrorMessage } from '@/components';
 
 const tableData = ref<Space[]>([]);
 
@@ -192,7 +235,7 @@ let baseQueryForm = reactive<QueryFormData>({
 
 // 业务特定查询表单
 const queryForm = reactive({
-  organId: '',
+  organId: null as number | null,
   spaceName: '',
   spaceCode: '',
   spaceType: '',
@@ -226,11 +269,11 @@ const editForm = reactive({
 });
 
 const editRules: FormRules = {
-  organId: [{ required: true, message: '请输入机构ID', trigger: 'blur' }],
-  spaceName: [{ required: true, message: '请输入空间名称', trigger: 'blur' }],
-  spaceCode: [{ required: true, message: '请输入空间编码', trigger: 'blur' }],
-  spaceType: [{ required: true, message: '请输入空间类型', trigger: 'blur' }],
-  status: [{ required: true, message: '请输入状态', trigger: 'blur' }],
+  organId: [{ required: true, message: t('CMS_SPACE_VLD_ORGAN_ID', '请输入机构ID'), trigger: 'blur' }],
+  spaceName: [{ required: true, message: t('CMS_SPACE_VLD_SPACE_NAME', '请输入空间名称'), trigger: 'blur' }],
+  spaceCode: [{ required: true, message: t('CMS_SPACE_VLD_SPACE_CODE', '请输入空间编码'), trigger: 'blur' }],
+  spaceType: [{ required: true, message: t('CMS_SPACE_VLD_SPACE_TYPE', '请输入空间类型'), trigger: 'blur' }],
+  status: [{ required: true, message: t('CMS_SPACE_VLD_STATUS', '请输入状态'), trigger: 'blur' }],
 };
 
 const handleCreate = () => {
@@ -260,9 +303,11 @@ const handleView = (row: Space) => {
 };
 
 const handleDelete = (row: Space) => {
-  ElMessageBox.confirm(`确认删除space「${row.id}」吗？`, '提示', {
-    type: 'warning',
-  })
+  ElMessageBox.confirm(
+    t('CMS_SPACE_DEL_CONFIRM', `确认删除space「${row.id}」吗？`),
+    t('G2_LBL_TIP', '提示'),
+    { type: 'warning' },
+  )
     .then(async () => {
       try {
         await SpaceApi.remove(row.id);
@@ -271,9 +316,9 @@ const handleDelete = (row: Space) => {
           pagination.pageNum--;
         }
         await loadData();
-        ElMessage.success('删除成功');
+        ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
       } catch (error: any) {
-        showErrorMessage(error || '删除失败');
+        showErrorMessage(error || t('G2_MSG_DELETE_FAIL', '删除失败'));
       }
     })
     .catch(() => {});
@@ -298,11 +343,11 @@ const submitEdit = async () => {
       payload.id = editForm.id;
     }
     await SpaceApi.save(payload);
-    ElMessage.success(isEdit.value ? '更新成功' : '新增成功');
+    ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
     await loadData();
     editDialogVisible.value = false;
   } catch (error: any) {
-    showErrorMessage(error || '保存失败');
+    showErrorMessage(error || t('G2_MSG_SAVE_FAIL', '保存失败'));
   }
 };
 
@@ -316,7 +361,7 @@ const handleSortChange = (params: Record<string, string>) => {
 
 const loadData = async () => {
   try {
-    const organId = queryForm.organId ? Number(queryForm.organId) : undefined;
+    const organId = queryForm.organId ?? undefined;
 
     // 构建查询条件（query 对象），包含基础查询参数和业务查询参数
     const query: SpaceQuery = {
@@ -356,7 +401,7 @@ const loadData = async () => {
     tableData.value = pageData.records;
     pagination.total = pageData.total;
   } catch (error: any) {
-    showErrorMessage(error || '加载列表失败');
+    showErrorMessage(error || t('G2_MSG_LOAD_FAIL', '加载列表失败'));
   }
 };
 
@@ -375,7 +420,7 @@ const handleReset = () => {
   baseQueryForm.sorts = undefined;
   
   // 重置业务特定查询表单
-  queryForm.organId = '';
+  queryForm.organId = null;
   queryForm.spaceName = '';
   queryForm.spaceCode = '';
   queryForm.spaceType = '';
@@ -453,4 +498,3 @@ onMounted(() => {
   margin-top: 16px;
 }
 </style>
-

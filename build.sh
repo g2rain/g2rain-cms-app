@@ -10,8 +10,7 @@ set -euo pipefail
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$APP_DIR"
 
-PROJECT_NAME="$(node -p "require('./package.json').name")"
-IMAGE="g2rain/${PROJECT_NAME}"
+IMAGE="g2rain/g2rain-cms-app"
 TAG="latest"
 BUILD_MODE="production"
 
@@ -52,6 +51,10 @@ echo "Image:   $IMAGE"
 echo "Tag:     $TAG"
 echo "Mode:    $BUILD_MODE"
 
-docker build --build-arg "VITE_BUILD_MODE=$BUILD_MODE" -t "$IMAGE:$TAG" .
+export DOCKER_BUILDKIT=1
+docker build \
+  --build-arg "VITE_BUILD_MODE=$BUILD_MODE" \
+  -t "$IMAGE:$TAG" \
+  .
 
 echo "=== Build completed: $IMAGE:$TAG ==="

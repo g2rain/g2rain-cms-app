@@ -19,7 +19,7 @@ export class ArticleTagRelationApi {
    * @param params 查询参数（可选）
    * @returns article_tag_relation列表
    */
-  static async list(params?: { articleId?: number; page?: number; size?: number }): Promise<ArticleTagRelation[]> {
+  static async list(params?: ArticleTagRelationQuery): Promise<ArticleTagRelation[]> {
     const http = getHttpClient('default');
     const res = await http.get<ArticleTagRelation[]>('/cms/article_tag_relation/list', params);
     return res.data || [];
@@ -30,9 +30,7 @@ export class ArticleTagRelationApi {
    * @param params 查询参数（继承PageSelectListDto，包含基础查询和业务查询条件）
    * @returns 分页数据
    */
-  static async page(
-    params: ArticleTagRelationQuery & PageSelectListDto,
-  ): Promise<PageData<ArticleTagRelation>> {
+  static async page(params: ArticleTagRelationQuery & PageSelectListDto): Promise<PageData<ArticleTagRelation>> {
     const http = getHttpClient('default');
     const res = await http.get<PageData<ArticleTagRelation>>('/cms/article_tag_relation/page', params);
     return res.data;

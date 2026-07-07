@@ -9,8 +9,11 @@ import { initRoutesFromResources } from './router';
 import { useAccessTokenStore } from '@platform/stores';
 import { env } from '@shared/env';
 import { isQiankunRuntime } from '@shared/utils/mode.util';
+import { isMockEnabled } from '@shared/env';
+import { isAloneMode } from '@shared/utils/mode.util';
 import { sso } from '@runtime/auth';
 import { initHttp } from '@runtime/http';
+import { ensureMockAuthSession } from './mock-auth.boot';
 
 export * from './types';
 export * from './resource';
@@ -183,9 +186,9 @@ export async function initApplicationResources(): Promise<void> {
         }
       };
 
-      // 立即检查一次（可能 token 已经设置好了）
+      // 立即检查一次（SsoCallback 可能已在 mount 阶段完成 generateToken）
       if (accessTokenStore.isLogin) {
-        void doInitResources();
+        void doInitResources().catch(reject);
         return;
       }
 
@@ -207,7 +210,7 @@ export async function initApplicationResources(): Promise<void> {
         () => accessTokenStore.isLogin,
         (isLogin) => {
           if (isLogin && !resolved) {
-            void doInitResources();
+            void doInitResources().catch(reject);
           }
         },
         { immediate: false },
@@ -217,6 +220,11 @@ export async function initApplicationResources(): Promise<void> {
 
   // 正常流程：验证 token 是否登录，然后初始化资源
   const accessTokenStore = useAccessTokenStore();
+
+  if (!accessTokenStore.isLogin && isAloneMode() && isMockEnabled()) {
+    await ensureMockAuthSession();
+  }
+
   if (!accessTokenStore.isLogin) {
     const error = new Error('用户未登录，无法初始化应用资源');
     console.error('[initApplicationResources]', error.message);

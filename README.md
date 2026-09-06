@@ -14,13 +14,12 @@
 
 CMS 内容管理微前端子应用，提供文章、分类、标签、栏目、页面、空间与站点的管理界面；作为 qiankun 子应用接入 g2rain-main-shell，并调用 g2rain-cms 业务 API
 
-[官网](https://www.g2rain.com) · [Issues](https://github.com/g2rain/g2rain/issues) · [Discussions](https://github.com/g2rain/g2rain/discussions)
+[官网](https://www.g2rain.com) · [完整文档](docs/index.md) · [架构说明](docs/architecture/overview.md) · [本地开发](docs/development/local-development.md) · [Issues](https://github.com/g2rain/g2rain/issues) · [Discussions](https://github.com/g2rain/g2rain/discussions)
 
 ## 目录
 
 - 项目简介
 - 平台定位
-- 功能概览
 - 功能概览
 - 使用场景
 - 核心流程
@@ -35,6 +34,7 @@ CMS 内容管理微前端子应用，提供文章、分类、标签、栏目、�
 - 安全说明
 - 与关联仓库的关系
 - 模块说明
+- 架构与项目文档
 - 职责边界
 - 常见问题
 - 关联仓库
@@ -50,17 +50,6 @@ CMS 内容管理微前端子应用，提供文章、分类、标签、栏目、�
 ## 平台定位
 
 该仓库位于 g2rain 前端业务应用层，承载具体业务域的前端界面与交互流程。
-
-## 功能概览
-
-该仓库聚焦于 `内容管理`。
-
-主要流程包括：
-- Shell 启动与路由映射注册流程
-- 子应用挂载与卸载生命周期流程
-- 子应用路由同步流程
-- 令牌请求、响应与失效事件流程
-- Qiankun 运行时初始化与多实例子应用编排流程
 
 ## 功能概览
 
@@ -131,11 +120,17 @@ flowchart TD
 
 ## 配置说明
 
+完整变量说明见[运行配置](docs/operations/configuration.md)。默认开发配置使用应用编码 `g2rain-cms-app`、Context Path `/cms`、端口 `3001`，并以独立模式运行。
+
 ### 运行配置
 
 | 配置项 | 说明 |
 | --- | --- |
-| `VITE_*` | 前端运行时环境变量，通常由 Vite 与部署环境共同注入。 |
+| `VITE_APPLICATION_CODE` | Basis 资源接口使用的应用编码。 |
+| `VITE_CONTEXT_PATH` | Vite、Router 和代理共同使用的路径前缀。 |
+| `VITE_RUN_MODE` | `alone` 为独立模式；默认空模式表达主应用集成意图。 |
+| `VITE_MOCK_ENABLED` | 本地 Mock 开关；生产环境必须关闭。 |
+| `VITE_SSO_BASE_URL`、`VITE_REDIRECT_URI` | 独立模式 IAM SSO 地址与回调地址。 |
 
 ### 路由配置
 
@@ -156,14 +151,20 @@ flowchart TD
 | 本地开发 | `npm run dev` | 本地开发服务 | 启动前端本地开发服务。 |
 | 前端产物 | `npm run build` | `dist` | 执行类型检查与 Vite/TypeScript 构建，生成可发布产物。 |
 | 产物预览 | `npm run preview` | 本地预览服务 | 在本地预览构建后的前端静态产物。 |
+| 页面代码 | `npm run build:generate -- --tables=<table>` | `src/views/<table>`、`route-map.ts` | 从项目 SQL 生成并直接覆盖 view、API、type、mock 与路由；执行前必须保存工作。 |
+| 资源配置 | `npm run build:config` | `src/shared/config-util/config` | 覆盖页面、页面元素与聚合 JSON；当前不生成 API 端点。 |
 | 容器镜像 | `docker build .` | 前端运行镜像 | 基于 Dockerfile 封装静态前端运行镜像。 |
-| 构建脚本 | `./build.sh` | 脚本定义的构建结果 | 执行仓库提供的构建脚本，承载组织内镜像或发布流程。 |
+| 构建脚本 | `./build.sh --tag <tag>` | `g2rain/g2rain-cms-app:<tag>` | 支持 `--image`、`--tag`、`--build-mode`；默认 production。 |
+
+代码生成器默认开启 view、API、Mock 和 route 输出，可用 `--no-view`、`--no-api`、`--no-mock`、`--no-route` 分别关闭。详见[代码生成](docs/development/code-generation.md)和[资源配置生成](docs/development/resource-generation.md)。
 
 ## 代码质量与测试
 
 | 检查项 | 命令 | 说明 |
 | --- | --- | --- |
 | Vue 类型检查 | `npm run build` | 构建流程中使用 vue-tsc 检查 Vue 与 TypeScript 类型。 |
+
+2026-09-06 已执行 `npm run build` 并通过。项目未配置 `test` 或 `lint` 脚本，也未发现自动化测试套件，当前自动化测试数为 0。构建仍报告循环分块、MockJS `eval`、经典 `env-config.js` 和大分块警告，详见[测试说明](docs/development/testing.md)。
 
 ## 运行示例
 
@@ -193,6 +194,18 @@ flowchart TD
 | 站点结构 | 提供栏目、页面、空间和站点管理页面。 | src/views/channel、src/views/page、src/views/space、src/views/web_site |
 | 平台运行时 | 承接微前端生命周期、路由、认证态和 HTTP 请求封装。 | src/runtime、src/platform、src/components/micro-app |
 
+## 架构与项目文档
+
+本项目计划采用 g2rain 正式版 `frontend-app 1.0.0`，固定中央基线为 `architecture-v1.1.0`。本地构建与文档已完成，中央目录登记需在单独治理任务中处理。
+
+| 主题 | 文档 |
+| --- | --- |
+| 项目机器可读事实 | [docs/project.yaml](docs/project.yaml) |
+| 分层与依赖 | [分层](docs/architecture/layers.md) · [依赖](docs/architecture/dependencies.md) |
+| 运行流程与偏差 | [双模式流程](docs/architecture/runtime-flows.md) · [架构偏差](docs/architecture/deviations.md) |
+| 开发与发布 | [完成定义](docs/development/definition-of-done.md) · [部署](docs/operations/deployment.md) |
+| 安全 | [安全边界](docs/security/security-boundaries.md) |
+
 ## 职责边界
 
 该仓库主要负责：
@@ -214,6 +227,7 @@ flowchart TD
 
 | 仓库 | 协作关系 |
 | --- | --- |
+| g2rain-cms | 作为 CMS 业务后端，与业务前端应用协同完成内容管理能力。 |
 | g2rain-main-shell | 作为微前端主应用，负责装载子应用并提供统一平台入口。 |
 
 ## 参与贡献
@@ -229,6 +243,8 @@ flowchart TD
 5. 提交 Pull Request。
 
 代码贡献前请尽量补充必要的测试和文档，并确保构建、测试与静态检查通过。
+
+提交前请对照[代码约定](docs/development/code-conventions.md)、[完成定义](docs/development/definition-of-done.md)和[Git 工作流](docs/development/git-workflow.md)。
 
 ## 许可证
 

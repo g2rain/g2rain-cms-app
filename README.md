@@ -1,120 +1,261 @@
+﻿<p align="center">
+  <img src="https://github.com/g2rain.png" alt="G2Rain" width="180" />
+</p>
+
 # g2rain-cms-app
 
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Vue](https://img.shields.io/badge/Vue-3.5.26-42B883?logo=vuedotjs&logoColor=white)](https://vuejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-7.3.0-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![Qiankun](https://img.shields.io/badge/micro--frontend-Qiankun-1677FF)](https://qiankun.umijs.org/)
 
-基于 Vue 3 + TypeScript + Vite + Element Plus + qiankun 的 **CMS 业务**微前端子应用，可作为子应用被主应用加载，或独立运行。
+下一代AI软件开发范式，AI原生Agent平台，开源的企业级SaaS底座。
 
-**生态**：主壳 [g2rain-main-shell](https://github.com/g2rain/g2rain-main-shell)；通用子应用模板 [g2rain-app-template](https://github.com/g2rain/g2rain-app-template) 与脚手架 [create-g2rain-app](https://github.com/g2rain/g2rain-app-cli)；基建/平台能力子应用 [g2rain-infra-app](https://github.com/g2rain/g2rain-infra-app)。**本仓库**侧重 **CMS 内容管理**相关页面与生成器产出，与上述仓库同属 G2rain 前端体系。
+CMS 内容管理微前端子应用，提供文章、分类、标签、栏目、页面、空间与站点的管理界面；作为 qiankun 子应用接入 g2rain-main-shell，并调用 g2rain-cms 业务 API
+
+[官网](https://www.g2rain.com) · [完整文档](docs/index.md) · [架构说明](docs/architecture/overview.md) · [本地开发](docs/development/local-development.md) · [Issues](https://github.com/g2rain/g2rain/issues) · [Discussions](https://github.com/g2rain/g2rain/discussions)
 
 ## 目录
 
-- [快速开始](#快速开始)
-- [构建与 Docker](#构建与-docker)
-- [代码与配置生成](#代码与配置生成)
-- [文档](#文档)
-- [贡献指南](#贡献指南)
-- [安全](#安全)
-- [许可证](#许可证)
-- [联系我们](#联系我们)
+- 项目简介
+- 平台定位
+- 功能概览
+- 使用场景
+- 核心流程
+- 流程图
+- 技术栈
+- 环境要求
+- 快速开始
+- 配置说明
+- 构建与镜像
+- 代码质量与测试
+- 运行示例
+- 安全说明
+- 与关联仓库的关系
+- 模块说明
+- 架构与项目文档
+- 职责边界
+- 常见问题
+- 关联仓库
+- 参与贡献
+- 许可证
+- 联系我们
+- 致谢
+
+## 项目简介
+
+CMS 内容管理微前端子应用，提供文章、分类、标签、栏目、页面、空间与站点的管理界面；作为 qiankun 子应用接入 g2rain-main-shell，并调用 g2rain-cms 业务 API
+
+## 平台定位
+
+该仓库位于 g2rain 前端业务应用层，承载具体业务域的前端界面与交互流程。
+
+## 功能概览
+
+| 能力 | 说明 |
+| --- | --- |
+| 文章管理 | 提供文章列表、分页查询、编辑保存、删除及 Markdown 内容编辑能力。 |
+| 分类与标签管理 | 维护文章分类、标签以及文章标签关联关系。 |
+| 栏目与页面管理 | 维护栏目、页面及其启停状态，组织站点内容结构。 |
+| 站点与空间管理 | 管理 CMS 站点和内容空间，为业务内容提供归属范围。 |
+| 微前端接入 | 通过 qiankun 生命周期、Context Path 和平台运行时能力接入主应用。 |
+
+## 使用场景
+
+| 场景 | 说明 |
+| --- | --- |
+| 运营内容管理 | 当运营人员需要维护文章、分类、标签、栏目和页面时使用。 |
+| 多站点内容组织 | 当内容需要按站点与空间进行划分和管理时使用。 |
+| 微前端业务接入 | 当 CMS 需要作为独立业务子应用接入 g2rain-main-shell 时使用。 |
+
+## 核心流程
+
+| 流程 | 关键步骤 | 代码线索 |
+| --- | --- | --- |
+| 文章编辑与发布管理 | 进入文章页面 → 查询文章列表 → 编辑 Markdown 内容 → 选择分类与标签 → 保存文章 → 返回列表刷新状态 | src/views/article、MarkdownEditor、src/runtime/api |
+| 内容结构维护 | 选择站点或空间 → 维护栏目与页面 → 调整启停状态 → 调用 CMS API 保存 → 刷新页面数据 | src/views/web_site、space、channel、page |
+
+## 流程图
+
+```mermaid
+flowchart TD
+  A[用户从主应用进入 CMS 子应用] --> B[加载 CMS 路由与权限]
+  B --> C[选择站点或内容空间]
+  C --> D[维护栏目/页面]
+  C --> E[创建或编辑文章]
+  E --> F[选择分类与标签]
+  F --> G[调用 g2rain-cms API 保存]
+  G --> H[刷新列表与状态]
+```
+
+## 技术栈
+
+| 类别 | 说明 |
+| --- | --- |
+| 运行时 | Node.js、npm |
+| 前端框架 | vue、vue-router、pinia、vue-i18n、element-plus |
+| 构建与类型 | vite、typescript、vue-tsc |
+| 微前端 | qiankun、vite-plugin-qiankun |
+| 接口与模拟 | axios、mockjs、vite-plugin-mock |
+| 部署 | Docker、Nginx |
+
+## 环境要求
+
+- Node.js >=22
+- npm
+- Docker
 
 ## 快速开始
 
-### 环境
+| 步骤 | 命令或位置 | 说明 |
+| --- | --- | --- |
+| 安装依赖 | `npm install` | 根据 package.json 安装前端依赖。 |
+| 本地开发 | `npm run dev` | 启动本地开发服务。 |
+| 构建产物 | `npm run build` | 执行类型检查与前端构建，生成可发布产物。 |
+| 预览产物 | `npm run preview` | 在本地预览构建后的前端产物。 |
+| 容器化 | `docker build .` | 仓库提供 Dockerfile，可按组织镜像规范封装前端运行镜像。 |
 
-- Node.js >= 18（与 `package.json` 中 `engines` 一致）
-- npm >= 9
+版本号以项目构建配置为准，当前识别为 `0.1.0`。
 
-### 安装
+## 配置说明
 
-```bash
-npm install
-```
+完整变量说明见[运行配置](docs/operations/configuration.md)。默认开发配置使用应用编码 `g2rain-cms-app`、Context Path `/cms`、端口 `3001`，并以独立模式运行。
 
-### `.env` 最小配置
+### 运行配置
 
-```env
-VITE_APPLICATION_CODE=g2rain-cms-app
-VITE_BASE_URL=/test/
-VITE_BACKEND_ORIGIN=http://localhost:8080
-VITE_APPLICATION_CONTEXT=/test
-VITE_IAM_ORIGIN=http://localhost:8080
-VITE_REFRESH_TOKEN_URL=/auth/refresh-token
-VITE_GENERATE_TOKEN_URL=/auth/token
-VITE_SSO_BASE_URL=https://sso.example.com
-VITE_AUTH_END_POINT=/auth/authorize
-VITE_REDIRECT_URI=http://localhost:3000/test/sso_callback
-VITE_SERVER_PORT=3000
-```
+| 配置项 | 说明 |
+| --- | --- |
+| `VITE_APPLICATION_CODE` | Basis 资源接口使用的应用编码。 |
+| `VITE_CONTEXT_PATH` | Vite、Router 和代理共同使用的路径前缀。 |
+| `VITE_RUN_MODE` | `alone` 为独立模式；默认空模式表达主应用集成意图。 |
+| `VITE_MOCK_ENABLED` | 本地 Mock 开关；生产环境必须关闭。 |
+| `VITE_SSO_BASE_URL`、`VITE_REDIRECT_URI` | 独立模式 IAM SSO 地址与回调地址。 |
 
-### 启动
+### 路由配置
 
-```bash
-npm run dev
-```
+| 配置项 | 说明 |
+| --- | --- |
+| `Context Path` | 用于控制前端应用在平台或子路径下的访问基准路径。 |
 
-### 构建与预览
+### 部署配置
 
-```bash
-npm run build
-npm run preview
-```
+| 配置项 | 说明 |
+| --- | --- |
+| `nginx/default.conf.template` | 容器运行时 Nginx 配置模板，用于静态资源访问和请求转发。 |
 
-## 构建与 Docker
+## 构建与镜像
 
-```bash
-docker build -t g2rain-cms-app .
-docker run -d -p 8080:8080 g2rain-cms-app
-```
+| 目标 | 命令 | 产物 | 说明 |
+| --- | --- | --- | --- |
+| 本地开发 | `npm run dev` | 本地开发服务 | 启动前端本地开发服务。 |
+| 前端产物 | `npm run build` | `dist` | 执行类型检查与 Vite/TypeScript 构建，生成可发布产物。 |
+| 产物预览 | `npm run preview` | 本地预览服务 | 在本地预览构建后的前端静态产物。 |
+| 页面代码 | `npm run build:generate -- --tables=<table>` | `src/views/<table>`、`route-map.ts` | 从项目 SQL 生成并直接覆盖 view、API、type、mock 与路由；执行前必须保存工作。 |
+| 资源配置 | `npm run build:config` | `src/shared/config-util/config` | 覆盖页面、页面元素与聚合 JSON；当前不生成 API 端点。 |
+| 容器镜像 | `docker build .` | 前端运行镜像 | 基于 Dockerfile 封装静态前端运行镜像。 |
+| 构建脚本 | `./build.sh --tag <tag>` | `g2rain/g2rain-cms-app:<tag>` | 支持 `--image`、`--tag`、`--build-mode`；默认 production。 |
 
-也可使用根目录 `build.sh` 构建镜像（镜像名默认取自 `package.json` 的 `name`）。
+代码生成器默认开启 view、API、Mock 和 route 输出，可用 `--no-view`、`--no-api`、`--no-mock`、`--no-route` 分别关闭。详见[代码生成](docs/development/code-generation.md)和[资源配置生成](docs/development/resource-generation.md)。
 
-## 代码与配置生成
+## 代码质量与测试
 
-```bash
-npm run build:generate -- --tables=dict
-```
+| 检查项 | 命令 | 说明 |
+| --- | --- | --- |
+| Vue 类型检查 | `npm run build` | 构建流程中使用 vue-tsc 检查 Vue 与 TypeScript 类型。 |
 
-可选参数：`--no-view` `--no-api` `--no-mock` `--no-route`
+2026-09-06 已执行 `npm run build` 并通过。项目未配置 `test` 或 `lint` 脚本，也未发现自动化测试套件，当前自动化测试数为 0。构建仍报告循环分块、MockJS `eval`、经典 `env-config.js` 和大分块警告，详见[测试说明](docs/development/testing.md)。
 
-```bash
-npm run build:config
-```
+## 运行示例
 
-输出目录：`src/shared/config-util/config/`（该目录已在 `.gitignore` 中忽略，勿提交生成物）。
+| 示例 | 方法 | 路径 | 用途 | 调用示例 |
+| --- | --- | --- | --- | --- |
+| 启动 CMS 本地开发 | npm | `npm run dev` | 启动 CMS 子应用，联调业务页面、后端 API 和主应用接入。 | `npm run dev` |
+| 构建 CMS 子应用 | npm | `npm run build` | 执行类型检查并生成可部署的前端产物。 | `npm run build` |
 
-## 文档
+## 安全说明
 
-- 架构：`ARCHITECHTURE.md`、`ARCHITECTURE_SPEC.md`
-- 代码生成器：`src/shared/generator/README.md`
-- 配置生成器：`src/shared/config-util/README.md`
+| 主题 | 说明 |
+| --- | --- |
+| 业务权限 | 文章、站点、栏目和页面操作应结合平台路由权限及后端权限校验。 |
+| 内容安全 | Markdown 或富文本内容展示时应过滤不可信 HTML 与脚本。 |
+| 认证态传递 | 子应用应复用平台统一令牌与请求封装，不自行持久化独立认证状态。 |
 
-## 贡献指南
+## 与关联仓库的关系
 
-我们欢迎所有形式的贡献。
+本仓库作为 CMS 业务前端，被 g2rain-main-shell 以微前端子应用方式装载，并与 g2rain-cms 后端协同完成内容管理流程。
 
-**Issue 与讨论**请统一到主仓库 [g2rain/g2rain/issues](https://github.com/g2rain/g2rain/issues) 提交，便于集中跟踪；请在标题或正文中注明与 **g2rain-cms-app** 相关。
+## 模块说明
 
-1. Fork 本仓库  
-2. 创建分支：`git checkout -b feature/your-feature-name`  
-3. 本地执行 `npm run build`，确保可通过编译  
-4. 提交并推送后发起 **Pull Request**
+| 模块 | 职责说明 | 代码线索 |
+| --- | --- | --- |
+| 文章与内容编辑 | 提供文章列表、编辑表单、Markdown 编辑器和文章相关操作。 | src/views/article、src/components/MarkdownEditor |
+| 内容组织 | 提供分类、标签和文章标签关系的管理页面。 | src/views/article_category、src/views/tag、src/views/article_tag_relation |
+| 站点结构 | 提供栏目、页面、空间和站点管理页面。 | src/views/channel、src/views/page、src/views/space、src/views/web_site |
+| 平台运行时 | 承接微前端生命周期、路由、认证态和 HTTP 请求封装。 | src/runtime、src/platform、src/components/micro-app |
 
-维护者信息与 `package.json` 中 `contributors` 字段一致。
+## 架构与项目文档
 
-## 安全
+本项目计划采用 g2rain 正式版 `frontend-app 1.0.0`，固定中央基线为 `architecture-v1.1.0`。本地构建与文档已完成，中央目录登记需在单独治理任务中处理。
 
-安全相关问题请见 [SECURITY.md](SECURITY.md)。
+| 主题 | 文档 |
+| --- | --- |
+| 项目机器可读事实 | [docs/project.yaml](docs/project.yaml) |
+| 分层与依赖 | [分层](docs/architecture/layers.md) · [依赖](docs/architecture/dependencies.md) |
+| 运行流程与偏差 | [双模式流程](docs/architecture/runtime-flows.md) · [架构偏差](docs/architecture/deviations.md) |
+| 开发与发布 | [完成定义](docs/development/definition-of-done.md) · [部署](docs/operations/deployment.md) |
+| 安全 | [安全边界](docs/security/security-boundaries.md) |
+
+## 职责边界
+
+该仓库主要负责：
+- 负责具体业务域的前端页面、路由、表单、列表与交互流程
+- 负责通过平台认证态和业务 API 完成业务操作体验
+
+该仓库默认不负责：
+- 不负责业务数据的服务端持久化与业务规则权威实现
+- 不承担微前端主应用的全局布局和子应用编排职责
+
+## 常见问题
+
+| 问题 | 可能原因 | 处理建议 |
+| --- | --- | --- |
+| 业务页面请求失败 | CMS API 基地址、Context Path、网关路由或令牌配置不一致。 | 检查 VITE_* 配置、子应用路径、网关路由及浏览器请求头。 |
+| 子应用无法被主应用加载 | qiankun entry、activeRule 或构建 base 配置不匹配。 | 检查主应用注册信息、Vite base 和 CMS 子应用部署地址。 |
+
+## 关联仓库
+
+| 仓库 | 协作关系 |
+| --- | --- |
+| g2rain-cms | 作为 CMS 业务后端，与业务前端应用协同完成内容管理能力。 |
+| g2rain-main-shell | 作为微前端主应用，负责装载子应用并提供统一平台入口。 |
+
+## 参与贡献
+
+我们欢迎所有形式的贡献：Issue 反馈、文档改进、功能建议与代码提交。
+
+推荐流程：
+
+1. Fork 本仓库。
+2. 创建特性分支：`git checkout -b feature/your-feature-name`。
+3. 提交更改：`git commit -m "Add some feature"`。
+4. 推送分支：`git push origin feature/your-feature-name`。
+5. 提交 Pull Request。
+
+代码贡献前请尽量补充必要的测试和文档，并确保构建、测试与静态检查通过。
+
+提交前请对照[代码约定](docs/development/code-conventions.md)、[完成定义](docs/development/definition-of-done.md)和[Git 工作流](docs/development/git-workflow.md)。
 
 ## 许可证
 
-本项目基于 [Apache 2.0 许可证](LICENSE) 开源。
+本项目基于 [Apache 2.0许可证](https://github.com/g2rain/g2rain-common/blob/main/LICENSE) 开源。
 
 ## 联系我们
 
-- **Issues**：[g2rain/g2rain/issues](https://github.com/g2rain/g2rain/issues)（集中受理；请标注子项目名）  
-- **Discussions**：[g2rain/g2rain/discussions](https://github.com/g2rain/g2rain/discussions)  
-- **邮箱**：g2rain_developer@163.com  
+- Issues: [GitHub Issues](https://github.com/g2rain/g2rain/issues)
+- 讨论: [GitHub Discussions](https://github.com/g2rain/g2rain/discussions)
+- 邮箱: g2rain_developer@163.com
 
----
+## 致谢
 
-若本项目对你有帮助，欢迎点亮 Star。
+感谢所有为 g2rain 项目提交 Issue、代码、文档、建议和使用反馈的开发者们！

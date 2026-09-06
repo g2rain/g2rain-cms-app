@@ -38,7 +38,7 @@
       >
         <template #default>
           <p>当前环境已启用 Mock 数据模式，所有 API 请求将返回模拟数据。</p>
-          <p>如需使用真实 API，请在 <code>.env</code> 文件中设置 <code>VITE_USE_MOCK=false</code></p>
+          <p>如需使用真实 API，请在 <code>.env</code> 文件中设置 <code>VITE_MOCK_ENABLED=false</code></p>
         </template>
       </el-alert>
 

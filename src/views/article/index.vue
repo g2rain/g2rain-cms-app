@@ -386,7 +386,7 @@ import { DictItemApi } from '@/views/dict/api';
 import { Generator } from '@/shared/utils/random.util';
 import type { PageSelectListDto } from '@platform/types/api.type';
 
-import { SortableTable, TableColumn, SortManagerButton, QueryForm, type QueryFormData, OrganSelect, ApiSelect, DictSelect, DictText, MarkdownEditor, showErrorMessage } from '@/components';
+import { SortableTable, TableColumn, SortManagerButton, QueryForm, type QueryFormData, OrganSelect, ApiSelect, DictSelect, DictText, MarkdownEditor } from '@/components';
 
 const tableData = ref<Article[]>([]);
 
@@ -571,16 +571,12 @@ const handleView = (row: Article) => {
 };
 
 const handleEditContent = async (row: Article) => {
-  try {
-    contentEditorReady.value = false;
-    const detail = await ArticleApi.getById(row.id);
-    contentTargetArticle.value = detail;
-    contentDraft.value = detail.content ?? '';
-    contentEditorKey.value += 1;
-    contentDialogVisible.value = true;
-  } catch (error: any) {
-    showErrorMessage(error || t('CMS_ARTICLE_MSG_CONTENT_LOAD_FAIL', '加载文章内容失败'));
-  }
+  contentEditorReady.value = false;
+  const detail = await ArticleApi.getById(row.id);
+  contentTargetArticle.value = detail;
+  contentDraft.value = detail.content ?? '';
+  contentEditorKey.value += 1;
+  contentDialogVisible.value = true;
 };
 
 const handleContentDialogOpened = () => {
@@ -620,8 +616,6 @@ const handleSaveContent = async () => {
     ElMessage.success(t('CMS_ARTICLE_MSG_CONTENT_SAVE_OK', '内容保存成功'));
     contentDialogVisible.value = false;
     await loadData();
-  } catch (error: any) {
-    showErrorMessage(error || t('CMS_ARTICLE_MSG_CONTENT_SAVE_FAIL', '内容保存失败'));
   } finally {
     contentSaving.value = false;
   }
@@ -644,8 +638,7 @@ const loadTagOptions = async () => {
       ...(tagQueryName.value ? { tagName: tagQueryName.value } : {}),
     });
     tagOptions.value = pageData.records || [];
-  } catch (error: any) {
-    showErrorMessage(error || t('CMS_ARTICLE_MSG_TAG_LOAD_FAIL', '加载标签列表失败'));
+  } catch {
     tagOptions.value = [];
   } finally {
     tagLoading.value = false;
@@ -675,8 +668,6 @@ const handleSubmitTags = async () => {
     });
     ElMessage.success(t('CMS_ARTICLE_MSG_TAG_ADD_OK', '添加标签成功'));
     tagDrawerVisible.value = false;
-  } catch (error: any) {
-    showErrorMessage(error || t('CMS_ARTICLE_MSG_TAG_ADD_FAIL', '添加标签失败'));
   } finally {
     tagSubmitLoading.value = false;
   }
@@ -689,17 +680,13 @@ const handleDelete = (row: Article) => {
     { type: 'warning' },
   )
     .then(async () => {
-      try {
-        await ArticleApi.remove(row.id);
-        // 如果当前页只有一条数据，删除后应该跳转到上一页
-        if (tableData.value.length === 1 && pagination.pageNum > 1) {
-          pagination.pageNum--;
-        }
-        await loadData();
-        ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
-      } catch (error: any) {
-        showErrorMessage(error || t('G2_MSG_DELETE_FAIL', '删除失败'));
+      await ArticleApi.remove(row.id);
+      // 如果当前页只有一条数据，删除后应该跳转到上一页
+      if (tableData.value.length === 1 && pagination.pageNum > 1) {
+        pagination.pageNum--;
       }
+      await loadData();
+      ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
     })
     .catch(() => {});
 };
@@ -725,18 +712,14 @@ const submitEdit = async () => {
     publishTime: editForm.publishTime || null,
   };
 
-  try {
-    // 编辑模式下，将 id 添加到 payload 中
-    if (isEdit.value) {
-      payload.id = editForm.id;
-    }
-    await ArticleApi.save(payload);
-    ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
-    await loadData();
-    editDialogVisible.value = false;
-  } catch (error: any) {
-    showErrorMessage(error || t('G2_MSG_SAVE_FAIL', '保存失败'));
+  // 编辑模式下，将 id 添加到 payload 中
+  if (isEdit.value) {
+    payload.id = editForm.id;
   }
+  await ArticleApi.save(payload);
+  ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
+  await loadData();
+  editDialogVisible.value = false;
 };
 
 // 处理排序变化
@@ -796,8 +779,8 @@ const loadData = async () => {
     
     tableData.value = pageData.records;
     pagination.total = pageData.total;
-  } catch (error: any) {
-    showErrorMessage(error || t('G2_MSG_LOAD_FAIL', '加载列表失败'));
+  } catch {
+    // 请求失败已由 http 层统一提示
   }
 };
 
@@ -813,7 +796,6 @@ const handleReset = () => {
   baseQueryForm.id = undefined;
   baseQueryForm.createTime = undefined;
   baseQueryForm.updateTime = undefined;
-  baseQueryForm.sorts = undefined;
   
   // 重置业务特定查询表单
   queryForm.organId = null;

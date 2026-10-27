@@ -12,6 +12,7 @@ import { registerQiankunLifecycle } from '@platform/apps';
 import { initApplicationResources, initRoutesFromResources, setupTokenExpiredWatcher } from '@runtime/boot';
 import { ensureMockAuthSession } from '@runtime/boot/mock-auth.boot';
 import { permissionPlugin } from '@/components/permission';
+import { silenceNotified } from '@runtime/http/notified';
 import { env } from '@shared/env';
 import { sso } from '@runtime/auth';
 import { getShell, STANDALONE_SHELL_KEY } from '@/runtime/micro-shells';
@@ -196,6 +197,7 @@ async function render(container?: HTMLElement, initialRoute?: string, instanceKe
 
   // 创建应用实例
   const vueApp = createApp(App);
+  silenceNotified(vueApp);
   setupStore(vueApp);
   vueApp.use(i18n);
   vueApp.use(ElementPlus);

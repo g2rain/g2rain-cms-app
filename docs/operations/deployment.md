@@ -15,7 +15,7 @@ npm run build
 ./build.sh --image g2rain/g2rain-cms-app --tag <tag> --build-mode production
 ```
 
-脚本默认镜像 `g2rain/g2rain-cms-app:latest`。Docker builder 安装锁定依赖，运行 `npm run build:config`，再按 `VITE_BUILD_MODE` 调用 Vite。运行镜像基于 OpenResty，对外声明端口 8080，但 Nginx 默认监听 `SERVER_PORT=80`，部署平台应显式完成端口映射。
+脚本默认镜像 `g2rain/g2rain-cms-app:latest`。Docker 使用 Node 22 构建，再由 OpenResty 提供静态资源；`create-g2rain-app` 用最小 stub 满足 `npm ci`，直接 `npx vite build`（绕过 `vue-tsc`，也不跑 `build:config`），镜像成功不代表资源配置最新。对外声明端口 8080，但 Nginx 默认监听 `SERVER_PORT=80`，部署平台应显式完成端口映射。
 
 OpenResty 提供：静态资源与 SPA fallback；`/api/`、`/doc/` 到 Gateway 的代理；`/auth/` 到 IAM 的代理；公开密钥读取及 `/lua/sign_code` 签名辅助端点。
 

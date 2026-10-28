@@ -6,6 +6,9 @@ WORKDIR /app
 ARG VITE_BUILD_MODE=production
 
 COPY package.json package-lock.json .npmrc ./
+# create-g2rain-app 为 file:../g2rain-app-cli；镜像构建不需要 CLI，放最小 stub 以满足 npm ci
+RUN mkdir -p /g2rain-app-cli \
+ && printf '%s\n' '{"name":"create-g2rain-app","version":"0.1.0","private":true}' > /g2rain-app-cli/package.json
 RUN --mount=type=cache,target=/root/.npm \
     npm ci --legacy-peer-deps --no-audit --no-fund --loglevel=warn
 
@@ -17,18 +20,15 @@ RUN echo "🔨 构建模式: $VITE_BUILD_MODE"
 RUN echo "📁 检查配置文件:" && ls -la vite.config.* && \
     echo "📁 检查环境文件:" && ls -la .env*
 
-# 生成 src/shared/config-util/config/*.json（本地常 gitignore，构建时由 route-map 生成；vite 会静态 import resources.json）
-RUN npm run build:config
-
-RUN set -eux; \
-    if [ -n "$VITE_BUILD_MODE" ]; then \
+RUN if [ -n "$VITE_BUILD_MODE" ]; then \
         echo "🏗️ 使用指定的构建模式: $VITE_BUILD_MODE"; \
-        npx vite build --mode "$VITE_BUILD_MODE"; \
+        npx vite build --mode $VITE_BUILD_MODE; \
+        echo "✅ $VITE_BUILD_MODE 模式构建完成"; \
     else \
         echo "🚀 VITE_BUILD_MODE 未设置，使用默认模式: production"; \
         npx vite build --mode production; \
-    fi; \
-    test -d dist && ls -la dist | head -20 && echo "✅ dist 已生成"
+        echo "✅ production 模式构建完成"; \
+    fi
 
 # ------------------------------------------------------------
 # 阶段 2：OpenResty + OpenSSL 3 + luaossl

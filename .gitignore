@@ -22,4 +22,3 @@ yarn-error.log
 *.json.gzip
 *.txt
 doc
-/src/shared/config-util/config/

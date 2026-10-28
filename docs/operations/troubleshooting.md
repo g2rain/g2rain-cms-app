@@ -9,7 +9,7 @@
 | CMS 请求 404 | `/cms` 路由前缀、Gateway 路由及后端部署状态 |
 | 容器启动失败 | 必填 Gateway/IAM 变量、模板渲染后的 Nginx 配置和监听端口 |
 | 签名或密钥端点失败 | 部署挂载的 key 文件名、格式、权限和 luaossl 加载状态 |
-| Docker 构建找不到 resources.json | `npm run build:config` 是否成功解析 route-map 与 Vue 权限指令 |
+| 资源 JSON 漂移 | Docker 不自动生成；手工执行并审查 `npm run build:config` |
 
 构建成功但出现警告时，先对照[测试说明](../development/testing.md)。循环分块警告可能影响执行顺序，不能只因退出码为 0 就忽略发布回归。
 

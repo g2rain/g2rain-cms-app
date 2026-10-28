@@ -1,0 +1,258 @@
+[
+  {
+    "serviceName": "space",
+    "routePrefix": "/cms",
+    "apiName": "列表查询",
+    "method": "GET",
+    "path": "/space/list",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "space",
+    "routePrefix": "/cms",
+    "apiName": "详情查询",
+    "method": "GET",
+    "path": "/space/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "space",
+    "routePrefix": "/cms",
+    "apiName": "保存",
+    "method": "POST",
+    "path": "/space/save",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "space",
+    "routePrefix": "/cms",
+    "apiName": "删除",
+    "method": "DELETE",
+    "path": "/space/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "channel",
+    "routePrefix": "/cms",
+    "apiName": "列表查询",
+    "method": "GET",
+    "path": "/channel/list",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "channel",
+    "routePrefix": "/cms",
+    "apiName": "详情查询",
+    "method": "GET",
+    "path": "/channel/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "channel",
+    "routePrefix": "/cms",
+    "apiName": "保存",
+    "method": "POST",
+    "path": "/channel/save",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "channel",
+    "routePrefix": "/cms",
+    "apiName": "删除",
+    "method": "DELETE",
+    "path": "/channel/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "article",
+    "routePrefix": "/cms",
+    "apiName": "列表查询",
+    "method": "GET",
+    "path": "/article/list",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "article",
+    "routePrefix": "/cms",
+    "apiName": "详情查询",
+    "method": "GET",
+    "path": "/article/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "article",
+    "routePrefix": "/cms",
+    "apiName": "保存",
+    "method": "POST",
+    "path": "/article/save",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "article",
+    "routePrefix": "/cms",
+    "apiName": "删除",
+    "method": "DELETE",
+    "path": "/article/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "page",
+    "routePrefix": "/cms",
+    "apiName": "分页查询",
+    "method": "GET",
+    "path": "/page/list",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "page",
+    "routePrefix": "/cms",
+    "apiName": "分页查询",
+    "method": "GET",
+    "path": "/page/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "page",
+    "routePrefix": "/cms",
+    "apiName": "分页查询",
+    "method": "POST",
+    "path": "/page/save",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "page",
+    "routePrefix": "/cms",
+    "apiName": "分页查询",
+    "method": "DELETE",
+    "path": "/page/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "tag",
+    "routePrefix": "/cms",
+    "apiName": "列表查询",
+    "method": "GET",
+    "path": "/tag/list",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "tag",
+    "routePrefix": "/cms",
+    "apiName": "详情查询",
+    "method": "GET",
+    "path": "/tag/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "tag",
+    "routePrefix": "/cms",
+    "apiName": "保存",
+    "method": "POST",
+    "path": "/tag/save",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "tag",
+    "routePrefix": "/cms",
+    "apiName": "删除",
+    "method": "DELETE",
+    "path": "/tag/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "article_tag_relation",
+    "routePrefix": "/cms",
+    "apiName": "列表查询",
+    "method": "GET",
+    "path": "/article_tag_relation/list",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "article_tag_relation",
+    "routePrefix": "/cms",
+    "apiName": "详情查询",
+    "method": "GET",
+    "path": "/article_tag_relation/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "article_tag_relation",
+    "routePrefix": "/cms",
+    "apiName": "保存",
+    "method": "POST",
+    "path": "/article_tag_relation/save",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "article_tag_relation",
+    "routePrefix": "/cms",
+    "apiName": "删除",
+    "method": "DELETE",
+    "path": "/article_tag_relation/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "web_site",
+    "routePrefix": "/cms",
+    "apiName": "列表查询",
+    "method": "GET",
+    "path": "/web_site/list",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "web_site",
+    "routePrefix": "/cms",
+    "apiName": "详情查询",
+    "method": "GET",
+    "path": "/web_site/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "web_site",
+    "routePrefix": "/cms",
+    "apiName": "保存",
+    "method": "POST",
+    "path": "/web_site/save",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "web_site",
+    "routePrefix": "/cms",
+    "apiName": "删除",
+    "method": "DELETE",
+    "path": "/web_site/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "article_category",
+    "routePrefix": "/cms",
+    "apiName": "列表查询",
+    "method": "GET",
+    "path": "/article_category/list",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "article_category",
+    "routePrefix": "/cms",
+    "apiName": "详情查询",
+    "method": "GET",
+    "path": "/article_category/:id",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "article_category",
+    "routePrefix": "/cms",
+    "apiName": "保存",
+    "method": "POST",
+    "path": "/article_category/save",
+    "status": "ENABLED"
+  },
+  {
+    "serviceName": "article_category",
+    "routePrefix": "/cms",
+    "apiName": "删除",
+    "method": "DELETE",
+    "path": "/article_category/:id",
+    "status": "ENABLED"
+  }
+]

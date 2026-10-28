@@ -386,15 +386,17 @@ import { DictItemApi } from '@/views/dict/api';
 import { Generator } from '@/shared/utils/random.util';
 import type { PageSelectListDto } from '@platform/types/api.type';
 
-import { SortableTable, TableColumn, SortManagerButton, QueryForm, type QueryFormData, OrganSelect, ApiSelect, DictSelect, DictText, MarkdownEditor } from '@/components';
+import { SortableTable, TableColumn, SortManagerButton, QueryForm, type QueryFormData, ApiSelect, type RemoteSelectOption } from '@g2rain/ui';
+import { OrganSelect, DictSelect, DictText } from '@g2rain/ui/platform';
+import { MarkdownEditor } from '@/components';
 
 const tableData = ref<Article[]>([]);
 
-const fetchSpaces = async (params: { key?: string; value?: number }) => {
+const fetchSpaces = async (params: { key?: string; value?: number }): Promise<RemoteSelectOption[]> => {
   if (params.value !== undefined && params.value !== null) {
     try {
       const item = await SpaceApi.getById(params.value);
-      return item ? [item] : [];
+      return item ? ([item] as unknown as RemoteSelectOption[]) : [];
     } catch {
       return [];
     }
@@ -404,14 +406,14 @@ const fetchSpaces = async (params: { key?: string; value?: number }) => {
     pageSize: 10,
     ...(params.key ? { spaceName: params.key } : {}),
   } as any);
-  return pageData.records || [];
+  return (pageData.records || []) as unknown as RemoteSelectOption[];
 };
 
-const fetchCategories = async (params: { key?: string; value?: number }) => {
+const fetchCategories = async (params: { key?: string; value?: number }): Promise<RemoteSelectOption[]> => {
   if (params.value !== undefined && params.value !== null) {
     try {
       const item = await ArticleCategoryApi.getById(params.value);
-      return item ? [item] : [];
+      return item ? ([item] as unknown as RemoteSelectOption[]) : [];
     } catch {
       return [];
     }
@@ -421,11 +423,11 @@ const fetchCategories = async (params: { key?: string; value?: number }) => {
     pageSize: 10,
     ...(params.key ? { categoryName: params.key } : {}),
   } as any);
-  return pageData.records || [];
+  return (pageData.records || []) as unknown as RemoteSelectOption[];
 };
 
 // 基础查询表单（BaseSelectListDto）
-let baseQueryForm = reactive<QueryFormData>({
+const baseQueryForm = ref<QueryFormData>({
   id: undefined,
   createTime: undefined,
   updateTime: undefined,
@@ -739,7 +741,7 @@ const loadData = async () => {
     const query: ArticleQuery = {
       // 基础查询参数（BaseSelectListDto）- 使用 Object.fromEntries 过滤无效值
       ...Object.fromEntries(
-        Object.entries(baseQueryForm).filter(
+        Object.entries(baseQueryForm.value).filter(
           ([_, v]) => v != null && (!Array.isArray(v) || v.length > 0)
         )
       ),
@@ -793,9 +795,9 @@ const handleSearch = () => {
 // 重置查询条件
 const handleReset = () => {
   // 重置基础查询表单
-  baseQueryForm.id = undefined;
-  baseQueryForm.createTime = undefined;
-  baseQueryForm.updateTime = undefined;
+  baseQueryForm.value.id = undefined;
+  baseQueryForm.value.createTime = undefined;
+  baseQueryForm.value.updateTime = undefined;
   
   // 重置业务特定查询表单
   queryForm.organId = null;

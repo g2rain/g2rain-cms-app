@@ -3,7 +3,7 @@
  * 提供article_category数据的 CRUD 操作接口
  */
 
-import { getHttpClient } from '@/components/http';
+import { getHttpClient } from '@runtime/http';
 import type { ArticleCategory, ArticleCategoryPayload, ArticleCategoryQuery } from './type';
 import type { PageData, PageSelectListDto } from '@platform/types/api.type';
 

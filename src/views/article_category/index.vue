@@ -88,7 +88,8 @@
             :active-value="'ACTIVE'"
             :inactive-value="'INACTIVE'"
             usage-code="STATUS"
-            :api-method="({ nextValue }) => ArticleCategoryApi.save({ id: row.id, status: String(nextValue) }).then(() => undefined)"
+            :api-method="({ nextValue }) => updateArticleCategoryStatus(row.id, nextValue)"
+            @success="loadData"
           />
         </template>
       </el-table-column>
@@ -225,16 +226,20 @@ import { OrganApi } from '@/views/organ/api';
 import { DictItemApi } from '@/views/dict/api';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
 
-import { SortableTable, TableColumn, SortManagerButton, QueryForm, OrganSelect, ApiSelect, DictSelect, StatusSwitch } from '@/components';
+import { SortableTable, TableColumn, SortManagerButton, QueryForm, ApiSelect, type RemoteSelectOption } from '@g2rain/ui';
+import { OrganSelect, DictSelect, StatusSwitch } from '@g2rain/ui/platform';
+
+const updateArticleCategoryStatus = (id: number, nextValue: string | number | boolean) =>
+  ArticleCategoryApi.save({ id, status: String(nextValue) }).then(() => undefined);
 
 const tableData = ref<ArticleCategory[]>([]);
 
-const fetchSpaces = async (params: { key?: string; value?: number }) => {
+const fetchSpaces = async (params: { key?: string; value?: number }): Promise<RemoteSelectOption[]> => {
   // 按 ID 回显
   if (params.value !== undefined && params.value !== null) {
     try {
       const item = await SpaceApi.getById(params.value);
-      return item ? [item] : [];
+      return item ? ([item] as unknown as RemoteSelectOption[]) : [];
     } catch {
       return [];
     }
@@ -246,11 +251,11 @@ const fetchSpaces = async (params: { key?: string; value?: number }) => {
     pageSize: 10,
     ...(params.key ? { spaceName: params.key } : {}),
   } as any);
-  return page.records || [];
+  return (page.records || []) as unknown as RemoteSelectOption[];
 };
 
 // 基础查询表单（BaseSelectListDto）
-let baseQueryForm = reactive<BaseSelectListDto>({
+const baseQueryForm = ref<BaseSelectListDto>({
   id: undefined,
   createTime: undefined,
   updateTime: undefined,
@@ -383,7 +388,7 @@ const loadData = async () => {
     const query: ArticleCategoryQuery = {
       // 基础查询参数（BaseSelectListDto）- 使用 Object.fromEntries 过滤无效值
       ...Object.fromEntries(
-        Object.entries(baseQueryForm).filter(
+        Object.entries(baseQueryForm.value).filter(
           ([_, v]) => v != null && (!Array.isArray(v) || v.length > 0)
         )
       ),
@@ -430,9 +435,9 @@ const handleSearch = () => {
 // 重置查询条件
 const handleReset = () => {
   // 重置基础查询表单
-  baseQueryForm.id = undefined;
-  baseQueryForm.createTime = undefined;
-  baseQueryForm.updateTime = undefined;
+  baseQueryForm.value.id = undefined;
+  baseQueryForm.value.createTime = undefined;
+  baseQueryForm.value.updateTime = undefined;
   
   // 重置业务特定查询表单
   queryForm.organId = null;

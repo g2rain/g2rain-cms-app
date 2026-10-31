@@ -10,11 +10,11 @@
         @search="handleSearch"
       >
         <!-- 业务特定查询字段 -->
-        <el-form-item :label="$t('CMS_WEB_SITE_FIELD_ORGAN_ID', '机构ID')">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
           <OrganSelect
             v-model="queryForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_WEB_SITE_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="200px"
             clearable
           />
@@ -35,8 +35,8 @@
           <DictSelect
             v-model="queryForm.status"
             :api-method="DictItemApi.select"
-            usage-code="STATUS"
-            :placeholder="$t('CMS_WEB_SITE_PH_STATUS', '请选择状态')"
+            usage-code="ENABLE_STATUS"
+            :placeholder="$t('G2_PH_STATUS', '请选择状态')"
             clearable
             width="200px"
           />
@@ -55,9 +55,9 @@
     <!-- 标题和操作按钮 -->
     <div class="web_site-page__header">
       <div class="web_site-page__title-group">
-        <h2>{{ $t('CMS_WEB_SITE_TITLE', '管理各类web_site数据') }}</h2>
+        <h2>{{ $t('CMS_WEB_SITE_TITLE', '站点') }}</h2>
       </div>
-      <el-button type="primary" v-permission="'web_site:add'" @click="handleCreate">{{ $t('CMS_WEB_SITE_BTN_ADD', '新增web_site') }}</el-button>
+      <el-button type="primary" v-permission="'web_site:add'" @click="handleCreate">{{ $t('CMS_WEB_SITE_BTN_ADD', '新增站点') }}</el-button>
     </div>
 
     <SortableTable
@@ -69,7 +69,11 @@
       @sort-change="handleSortChange"
     >
       <el-table-column prop="id" :label="$t('G2_FIELD_ID', 'ID')" width="120" />
-      <el-table-column prop="organId" :label="$t('CMS_WEB_SITE_FIELD_ORGAN_ID', '机构ID')" width="140" />
+      <el-table-column :label="$t('G2_FIELD_ORGAN', '所属机构')" width="140">
+        <template #default="{ row }">
+          {{ row.organName || row.organId }}
+        </template>
+      </el-table-column>
       <el-table-column prop="siteName" :label="$t('CMS_WEB_SITE_FIELD_SITE_NAME', '站点名称')" width="180" />
       <el-table-column prop="siteCode" :label="$t('CMS_WEB_SITE_FIELD_SITE_CODE', '站点编码')" width="180" />
       <el-table-column prop="domain" :label="$t('CMS_WEB_SITE_FIELD_DOMAIN', '站点域名')" width="180" />
@@ -81,7 +85,7 @@
             permission="web_site:status_update"
             :active-value="'ACTIVE'"
             :inactive-value="'INACTIVE'"
-            usage-code="STATUS"
+            usage-code="ENABLE_STATUS"
             :api-method="({ nextValue }) => updateWebSiteStatus(row, nextValue)"
             @success="loadData"
           />
@@ -120,20 +124,20 @@
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog
       v-model="editDialogVisible"
-      :title="isEdit ? $t('CMS_WEB_SITE_DLG_EDIT', '编辑web_site') : $t('CMS_WEB_SITE_DLG_ADD', '新增web_site')"
+      :title="isEdit ? $t('CMS_WEB_SITE_DLG_EDIT', '编辑站点') : $t('CMS_WEB_SITE_DLG_ADD', '新增站点')"
       width="520px"
     >
       <el-form
         ref="editFormRef"
         :model="editForm"
         :rules="editRules"
-        label-width="100px"
+        label-width="130px"
       >
-        <el-form-item :label="$t('CMS_WEB_SITE_FIELD_ORGAN_ID', '机构ID')" prop="organId">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')" prop="organId">
           <OrganSelect
             v-model="editForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_WEB_SITE_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="100%"
             clearable
           />
@@ -154,8 +158,8 @@
           <DictSelect
             v-model="editForm.status"
             :api-method="DictItemApi.select"
-            usage-code="STATUS"
-            :placeholder="$t('CMS_WEB_SITE_PH_STATUS', '请选择状态')"
+            usage-code="ENABLE_STATUS"
+            :placeholder="$t('G2_PH_STATUS', '请选择状态')"
             clearable
             width="100%"
           />
@@ -170,11 +174,11 @@
     </el-dialog>
 
     <!-- 明细弹窗 -->
-    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_WEB_SITE_DETAIL', 'web_site明细')" width="520px">
+    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_WEB_SITE_DETAIL', '站点明细')" width="520px">
       <el-descriptions :column="1" border>
         <el-descriptions-item :label="$t('G2_FIELD_ID', 'ID')">{{ currentRow?.id }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_WEB_SITE_FIELD_ORGAN_ID', '机构ID')">
-          {{ currentRow?.organId }}
+        <el-descriptions-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
+          {{ currentRow?.organName || currentRow?.organId }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('CMS_WEB_SITE_FIELD_SITE_NAME', '站点名称')">
           {{ currentRow?.siteName }}
@@ -191,7 +195,7 @@
         <el-descriptions-item :label="$t('G2_FIELD_STATUS', '状态')">
           <DictText
             :value="currentRow?.status"
-            usage-code="STATUS"
+            usage-code="ENABLE_STATUS"
             :api-method="DictItemApi.select"
           />
         </el-descriptions-item>
@@ -281,10 +285,10 @@ const editForm = reactive({
 });
 
 const editRules: FormRules = {
-  organId: [{ required: true, message: t('CMS_WEB_SITE_VLD_ORGAN', '请选择机构'), trigger: 'change' }],
+  organId: [{ required: true, message: t('G2_PH_ORGAN', '请选择所属机构'), trigger: 'change' }],
   siteName: [{ required: true, message: t('CMS_WEB_SITE_VLD_SITE_NAME', '请输入站点名称'), trigger: 'blur' }],
   siteCode: [{ required: true, message: t('CMS_WEB_SITE_VLD_SITE_CODE', '请输入站点编码'), trigger: 'blur' }],
-  status: [{ required: true, message: t('CMS_WEB_SITE_VLD_STATUS', '请选择状态'), trigger: 'change' }],
+  status: [{ required: true, message: t('G2_PH_STATUS', '请选择状态'), trigger: 'change' }],
 };
 
 const handleCreate = () => {
@@ -317,7 +321,7 @@ const handleView = (row: WebSite) => {
 
 const handleDelete = (row: WebSite) => {
   ElMessageBox.confirm(
-    t('CMS_WEB_SITE_DEL_CONFIRM', `确认删除web_site「${row.id}」吗？`),
+    t('CMS_WEB_SITE_DEL_CONFIRM', { id: row.id }, '确认删除站点「{id}」吗？'),
     t('G2_LBL_TIP', '提示'),
     { type: 'warning' },
   )

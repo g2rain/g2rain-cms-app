@@ -9,17 +9,23 @@
         @search="handleSearch"
       >
         <!-- 业务特定查询字段 -->
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_ORGAN_ID', '机构ID')">
-          <el-input v-model="queryForm.organId" :placeholder="$t('CMS_CHANNEL_PH_ORGAN_ID', '请输入机构ID')" clearable style="width: 200px" />
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
+          <OrganSelect
+            v-model="queryForm.organId"
+            :api-method="OrganApi.searchOrgans"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
+            width="200px"
+            clearable
+          />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_SPACE_ID', '空间ID')">
-          <el-input v-model="queryForm.spaceId" :placeholder="$t('CMS_CHANNEL_PH_SPACE_ID', '请输入空间ID')" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_CHANNEL_FIELD_SPACE_ID', '空间')">
+          <el-input v-model="queryForm.spaceId" :placeholder="$t('CMS_CHANNEL_PH_SPACE_ID', '请输入空间')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_SITE_ID', '站点ID')">
-          <el-input v-model="queryForm.siteId" :placeholder="$t('CMS_CHANNEL_PH_SITE_ID', '请输入站点ID')" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_CHANNEL_FIELD_SITE_ID', '站点')">
+          <el-input v-model="queryForm.siteId" :placeholder="$t('CMS_CHANNEL_PH_SITE_ID', '请输入站点')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_PARENT_ID', '父栏目ID')">
-          <el-input v-model="queryForm.parentId" :placeholder="$t('CMS_CHANNEL_PH_PARENT_ID', '请输入父栏目ID')" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_CHANNEL_FIELD_PARENT_ID', '父栏目')">
+          <el-input v-model="queryForm.parentId" :placeholder="$t('CMS_CHANNEL_PH_PARENT_ID', '请输入父栏目')" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item :label="$t('CMS_CHANNEL_FIELD_CHANNEL_NAME', '栏目名称')">
           <el-input v-model="queryForm.channelName" :placeholder="$t('CMS_CHANNEL_PH_CHANNEL_NAME', '请输入栏目名称')" clearable style="width: 200px" />
@@ -28,28 +34,49 @@
           <el-input v-model="queryForm.channelCode" :placeholder="$t('CMS_CHANNEL_PH_CHANNEL_CODE', '请输入栏目编码')" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item :label="$t('CMS_CHANNEL_FIELD_CHANNEL_TYPE', '栏目类型')">
-          <el-input v-model="queryForm.channelType" :placeholder="$t('CMS_CHANNEL_PH_CHANNEL_TYPE', '请输入栏目类型')" clearable style="width: 200px" />
+          <DictSelect
+            v-model="queryForm.channelType"
+            :api-method="DictItemApi.select"
+            usage-code="CMS_CHANNEL_TYPE"
+            :placeholder="$t('CMS_CHANNEL_PH_CHANNEL_TYPE', '请选择栏目类型')"
+            clearable
+            width="200px"
+          />
         </el-form-item>
         <el-form-item :label="$t('CMS_CHANNEL_FIELD_PATH', '访问路径')">
           <el-input v-model="queryForm.path" :placeholder="$t('CMS_CHANNEL_PH_PATH', '请输入访问路径')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_CATEGORY_ID', '分类ID')">
-          <el-input v-model="queryForm.categoryId" :placeholder="$t('CMS_CHANNEL_PH_CATEGORY_ID', '请输入分类ID')" clearable style="width: 200px" />
+        <el-form-item :label="$t('G2_FIELD_CATEGORY', '分类')">
+          <el-input v-model="queryForm.categoryId" :placeholder="$t('CMS_CHANNEL_PH_CATEGORY_ID', '请输入分类')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_PAGE_ID', '页面ID')">
-          <el-input v-model="queryForm.pageId" :placeholder="$t('CMS_CHANNEL_PH_PAGE_ID', '请输入页面ID')" clearable style="width: 200px" />
+        <el-form-item :label="$t('G2_FIELD_PAGE', '页面')">
+          <el-input v-model="queryForm.pageId" :placeholder="$t('CMS_CHANNEL_PH_PAGE_ID', '请输入页面')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_LINK_URL', '外链URL')">
-          <el-input v-model="queryForm.linkUrl" :placeholder="$t('CMS_CHANNEL_PH_LINK_URL', '请输入外链URL')" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_CHANNEL_FIELD_LINK_URL', '外链')">
+          <el-input v-model="queryForm.linkUrl" :placeholder="$t('CMS_CHANNEL_PH_LINK_URL', '请输入外链')" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item :label="$t('G2_LBL_SORT', '排序')">
-          <el-input v-model="queryForm.sortOrder" :placeholder="$t('CMS_CHANNEL_PH_SORT_ORDER', '请输入排序')" clearable style="width: 200px" />
+          <el-input v-model="queryForm.sortOrder" :placeholder="$t('G2_PH_SORT', '请输入排序')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_VISIBLE', '是否显示')">
-          <el-input v-model="queryForm.visible" :placeholder="$t('CMS_CHANNEL_PH_VISIBLE', '请输入是否显示')" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_CHANNEL_FIELD_VISIBLE', '显示')">
+          <DictSelect
+            v-model="queryForm.visible"
+            :api-method="DictItemApi.select"
+            usage-code="BOOLEAN_FLAG"
+            :placeholder="$t('CMS_CHANNEL_PH_VISIBLE', '请选择是否显示')"
+            clearable
+            width="200px"
+          />
         </el-form-item>
         <el-form-item :label="$t('G2_FIELD_STATUS', '状态')">
-          <el-input v-model="queryForm.status" :placeholder="$t('CMS_CHANNEL_PH_STATUS', '请输入状态')" clearable style="width: 200px" />
+          <DictSelect
+            v-model="queryForm.status"
+            :api-method="DictItemApi.select"
+            usage-code="ENABLE_STATUS"
+            :placeholder="$t('G2_PH_STATUS', '请选择状态')"
+            clearable
+            width="200px"
+          />
         </el-form-item>
 
         <!-- 操作按钮 -->
@@ -65,9 +92,9 @@
     <!-- 标题和操作按钮 -->
     <div class="channel-page__header">
       <div class="channel-page__title-group">
-        <h2>{{ $t('CMS_CHANNEL_TITLE', '管理各类channel数据') }}</h2>
+        <h2>{{ $t('CMS_CHANNEL_TITLE', '栏目') }}</h2>
       </div>
-      <el-button type="primary" v-permission="'channel:add'" @click="handleCreate">{{ $t('CMS_CHANNEL_BTN_ADD', '新增channel') }}</el-button>
+      <el-button type="primary" v-permission="'channel:add'" @click="handleCreate">{{ $t('CMS_CHANNEL_BTN_ADD', '新增栏目') }}</el-button>
     </div>
 
     <SortableTable
@@ -79,20 +106,36 @@
       @sort-change="handleSortChange"
     >
       <el-table-column prop="id" :label="$t('G2_FIELD_ID', 'ID')" width="120" />
-      <el-table-column prop="organId" :label="$t('CMS_CHANNEL_FIELD_ORGAN_ID', '机构ID')" width="140" />
-      <el-table-column prop="spaceId" :label="$t('CMS_CHANNEL_FIELD_SPACE_ID', '空间ID')" width="140" />
-      <el-table-column prop="siteId" :label="$t('CMS_CHANNEL_FIELD_SITE_ID', '站点ID')" width="140" />
-      <el-table-column prop="parentId" :label="$t('CMS_CHANNEL_FIELD_PARENT_ID', '父栏目ID')" width="140" />
+      <el-table-column :label="$t('G2_FIELD_ORGAN', '所属机构')" width="140">
+        <template #default="{ row }">
+          {{ row.organName || row.organId }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="spaceId" :label="$t('CMS_CHANNEL_FIELD_SPACE_ID', '空间')" width="140" />
+      <el-table-column prop="siteId" :label="$t('CMS_CHANNEL_FIELD_SITE_ID', '站点')" width="140" />
+      <el-table-column prop="parentId" :label="$t('CMS_CHANNEL_FIELD_PARENT_ID', '父栏目')" width="140" />
       <el-table-column prop="channelName" :label="$t('CMS_CHANNEL_FIELD_CHANNEL_NAME', '栏目名称')" width="180" />
       <el-table-column prop="channelCode" :label="$t('CMS_CHANNEL_FIELD_CHANNEL_CODE', '栏目编码')" width="180" />
-      <el-table-column prop="channelType" :label="$t('CMS_CHANNEL_FIELD_CHANNEL_TYPE', '栏目类型')" width="180" />
+      <el-table-column :label="$t('CMS_CHANNEL_FIELD_CHANNEL_TYPE', '栏目类型')" width="180">
+        <template #default="{ row }">
+          <DictText :value="row.channelType" usage-code="CMS_CHANNEL_TYPE" :api-method="DictItemApi.select" />
+        </template>
+      </el-table-column>
       <el-table-column prop="path" :label="$t('CMS_CHANNEL_FIELD_PATH', '访问路径')" width="180" />
-      <el-table-column prop="categoryId" :label="$t('CMS_CHANNEL_FIELD_CATEGORY_ID', '分类ID')" width="140" />
-      <el-table-column prop="pageId" :label="$t('CMS_CHANNEL_FIELD_PAGE_ID', '页面ID')" width="140" />
-      <el-table-column prop="linkUrl" :label="$t('CMS_CHANNEL_FIELD_LINK_URL', '外链URL')" width="220" />
+      <el-table-column prop="categoryId" :label="$t('G2_FIELD_CATEGORY', '分类')" width="140" />
+      <el-table-column prop="pageId" :label="$t('G2_FIELD_PAGE', '页面')" width="140" />
+      <el-table-column prop="linkUrl" :label="$t('CMS_CHANNEL_FIELD_LINK_URL', '外链')" width="220" />
       <el-table-column prop="sortOrder" :label="$t('G2_LBL_SORT', '排序')" width="140" />
-      <el-table-column prop="visible" :label="$t('CMS_CHANNEL_FIELD_VISIBLE', '是否显示')" width="140" />
-      <el-table-column prop="status" :label="$t('G2_FIELD_STATUS', '状态')" width="180" />
+      <el-table-column :label="$t('CMS_CHANNEL_FIELD_VISIBLE', '显示')" width="140">
+        <template #default="{ row }">
+          <DictText :value="row.visible" usage-code="BOOLEAN_FLAG" :api-method="DictItemApi.select" />
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('G2_FIELD_STATUS', '状态')" width="180">
+        <template #default="{ row }">
+          <DictText :value="row.status" usage-code="ENABLE_STATUS" :api-method="DictItemApi.select" />
+        </template>
+      </el-table-column>
       <TableColumn prop="createTime" :label="$t('G2_FIELD_CREATE_TIME', '创建时间')" width="180" :sortable="true" />
       <TableColumn prop="updateTime" :label="$t('G2_FIELD_UPDATE_TIME', '更新时间')" width="180" :sortable="true" />
       <el-table-column :label="$t('G2_FIELD_ACTION', '操作')" fixed="right" width="280">
@@ -126,26 +169,32 @@
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog
       v-model="editDialogVisible"
-      :title="isEdit ? $t('CMS_CHANNEL_DLG_EDIT', '编辑channel') : $t('CMS_CHANNEL_DLG_ADD', '新增channel')"
+      :title="isEdit ? $t('CMS_CHANNEL_DLG_EDIT', '编辑栏目') : $t('CMS_CHANNEL_DLG_ADD', '新增栏目')"
       width="520px"
     >
       <el-form
         ref="editFormRef"
         :model="editForm"
         :rules="editRules"
-        label-width="100px"
+        label-width="140px"
       >
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_ORGAN_ID', '机构ID')" prop="organId">
-          <el-input v-model="editForm.organId" :placeholder="$t('CMS_CHANNEL_PH_ORGAN_ID', '请输入机构ID')" />
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')" prop="organId">
+          <OrganSelect
+            v-model="editForm.organId"
+            :api-method="OrganApi.searchOrgans"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
+            width="100%"
+            clearable
+          />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_SPACE_ID', '空间ID')" prop="spaceId">
-          <el-input v-model="editForm.spaceId" :placeholder="$t('CMS_CHANNEL_PH_SPACE_ID', '请输入空间ID')" />
+        <el-form-item :label="$t('CMS_CHANNEL_FIELD_SPACE_ID', '空间')" prop="spaceId">
+          <el-input v-model="editForm.spaceId" :placeholder="$t('CMS_CHANNEL_PH_SPACE_ID', '请输入空间')" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_SITE_ID', '站点ID')" prop="siteId">
-          <el-input v-model="editForm.siteId" :placeholder="$t('CMS_CHANNEL_PH_SITE_ID', '请输入站点ID')" />
+        <el-form-item :label="$t('CMS_CHANNEL_FIELD_SITE_ID', '站点')" prop="siteId">
+          <el-input v-model="editForm.siteId" :placeholder="$t('CMS_CHANNEL_PH_SITE_ID', '请输入站点')" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_PARENT_ID', '父栏目ID')" prop="parentId">
-          <el-input v-model="editForm.parentId" :placeholder="$t('CMS_CHANNEL_PH_PARENT_ID', '请输入父栏目ID')" />
+        <el-form-item :label="$t('CMS_CHANNEL_FIELD_PARENT_ID', '父栏目')" prop="parentId">
+          <el-input v-model="editForm.parentId" :placeholder="$t('CMS_CHANNEL_PH_PARENT_ID', '请输入父栏目')" />
         </el-form-item>
         <el-form-item :label="$t('CMS_CHANNEL_FIELD_CHANNEL_NAME', '栏目名称')" prop="channelName">
           <el-input v-model="editForm.channelName" :placeholder="$t('CMS_CHANNEL_PH_CHANNEL_NAME', '请输入栏目名称')" />
@@ -154,28 +203,49 @@
           <el-input v-model="editForm.channelCode" :placeholder="$t('CMS_CHANNEL_PH_CHANNEL_CODE', '请输入栏目编码')" />
         </el-form-item>
         <el-form-item :label="$t('CMS_CHANNEL_FIELD_CHANNEL_TYPE', '栏目类型')" prop="channelType">
-          <el-input v-model="editForm.channelType" :placeholder="$t('CMS_CHANNEL_PH_CHANNEL_TYPE', '请输入栏目类型')" />
+          <DictSelect
+            v-model="editForm.channelType"
+            :api-method="DictItemApi.select"
+            usage-code="CMS_CHANNEL_TYPE"
+            :placeholder="$t('CMS_CHANNEL_PH_CHANNEL_TYPE', '请选择栏目类型')"
+            width="100%"
+            clearable
+          />
         </el-form-item>
         <el-form-item :label="$t('CMS_CHANNEL_FIELD_PATH', '访问路径')" prop="path">
           <el-input v-model="editForm.path" :placeholder="$t('CMS_CHANNEL_PH_PATH', '请输入访问路径')" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_CATEGORY_ID', '分类ID')" prop="categoryId">
-          <el-input v-model="editForm.categoryId" :placeholder="$t('CMS_CHANNEL_PH_CATEGORY_ID', '请输入分类ID')" />
+        <el-form-item :label="$t('G2_FIELD_CATEGORY', '分类')" prop="categoryId">
+          <el-input v-model="editForm.categoryId" :placeholder="$t('CMS_CHANNEL_PH_CATEGORY_ID', '请输入分类')" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_PAGE_ID', '页面ID')" prop="pageId">
-          <el-input v-model="editForm.pageId" :placeholder="$t('CMS_CHANNEL_PH_PAGE_ID', '请输入页面ID')" />
+        <el-form-item :label="$t('G2_FIELD_PAGE', '页面')" prop="pageId">
+          <el-input v-model="editForm.pageId" :placeholder="$t('CMS_CHANNEL_PH_PAGE_ID', '请输入页面')" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_LINK_URL', '外链URL')" prop="linkUrl">
-          <el-input v-model="editForm.linkUrl" :placeholder="$t('CMS_CHANNEL_PH_LINK_URL', '请输入外链URL')" />
+        <el-form-item :label="$t('CMS_CHANNEL_FIELD_LINK_URL', '外链')" prop="linkUrl">
+          <el-input v-model="editForm.linkUrl" :placeholder="$t('CMS_CHANNEL_PH_LINK_URL', '请输入外链')" />
         </el-form-item>
         <el-form-item :label="$t('G2_LBL_SORT', '排序')" prop="sortOrder">
-          <el-input v-model="editForm.sortOrder" :placeholder="$t('CMS_CHANNEL_PH_SORT_ORDER', '请输入排序')" />
+          <el-input v-model="editForm.sortOrder" :placeholder="$t('G2_PH_SORT', '请输入排序')" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_CHANNEL_FIELD_VISIBLE', '是否显示')" prop="visible">
-          <el-input v-model="editForm.visible" :placeholder="$t('CMS_CHANNEL_PH_VISIBLE', '请输入是否显示')" />
+        <el-form-item :label="$t('CMS_CHANNEL_FIELD_VISIBLE', '显示')" prop="visible">
+          <DictSelect
+            v-model="editForm.visible"
+            :api-method="DictItemApi.select"
+            usage-code="BOOLEAN_FLAG"
+            :placeholder="$t('CMS_CHANNEL_PH_VISIBLE', '请选择是否显示')"
+            width="100%"
+            clearable
+          />
         </el-form-item>
         <el-form-item :label="$t('G2_FIELD_STATUS', '状态')" prop="status">
-          <el-input v-model="editForm.status" :placeholder="$t('CMS_CHANNEL_PH_STATUS', '请输入状态')" />
+          <DictSelect
+            v-model="editForm.status"
+            :api-method="DictItemApi.select"
+            usage-code="ENABLE_STATUS"
+            :placeholder="$t('G2_PH_STATUS', '请选择状态')"
+            width="100%"
+            clearable
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -187,19 +257,19 @@
     </el-dialog>
 
     <!-- 明细弹窗 -->
-    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_CHANNEL_DETAIL', 'channel明细')" width="520px">
+    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_CHANNEL_DETAIL', '栏目明细')" width="520px">
       <el-descriptions :column="1" border>
         <el-descriptions-item :label="$t('G2_FIELD_ID', 'ID')">{{ currentRow?.id }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_ORGAN_ID', '机构ID')">
-          {{ currentRow?.organId }}
+        <el-descriptions-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
+          {{ currentRow?.organName || currentRow?.organId }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_SPACE_ID', '空间ID')">
+        <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_SPACE_ID', '空间')">
           {{ currentRow?.spaceId }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_SITE_ID', '站点ID')">
+        <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_SITE_ID', '站点')">
           {{ currentRow?.siteId }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_PARENT_ID', '父栏目ID')">
+        <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_PARENT_ID', '父栏目')">
           {{ currentRow?.parentId }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_CHANNEL_NAME', '栏目名称')">
@@ -209,28 +279,28 @@
           {{ currentRow?.channelCode }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_CHANNEL_TYPE', '栏目类型')">
-          {{ currentRow?.channelType }}
+          <DictText :value="currentRow?.channelType" usage-code="CMS_CHANNEL_TYPE" :api-method="DictItemApi.select" />
         </el-descriptions-item>
         <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_PATH', '访问路径')">
           {{ currentRow?.path }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_CATEGORY_ID', '分类ID')">
+        <el-descriptions-item :label="$t('G2_FIELD_CATEGORY', '分类')">
           {{ currentRow?.categoryId }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_PAGE_ID', '页面ID')">
+        <el-descriptions-item :label="$t('G2_FIELD_PAGE', '页面')">
           {{ currentRow?.pageId }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_LINK_URL', '外链URL')">
+        <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_LINK_URL', '外链')">
           {{ currentRow?.linkUrl }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('G2_LBL_SORT', '排序')">
           {{ currentRow?.sortOrder }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_VISIBLE', '是否显示')">
-          {{ currentRow?.visible }}
+        <el-descriptions-item :label="$t('CMS_CHANNEL_FIELD_VISIBLE', '显示')">
+          <DictText :value="currentRow?.visible" usage-code="BOOLEAN_FLAG" :api-method="DictItemApi.select" />
         </el-descriptions-item>
         <el-descriptions-item :label="$t('G2_FIELD_STATUS', '状态')">
-          {{ currentRow?.status }}
+          <DictText :value="currentRow?.status" usage-code="ENABLE_STATUS" :api-method="DictItemApi.select" />
         </el-descriptions-item>
         <el-descriptions-item :label="$t('G2_FIELD_VERSION', '版本号')">{{ currentRow?.version }}</el-descriptions-item>
         <el-descriptions-item :label="$t('G2_FIELD_CREATE_TIME', '创建时间')">{{ currentRow?.createTime }}</el-descriptions-item>
@@ -251,10 +321,13 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { t } from '@platform/i18n';
 import { ChannelApi } from './api';
+import { OrganApi } from '../organ/api';
+import { DictItemApi } from '../dict/api';
 import type { Channel, ChannelPayload, ChannelQuery } from './type';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
 
 import { SortableTable, TableColumn, SortManagerButton, QueryForm } from '@g2rain/ui';
+import { OrganSelect, DictSelect, DictText } from '@g2rain/ui/platform';
 
 const tableData = ref<Channel[]>([]);
 
@@ -268,20 +341,20 @@ const baseQueryForm = ref<BaseSelectListDto>({
 
 // 业务特定查询表单
 const queryForm = reactive({
-  organId: '',
+  organId: null as number | null,
   spaceId: '',
   siteId: '',
   parentId: '',
   channelName: '',
   channelCode: '',
-  channelType: '',
+  channelType: null as string | null,
   path: '',
   categoryId: '',
   pageId: '',
   linkUrl: '',
   sortOrder: '',
-  visible: '',
-  status: '',
+  visible: null as string | null,
+  status: null as string | null,
 });
 
 // 组件引用
@@ -303,57 +376,57 @@ const editFormRef = ref<FormInstance | null>(null);
 
 const editForm = reactive({
   id: 0,
-  organId: '',
+  organId: null as number | null,
   spaceId: '',
   siteId: '',
   parentId: '',
   channelName: '',
   channelCode: '',
-  channelType: '',
+  channelType: null as string | null,
   path: '',
   categoryId: '',
   pageId: '',
   linkUrl: '',
   sortOrder: '',
-  visible: '',
-  status: '',
+  visible: null as string | null,
+  status: null as string | null,
 });
 
 const editRules: FormRules = {
-  organId: [{ required: true, message: t('CMS_CHANNEL_VLD_ORGAN_ID', '请输入机构ID'), trigger: 'blur' }],
-  spaceId: [{ required: true, message: t('CMS_CHANNEL_VLD_SPACE_ID', '请输入空间ID'), trigger: 'blur' }],
-  siteId: [{ required: true, message: t('CMS_CHANNEL_VLD_SITE_ID', '请输入站点ID'), trigger: 'blur' }],
-  parentId: [{ required: true, message: t('CMS_CHANNEL_VLD_PARENT_ID', '请输入父栏目ID'), trigger: 'blur' }],
+  organId: [{ required: true, message: t('G2_PH_ORGAN', '请选择所属机构'), trigger: 'change' }],
+  spaceId: [{ required: true, message: t('CMS_CHANNEL_VLD_SPACE_ID', '请输入空间'), trigger: 'blur' }],
+  siteId: [{ required: true, message: t('CMS_CHANNEL_VLD_SITE_ID', '请输入站点'), trigger: 'blur' }],
+  parentId: [{ required: true, message: t('CMS_CHANNEL_VLD_PARENT_ID', '请输入父栏目'), trigger: 'blur' }],
   channelName: [{ required: true, message: t('CMS_CHANNEL_VLD_CHANNEL_NAME', '请输入栏目名称'), trigger: 'blur' }],
-  channelType: [{ required: true, message: t('CMS_CHANNEL_VLD_CHANNEL_TYPE', '请输入栏目类型'), trigger: 'blur' }],
-  sortOrder: [{ required: true, message: t('CMS_CHANNEL_VLD_SORT_ORDER', '请输入排序'), trigger: 'blur' }],
-  visible: [{ required: true, message: t('CMS_CHANNEL_VLD_VISIBLE', '请输入是否显示'), trigger: 'blur' }],
-  status: [{ required: true, message: t('CMS_CHANNEL_VLD_STATUS', '请输入状态'), trigger: 'blur' }],
+  channelType: [{ required: true, message: t('CMS_CHANNEL_VLD_CHANNEL_TYPE', '请选择栏目类型'), trigger: 'change' }],
+  sortOrder: [{ required: true, message: t('G2_PH_SORT', '请输入排序'), trigger: 'blur' }],
+  visible: [{ required: true, message: t('CMS_CHANNEL_VLD_VISIBLE', '请选择是否显示'), trigger: 'change' }],
+  status: [{ required: true, message: t('G2_PH_STATUS', '请选择状态'), trigger: 'change' }],
 };
 
 const handleCreate = () => {
   isEdit.value = false;
-  editForm.organId = '';
+  editForm.organId = null;
   editForm.spaceId = '';
   editForm.siteId = '';
   editForm.parentId = '';
   editForm.channelName = '';
   editForm.channelCode = '';
-  editForm.channelType = '';
+  editForm.channelType = null;
   editForm.path = '';
   editForm.categoryId = '';
   editForm.pageId = '';
   editForm.linkUrl = '';
   editForm.sortOrder = '';
-  editForm.visible = '';
-  editForm.status = '';
+  editForm.visible = null;
+  editForm.status = null;
   editDialogVisible.value = true;
 };
 
 const handleEdit = (row: Channel) => {
   isEdit.value = true;
   editForm.id = row.id;
-  editForm.organId = String(row.organId);
+  editForm.organId = row.organId;
   editForm.spaceId = String(row.spaceId);
   editForm.siteId = String(row.siteId);
   editForm.parentId = String(row.parentId);
@@ -377,7 +450,7 @@ const handleView = (row: Channel) => {
 
 const handleDelete = (row: Channel) => {
   ElMessageBox.confirm(
-    t('CMS_CHANNEL_DEL_CONFIRM', `确认删除channel「${row.id}」吗？`),
+    t('CMS_CHANNEL_DEL_CONFIRM', { id: row.id }, '确认删除栏目「{id}」吗？'),
     t('G2_LBL_TIP', '提示'),
     { type: 'warning' },
   )
@@ -399,20 +472,20 @@ const submitEdit = async () => {
   if (!valid) return;
 
   const payload: ChannelPayload = {
-    organId: editForm.organId ? Number(editForm.organId) : undefined,
+    organId: editForm.organId ?? undefined,
     spaceId: editForm.spaceId ? Number(editForm.spaceId) : undefined,
     siteId: editForm.siteId ? Number(editForm.siteId) : undefined,
     parentId: editForm.parentId ? Number(editForm.parentId) : undefined,
     channelName: editForm.channelName,
     channelCode: editForm.channelCode || null,
-    channelType: editForm.channelType,
+    channelType: editForm.channelType ?? undefined,
     path: editForm.path || null,
     categoryId: editForm.categoryId ? Number(editForm.categoryId) : null,
     pageId: editForm.pageId ? Number(editForm.pageId) : null,
     linkUrl: editForm.linkUrl || null,
     sortOrder: editForm.sortOrder ? Number(editForm.sortOrder) : undefined,
-    visible: editForm.visible ? Number(editForm.visible) : undefined,
-    status: editForm.status,
+    visible: editForm.visible != null && editForm.visible !== '' ? Number(editForm.visible) : undefined,
+    status: editForm.status ?? undefined,
   };
 
   // 编辑模式下，将 id 添加到 payload 中
@@ -435,12 +508,12 @@ const handleSortChange = (params: Record<string, string>) => {
 
 const loadData = async () => {
   try {
-    const organId = queryForm.organId ? Number(queryForm.organId) : undefined;
+    const organId = queryForm.organId ?? undefined;
     const spaceId = queryForm.spaceId ? Number(queryForm.spaceId) : undefined;
     const siteId = queryForm.siteId ? Number(queryForm.siteId) : undefined;
     const parentId = queryForm.parentId ? Number(queryForm.parentId) : undefined;
     const sortOrder = queryForm.sortOrder ? Number(queryForm.sortOrder) : undefined;
-    const visible = queryForm.visible ? Number(queryForm.visible) : undefined;
+    const visible = queryForm.visible != null && queryForm.visible !== '' ? Number(queryForm.visible) : undefined;
     const categoryId = queryForm.categoryId ? Number(queryForm.categoryId) : undefined;
     const pageId = queryForm.pageId ? Number(queryForm.pageId) : undefined;
 
@@ -509,20 +582,20 @@ const handleReset = () => {
   baseQueryForm.value.updateTime = undefined;
   
   // 重置业务特定查询表单
-  queryForm.organId = '';
+  queryForm.organId = null;
   queryForm.spaceId = '';
   queryForm.siteId = '';
   queryForm.parentId = '';
   queryForm.channelName = '';
   queryForm.channelCode = '';
-  queryForm.channelType = '';
+  queryForm.channelType = null;
   queryForm.path = '';
   queryForm.categoryId = '';
   queryForm.pageId = '';
   queryForm.linkUrl = '';
   queryForm.sortOrder = '';
-  queryForm.visible = '';
-  queryForm.status = '';
+  queryForm.visible = null;
+  queryForm.status = null;
   
   pagination.pageNum = 1; // 重置到第一页
   loadData();

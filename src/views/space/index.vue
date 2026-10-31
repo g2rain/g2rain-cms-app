@@ -9,11 +9,11 @@
         @search="handleSearch"
       >
         <!-- 业务特定查询字段 -->
-        <el-form-item :label="$t('CMS_SPACE_FIELD_ORGAN_ID', '机构ID')">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
           <OrganSelect
             v-model="queryForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_SPACE_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="200px"
             clearable
           />
@@ -38,8 +38,8 @@
           <DictSelect
             v-model="queryForm.status"
             :api-method="DictItemApi.select"
-            usage-code="STATUS"
-            :placeholder="$t('CMS_SPACE_PH_STATUS', '请选择状态')"
+            usage-code="ENABLE_STATUS"
+            :placeholder="$t('G2_PH_STATUS', '请选择状态')"
             clearable
             width="200px"
           />
@@ -58,9 +58,9 @@
     <!-- 标题和操作按钮 -->
     <div class="space-page__header">
       <div class="space-page__title-group">
-        <h2>{{ $t('CMS_SPACE_TITLE', '管理各类space数据') }}</h2>
+        <h2>{{ $t('CMS_SPACE_TITLE', '空间') }}</h2>
       </div>
-      <el-button type="primary" v-permission="'space:add'" @click="handleCreate">{{ $t('CMS_SPACE_BTN_ADD', '新增space') }}</el-button>
+      <el-button type="primary" v-permission="'space:add'" @click="handleCreate">{{ $t('CMS_SPACE_BTN_ADD', '新增空间') }}</el-button>
     </div>
 
     <SortableTable
@@ -72,7 +72,11 @@
       @sort-change="handleSortChange"
     >
       <el-table-column prop="id" :label="$t('G2_FIELD_ID', 'ID')" width="120" />
-      <el-table-column prop="organId" :label="$t('CMS_SPACE_FIELD_ORGAN_ID', '机构ID')" width="140" />
+      <el-table-column :label="$t('G2_FIELD_ORGAN', '所属机构')" width="140">
+        <template #default="{ row }">
+          {{ row.organName || row.organId }}
+        </template>
+      </el-table-column>
       <el-table-column prop="spaceName" :label="$t('CMS_SPACE_FIELD_SPACE_NAME', '空间名称')" width="180" />
       <el-table-column prop="spaceCode" :label="$t('CMS_SPACE_FIELD_SPACE_CODE', '空间编码')" width="180" />
       <el-table-column :label="$t('CMS_SPACE_FIELD_SPACE_TYPE', '空间类型')" width="180">
@@ -87,7 +91,7 @@
             permission="space:status_update"
             :active-value="'ACTIVE'"
             :inactive-value="'INACTIVE'"
-            usage-code="STATUS"
+            usage-code="ENABLE_STATUS"
             :api-method="({ nextValue }) => updateSpaceStatus(row.id, nextValue)"
             @success="loadData"
           />
@@ -126,20 +130,20 @@
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog
       v-model="editDialogVisible"
-      :title="isEdit ? $t('CMS_SPACE_DLG_EDIT', '编辑space') : $t('CMS_SPACE_DLG_ADD', '新增space')"
+      :title="isEdit ? $t('CMS_SPACE_DLG_EDIT', '编辑空间') : $t('CMS_SPACE_DLG_ADD', '新增空间')"
       width="520px"
     >
       <el-form
         ref="editFormRef"
         :model="editForm"
         :rules="editRules"
-        label-width="100px"
+        label-width="130px"
       >
-        <el-form-item :label="$t('CMS_SPACE_FIELD_ORGAN_ID', '机构ID')" prop="organId">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')" prop="organId">
           <OrganSelect
             v-model="editForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_SPACE_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="100%"
             clearable
           />
@@ -164,8 +168,8 @@
           <DictSelect
             v-model="editForm.status"
             :api-method="DictItemApi.select"
-            usage-code="STATUS"
-            :placeholder="$t('CMS_SPACE_PH_STATUS', '请选择状态')"
+            usage-code="ENABLE_STATUS"
+            :placeholder="$t('G2_PH_STATUS', '请选择状态')"
             width="100%"
             clearable
           />
@@ -180,11 +184,11 @@
     </el-dialog>
 
     <!-- 明细弹窗 -->
-    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_SPACE_DETAIL', 'space明细')" width="520px">
+    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_SPACE_DETAIL', '空间明细')" width="520px">
       <el-descriptions :column="1" border>
         <el-descriptions-item :label="$t('G2_FIELD_ID', 'ID')">{{ currentRow?.id }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_SPACE_FIELD_ORGAN_ID', '机构ID')">
-          {{ currentRow?.organId }}
+        <el-descriptions-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
+          {{ currentRow?.organName || currentRow?.organId }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('CMS_SPACE_FIELD_SPACE_NAME', '空间名称')">
           {{ currentRow?.spaceName }}
@@ -274,7 +278,7 @@ const editForm = reactive({
 });
 
 const editRules: FormRules = {
-  organId: [{ required: true, message: t('CMS_SPACE_VLD_ORGAN_ID', '请输入机构ID'), trigger: 'blur' }],
+  organId: [{ required: true, message: t('G2_PH_ORGAN', '请选择所属机构'), trigger: 'blur' }],
   spaceName: [{ required: true, message: t('CMS_SPACE_VLD_SPACE_NAME', '请输入空间名称'), trigger: 'blur' }],
   spaceCode: [{ required: true, message: t('CMS_SPACE_VLD_SPACE_CODE', '请输入空间编码'), trigger: 'blur' }],
   spaceType: [{ required: true, message: t('CMS_SPACE_VLD_SPACE_TYPE', '请输入空间类型'), trigger: 'blur' }],
@@ -309,7 +313,7 @@ const handleView = (row: Space) => {
 
 const handleDelete = (row: Space) => {
   ElMessageBox.confirm(
-    t('CMS_SPACE_DEL_CONFIRM', `确认删除space「${row.id}」吗？`),
+    t('CMS_SPACE_DEL_CONFIRM', { id: row.id }, '确认删除空间「{id}」吗？'),
     t('G2_LBL_TIP', '提示'),
     { type: 'warning' },
   )

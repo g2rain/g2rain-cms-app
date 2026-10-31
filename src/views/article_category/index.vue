@@ -10,16 +10,16 @@
         @search="handleSearch"
       >
         <!-- 业务特定查询字段 -->
-        <el-form-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_ORGAN_ID', '机构ID')">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
           <OrganSelect
             v-model="queryForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_ARTICLE_CATEGORY_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="200px"
             clearable
           />
         </el-form-item>
-        <el-form-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间ID')">
+        <el-form-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间')">
           <ApiSelect
             v-model="queryForm.spaceId"
             :api-method="fetchSpaces"
@@ -42,7 +42,7 @@
           <DictSelect
             v-model="queryForm.status"
             :api-method="DictItemApi.select"
-            usage-code="STATUS"
+            usage-code="ENABLE_STATUS"
             :placeholder="$t('G2_PH_SELECT', '请选择')"
             clearable
             width="200px"
@@ -62,9 +62,9 @@
     <!-- 标题和操作按钮 -->
     <div class="article_category-page__header">
       <div class="article_category-page__title-group">
-        <h2>{{ $t('CMS_ARTICLE_CATEGORY_TITLE', '管理各类article_category数据') }}</h2>
+        <h2>{{ $t('CMS_ARTICLE_CATEGORY_TITLE', '文章分类') }}</h2>
       </div>
-      <el-button type="primary" v-permission="'article_category:add'" @click="handleCreate">{{ $t('CMS_ARTICLE_CATEGORY_BTN_ADD', '新增article_category') }}</el-button>
+      <el-button type="primary" v-permission="'article_category:add'" @click="handleCreate">{{ $t('G2_BTN_ADD_CATEGORY', '新增分类') }}</el-button>
     </div>
 
     <SortableTable
@@ -76,8 +76,12 @@
       @sort-change="handleSortChange"
     >
       <el-table-column prop="id" :label="$t('G2_FIELD_ID', 'ID')" width="120" />
-      <el-table-column prop="organId" :label="$t('CMS_ARTICLE_CATEGORY_FIELD_ORGAN_ID', '机构ID')" width="140" />
-      <el-table-column prop="spaceId" :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间ID')" width="140" />
+      <el-table-column :label="$t('G2_FIELD_ORGAN', '所属机构')" width="140">
+        <template #default="{ row }">
+          {{ row.organName || row.organId }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="spaceId" :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间')" width="140" />
       <el-table-column prop="categoryName" :label="$t('CMS_ARTICLE_CATEGORY_FIELD_CATEGORY_NAME', '分类名称')" width="180" />
       <el-table-column prop="categoryCode" :label="$t('CMS_ARTICLE_CATEGORY_FIELD_CATEGORY_CODE', '分类编码')" width="180" />
       <el-table-column :label="$t('G2_FIELD_STATUS', '状态')" width="180">
@@ -87,7 +91,7 @@
             permission="article_category:status_update"
             :active-value="'ACTIVE'"
             :inactive-value="'INACTIVE'"
-            usage-code="STATUS"
+            usage-code="ENABLE_STATUS"
             :api-method="({ nextValue }) => updateArticleCategoryStatus(row.id, nextValue)"
             @success="loadData"
           />
@@ -126,7 +130,7 @@
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog
       v-model="editDialogVisible"
-      :title="isEdit ? $t('CMS_ARTICLE_CATEGORY_DLG_EDIT', '编辑article_category') : $t('CMS_ARTICLE_CATEGORY_DLG_ADD', '新增article_category')"
+      :title="isEdit ? $t('G2_BTN_EDIT_CATEGORY', '编辑分类') : $t('G2_BTN_ADD_CATEGORY', '新增分类')"
       width="520px"
     >
       <el-form
@@ -135,16 +139,16 @@
         :rules="editRules"
         label-width="100px"
       >
-        <el-form-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_ORGAN_ID', '机构ID')" prop="organId">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')" prop="organId">
           <OrganSelect
             v-model="editForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_ARTICLE_CATEGORY_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="100%"
             clearable
           />
         </el-form-item>
-        <el-form-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间ID')" prop="spaceId">
+        <el-form-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间')" prop="spaceId">
           <ApiSelect
             v-model="editForm.spaceId"
             :api-method="fetchSpaces"
@@ -167,7 +171,7 @@
           <DictSelect
             v-model="editForm.status"
             :api-method="DictItemApi.select"
-            usage-code="STATUS"
+            usage-code="ENABLE_STATUS"
             :placeholder="$t('G2_PH_SELECT', '请选择')"
             width="100%"
             clearable
@@ -183,13 +187,13 @@
     </el-dialog>
 
     <!-- 明细弹窗 -->
-    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_ARTICLE_CATEGORY_DETAIL', 'article_category明细')" width="520px">
+    <el-dialog v-model="detailDialogVisible" :title="$t('G2_DETAIL_CATEGORY', '分类明细')" width="520px">
       <el-descriptions :column="1" border>
         <el-descriptions-item :label="$t('G2_FIELD_ID', 'ID')">{{ currentRow?.id }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_ORGAN_ID', '机构ID')">
-          {{ currentRow?.organId }}
+        <el-descriptions-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
+          {{ currentRow?.organName || currentRow?.organId }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间ID')">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间')">
           {{ currentRow?.spaceId }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_CATEGORY_NAME', '分类名称')">
@@ -298,10 +302,10 @@ const editForm = reactive({
 });
 
 const editRules = computed<FormRules>(() => ({
-  organId: [{ required: true, message: t('CMS_ARTICLE_CATEGORY_VLD_ORGAN', '请选择机构'), trigger: 'change' }],
+  organId: [{ required: true, message: t('G2_PH_ORGAN', '请选择所属机构'), trigger: 'change' }],
   spaceId: [{ required: true, message: t('CMS_ARTICLE_CATEGORY_VLD_SPACE', '请选择空间'), trigger: 'change' }],
   categoryName: [{ required: true, message: t('CMS_ARTICLE_CATEGORY_VLD_CATEGORY_NAME', '请输入分类名称'), trigger: 'blur' }],
-  status: [{ required: true, message: t('CMS_ARTICLE_CATEGORY_VLD_STATUS', '请选择状态'), trigger: 'change' }],
+  status: [{ required: true, message: t('G2_PH_STATUS', '请选择状态'), trigger: 'change' }],
 }));
 
 const handleCreate = () => {
@@ -332,7 +336,7 @@ const handleView = (row: ArticleCategory) => {
 
 const handleDelete = (row: ArticleCategory) => {
   ElMessageBox.confirm(
-    t('CMS_ARTICLE_CATEGORY_DEL_CONFIRM', `确认删除article_category「${row.id}」吗？`),
+    t('CMS_ARTICLE_CATEGORY_DEL_CONFIRM', { id: row.id }, '确认删除分类「{id}」吗？'),
     t('G2_LBL_TIP', '提示'),
     { type: 'warning' },
   )

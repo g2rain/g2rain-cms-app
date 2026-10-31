@@ -9,6 +9,7 @@ import type { BaseSelectListDto, BaseVo } from '@platform/types/api.type';
  */
 export interface Channel extends BaseVo {
   organId: number;
+  organName?: string;
   spaceId: number;
   siteId: number;
   parentId: number;

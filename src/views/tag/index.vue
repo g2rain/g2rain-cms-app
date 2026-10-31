@@ -9,11 +9,11 @@
         @search="handleSearch"
       >
         <!-- 业务特定查询字段 -->
-        <el-form-item :label="$t('CMS_TAG_FIELD_ORGAN_ID', '机构ID')">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
           <OrganSelect
             v-model="queryForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_TAG_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="200px"
             clearable
           />
@@ -38,9 +38,9 @@
     <!-- 标题和操作按钮 -->
     <div class="tag-page__header">
       <div class="tag-page__title-group">
-        <h2>{{ $t('CMS_TAG_TITLE', '管理各类tag数据') }}</h2>
+        <h2>{{ $t('G2_FIELD_TAG', '标签') }}</h2>
       </div>
-      <el-button type="primary" v-permission="'tag:add'" @click="handleCreate">{{ $t('CMS_TAG_BTN_ADD', '新增tag') }}</el-button>
+      <el-button type="primary" v-permission="'tag:add'" @click="handleCreate">{{ $t('G2_BTN_ADD_TAG', '新增标签') }}</el-button>
     </div>
 
     <SortableTable
@@ -52,7 +52,11 @@
       @sort-change="handleSortChange"
     >
       <el-table-column prop="id" :label="$t('G2_FIELD_ID', 'ID')" width="120" />
-      <el-table-column prop="organId" :label="$t('CMS_TAG_FIELD_ORGAN_ID', '机构ID')" width="140" />
+      <el-table-column :label="$t('G2_FIELD_ORGAN', '所属机构')" width="140">
+        <template #default="{ row }">
+          {{ row.organName || row.organId }}
+        </template>
+      </el-table-column>
       <el-table-column prop="tagCode" :label="$t('CMS_TAG_FIELD_TAG_CODE', '标签编码')" width="180" />
       <el-table-column prop="tagName" :label="$t('CMS_TAG_FIELD_TAG_NAME', '标签名称')" width="180" />
       <TableColumn prop="createTime" :label="$t('G2_FIELD_CREATE_TIME', '创建时间')" width="180" :sortable="true" />
@@ -88,7 +92,7 @@
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog
       v-model="editDialogVisible"
-      :title="isEdit ? $t('CMS_TAG_DLG_EDIT', '编辑tag') : $t('CMS_TAG_DLG_ADD', '新增tag')"
+      :title="isEdit ? $t('G2_BTN_EDIT_TAG', '编辑标签') : $t('G2_BTN_ADD_TAG', '新增标签')"
       width="520px"
     >
       <el-form
@@ -97,11 +101,11 @@
         :rules="editRules"
         label-width="100px"
       >
-        <el-form-item :label="$t('CMS_TAG_FIELD_ORGAN_ID', '机构ID')" prop="organId">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')" prop="organId">
           <OrganSelect
             v-model="editForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_TAG_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="100%"
             clearable
           />
@@ -122,11 +126,11 @@
     </el-dialog>
 
     <!-- 明细弹窗 -->
-    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_TAG_DETAIL', 'tag明细')" width="520px">
+    <el-dialog v-model="detailDialogVisible" :title="$t('G2_DETAIL_TAG', '标签明细')" width="520px">
       <el-descriptions :column="1" border>
         <el-descriptions-item :label="$t('G2_FIELD_ID', 'ID')">{{ currentRow?.id }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_TAG_FIELD_ORGAN_ID', '机构ID')">
-          {{ currentRow?.organId }}
+        <el-descriptions-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
+          {{ currentRow?.organName || currentRow?.organId }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('CMS_TAG_FIELD_TAG_NAME', '标签名称')">
           {{ currentRow?.tagName }}
@@ -202,7 +206,7 @@ const editForm = reactive({
 });
 
 const editRules: FormRules = {
-  organId: [{ required: true, message: t('CMS_TAG_VLD_ORGAN_ID', '请输入机构ID'), trigger: 'blur' }],
+  organId: [{ required: true, message: t('G2_PH_ORGAN', '请选择所属机构'), trigger: 'blur' }],
   tagCode: [{ required: true, message: t('CMS_TAG_VLD_TAG_CODE', '请输入标签编码'), trigger: 'blur' }],
   tagName: [{ required: true, message: t('CMS_TAG_VLD_TAG_NAME', '请输入标签名称'), trigger: 'blur' }],
 };
@@ -231,7 +235,7 @@ const handleView = (row: Tag) => {
 
 const handleDelete = (row: Tag) => {
   ElMessageBox.confirm(
-    t('CMS_TAG_DEL_CONFIRM', `确认删除tag「${row.id}」吗？`),
+    t('CMS_TAG_DEL_CONFIRM', { id: row.id }, '确认删除标签「{id}」吗？'),
     t('G2_LBL_TIP', '提示'),
     { type: 'warning' },
   )

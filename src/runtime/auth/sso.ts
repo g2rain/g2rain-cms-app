@@ -76,6 +76,11 @@ class SSOService {
     const generateTokenInstant = getHttpClient('auth');
 
     const accessTokenStore = this.getAccessTokenStore();
+
+    if (!accessTokenStore.client) {
+      accessTokenStore.client = await generateClient();
+    }
+
     const data = { code, grantType: 'authorization_code' };
     const headers: {
       DPoP: string;

@@ -10,6 +10,7 @@ import { isAloneMode, isQiankunRuntime } from '@shared/utils/mode.util';
 import { redirectToMainShellGatewayIfNeeded } from '@shared/utils/shell-gateway.util';
 import { registerQiankunLifecycle } from '@platform/apps';
 import { initApplicationResources, initRoutesFromResources, setupTokenExpiredWatcher } from '@runtime/boot';
+import { ensureMockAuthSession } from '@runtime/boot/mock-auth.boot';
 import { permissionPlugin } from '@/components/permission';
 import { env } from '@shared/env';
 import { sso } from '@runtime/auth';
@@ -68,6 +69,9 @@ export async function initRouterFromResources(instanceKey: string = STANDALONE_S
         instanceKey,
       );
     }
+
+    // 独立 Mock 模式：注入本地 mock 会话，避免未登录时无法加载动态路由
+    await ensureMockAuthSession();
 
     // 初始化应用资源（从后端加载页面、页面元素、API端点）
     try {

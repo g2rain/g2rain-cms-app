@@ -1,0 +1,112 @@
+schemaVersion: 1
+name: g2rain-cms-app
+family: frontend-app
+role: g2rain CMS 内容管理微前端应用
+version: 0.1.0
+license: Apache-2.0
+
+architectureBaseline:
+  repository: https://github.com/g2rain/g2rain
+  ref: architecture-v1.1.0
+  profile: docs/architecture/profiles/frontend-app
+  version: 1.0.0
+  status: planned
+  releasedAt: "2026-08-25"
+  deviations: docs/architecture/deviations.md
+
+ownership:
+  owns:
+    - 站点、空间、栏目、页面、文章、文章分类、标签和文章标签关系的管理端页面与交互用例
+    - 本应用的路由、资源加载、权限呈现、国际化和微前端生命周期
+    - 本项目的页面代码生成器与资源配置生成器
+  excludes:
+    - g2rain-cms 的领域数据、持久化和服务端业务规则
+    - IAM 的认证、Token 签发和会话规则
+    - Gateway 的鉴权、路由和请求转发
+    - main-shell 的全局菜单、Tab 与子应用注册治理
+
+businessDomains:
+  - web-site-management
+  - content-space-management
+  - channel-and-page-management
+  - article-management
+  - category-and-tag-management
+
+toolchain:
+  node: ">=22"
+  packageManager: npm
+  lockfileVersion: 3
+  framework: Vue 3.5.26
+  language: TypeScript 5.9.3
+  bundler: Vite 7.3
+  microFrontend: qiankun 2.10.16
+  ui: Element Plus 2.13
+  state: Pinia 3
+
+layers:
+  order: [shared, components, platform, runtime, views]
+  targetDependencyDirection: views -> runtime -> platform -> components -> shared
+  compositionRoots: [src/main.ts, src/App.vue]
+
+runtime:
+  applicationCode: g2rain-cms-app
+  contextPath: /cms
+  modes:
+    alone:
+      selector: mode=alone 或 VITE_RUN_MODE=alone
+      auth: 应用自行执行 IAM SSO、Token 管理和资源加载
+    integrated:
+      selector: 默认空模式
+      auth: main-shell 通过 qiankun props 注入 Token、Client、Locale、初始路由和 appKey
+  resourceEndpoint: /basis/authority/resources
+  backendRoutePrefix: /cms
+  devServerPort: 3001
+  container:
+    exposedPort: 8080
+    defaultServerPort: 80
+
+commands:
+  install: npm ci --legacy-peer-deps
+  dev: npm run dev
+  verify: npm run build
+  preview: npm run preview
+  codegen: npm run build:generate -- --tables=<table>
+  resourceConfig: npm run build:config
+  image: docker build --build-arg VITE_BUILD_MODE=production -t g2rain/g2rain-cms-app:<tag> .
+
+generators:
+  code:
+    input: src/shared/generator/database.sql
+    output: src/views/<table>
+    updatesRouteMap: true
+    overwritesExistingFiles: true
+    switches: [--no-view, --no-api, --no-mock, --no-route]
+  resource:
+    routeInput: src/views/route-map.ts
+    viewInput: src/views
+    output: src/shared/config-util/config
+    generated: [resources.json, pages.json, page-elements.json]
+    apiEndpointGeneration: false
+
+collaborators:
+  - repository: g2rain/g2rain-main-shell
+    role: 统一入口、路由同步和 qiankun 装载
+  - repository: g2rain/g2rain-cms
+    role: CMS 领域数据、业务规则和服务端 API
+  - repository: g2rain/g2rain-basis
+    role: 应用页面、页面元素与 API 资源下发
+  - repository: g2rain/g2rain-iam
+    role: SSO、Token 和客户端认证
+  - repository: g2rain/g2rain-gateway-webflux
+    role: 后端 API 统一入口与鉴权转发
+
+validation:
+  reviewedAt: "2026-09-06"
+  command: npm run build
+  status: build-passed
+  testsRun: 0
+  notes:
+    - Vue TypeScript 检查和 Vite 生产构建通过
+    - 未配置 test 或 lint 脚本，也未发现自动化测试套件
+    - 构建存在循环分块、MockJS eval、经典 env-config.js 和大分块警告
+

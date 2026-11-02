@@ -3,6 +3,7 @@ import type { Token, ApplicationScope } from '@platform/types/http.types';
 import type { Client } from '@/components/http';
 import { jwtVerify } from 'jose';
 import { publicKeyStringToJwk } from '@shared/utils/jwt.util';
+import { isMockEnabled } from '@shared/env';
 import { isQiankunRuntime } from '@shared/utils/mode.util';
 
 const STORAGE_KEY = 'g2rain_token';
@@ -22,7 +23,11 @@ export const useAccessTokenStore = defineStore('token', {
       if (!this.client || !this.token) {
         return (this.logged = false);
       }
-      // mock 模式下，now 设置为 0，token 永不过期
+      // Mock 模式下跳过 refresh 过期校验，避免 mock JWT 过期导致无法加载动态路由
+      if (isMockEnabled()) {
+        return (this.logged = true);
+      }
+
       const now = new Date();
 
       // 2. 检查 token 的过期时间
@@ -30,7 +35,6 @@ export const useAccessTokenStore = defineStore('token', {
         const refreshExpireAt = new Date(this.token?.refreshExpireAt * 1000);
 
         // 刷新未到期即认为已登录
-
         return (this.logged = refreshExpireAt > now);
       } catch (error) {
         // 如果日期解析失败，也认为未登录
@@ -38,6 +42,7 @@ export const useAccessTokenStore = defineStore('token', {
         return false;
       }
     },
+    // 检查 access token 是否有效
     isAdminCompany(): boolean {
       return this.token?.adminCompany === true;
     },
@@ -45,12 +50,14 @@ export const useAccessTokenStore = defineStore('token', {
       return this.token?.organId;
     },
     isAccessTokenValid(): boolean {
-
       if (!this.token?.expireAt) return false;
 
       try {
+        if (isMockEnabled()) {
+          return true;
+        }
+
         const expireAt = new Date(this.token.expireAt * 1000);
-        // mock 模式下，now 设置为 0，token 永不过期
         const now = new Date();
         return expireAt > now;
       } catch (error) {

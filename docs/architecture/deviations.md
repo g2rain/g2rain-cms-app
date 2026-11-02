@@ -4,7 +4,7 @@
 
 | 偏差 | 证据 | 风险 | 状态 |
 | --- | --- | --- | --- |
-| Docker 未执行类型检查 | Dockerfile 直接调用 `npx vite build` | 镜像构建可能绕过 `vue-tsc` 错误 | 待修复 |
+| Docker 未执行类型检查 | 已由 Dockerfile 改为 `npm run build` | 镜像构建会执行 `vue-tsc` 和 Vite 生产构建 | 已修复（v1.0.0） |
 | Docker 未刷新资源配置 | Dockerfile 未运行 `npm run build:config` | 已跟踪 JSON 可能与页面/权限指令漂移 | 待评估 |
 | platform 反向依赖 runtime | i18n / locale.store / message-handlers 仍调 runtime HTTP | 分层耦合 | 待迁移 |
 | API 权限检查直接放行 | `ResourceManager.hasApiPermission` 返回 `true` | 前端 API 权限呈现不可靠 | 已知限制 |

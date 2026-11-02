@@ -17,5 +17,5 @@
 
 默认开发值包括应用编码 `g2rain-cms-app`、Context Path `/cms` 和端口 `3001`。Vite 构建会生成 `dist/env-config.js`，容器启动时仅用 `SSO_BASE_URL` 替换其中的占位符。
 
-OpenResty 模板还需要 `GATEWAY_HOST`、`GATEWAY_PORT`、`IAM_HOST`、`IAM_PORT`、`SERVER_PORT` 和 `CONTEXT_PATH`。
+OpenResty 模板还需要 `GATEWAY_HOST`、`GATEWAY_PORT`、`IAM_HOST`、`IAM_PORT`、`SERVER_PORT` 和 `CONTEXT_PATH`。Dockerfile 声明容器端口 `8080`，但启动脚本默认 `SERVER_PORT=80`；部署必须显式协调监听端口和端口映射。
 

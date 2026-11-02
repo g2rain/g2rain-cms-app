@@ -20,20 +20,25 @@ RUN echo "🔨 构建模式: $VITE_BUILD_MODE"
 RUN echo "📁 检查配置文件:" && ls -la vite.config.* && \
     echo "📁 检查环境文件:" && ls -la .env*
 
-RUN if [ -n "$VITE_BUILD_MODE" ]; then \
-        echo "🏗️ 使用指定的构建模式: $VITE_BUILD_MODE"; \
-        npx vite build --mode $VITE_BUILD_MODE; \
-        echo "✅ $VITE_BUILD_MODE 模式构建完成"; \
-    else \
-        echo "🚀 VITE_BUILD_MODE 未设置，使用默认模式: production"; \
-        npx vite build --mode production; \
-        echo "✅ production 模式构建完成"; \
-    fi
+RUN if [ "$VITE_BUILD_MODE" != "production" ]; then \
+        echo "VITE_BUILD_MODE must be production for the release image; got '$VITE_BUILD_MODE'." >&2; \
+        exit 1; \
+    fi; \
+    npm run build
 
 # ------------------------------------------------------------
 # 阶段 2：OpenResty + OpenSSL 3 + luaossl
 # ------------------------------------------------------------
 FROM openresty/openresty:alpine
+
+ARG IMAGE_VERSION=1.0.0
+ARG VCS_REF=unknown
+LABEL org.opencontainers.image.source="https://github.com/g2rain/g2rain-cms-app" \
+      org.opencontainers.image.url="https://github.com/g2rain/g2rain-cms-app" \
+      org.opencontainers.image.title="g2rain-cms-app" \
+      org.opencontainers.image.version="${IMAGE_VERSION}" \
+      org.opencontainers.image.revision="${VCS_REF}" \
+      org.opencontainers.image.licenses="Apache-2.0"
 
 RUN set -eux; \
     sed -i 's|dl-cdn.alpinelinux.org|mirrors.aliyun.com|g' /etc/apk/repositories; \
@@ -62,10 +67,12 @@ RUN set -eux; \
     make install5.1 LUA51PATH=/usr/local/openresty/site/lualib; \
     make install5.2 LUA52PATH=/usr/local/openresty/site/lualib; \
     echo "✅ luaossl installed offline."; \
-    /usr/local/openresty/luajit/bin/luajit -e 'local ok, m = pcall(require, "openssl"); print("luaossl load:", ok, m)'
+    /usr/local/openresty/luajit/bin/luajit -e 'local ok, m = pcall(require, "openssl"); print("luaossl load:", ok, m)'; \
+    rm -rf /tmp/luaossl-src /tmp/luaossl-rel-20250929.tar.gz
 
 COPY --from=builder /app/dist /usr/local/openresty/nginx/html
 COPY lua/ /usr/local/openresty/nginx/lua/
+RUN mkdir -p /usr/local/openresty/nginx/lua/keys
 COPY nginx/default.conf.template /etc/nginx/conf.d/
 COPY nginx/docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh || true

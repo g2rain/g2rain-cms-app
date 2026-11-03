@@ -37,17 +37,6 @@ export class ArticleCategoryApi {
   }
 
   /**
-   * 按 ID 查询单条明细
-   * @param id article_category ID
-   * @returns article_category详情
-   */
-  static async getById(id: number): Promise<ArticleCategory> {
-    const http = getHttpClient('default');
-    const res = await http.get<ArticleCategory>(`/cms/article_category/${id}`);
-    return res.data;
-  }
-
-  /**
    * 保存article_category（新增或更新）
    * 如果 payload 中包含 id，则为更新；否则为新增
    * @param payload article_category数据（包含 id 时为更新，不包含时为新增）

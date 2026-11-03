@@ -89,8 +89,8 @@
           <StatusSwitch
             v-model="row.status"
             permission="article_category:status_update"
-            :active-value="'ACTIVE'"
-            :inactive-value="'INACTIVE'"
+            :active-value="'ENABLED'"
+            :inactive-value="'DISABLED'"
             usage-code="ENABLE_STATUS"
             :api-method="({ nextValue }) => updateArticleCategoryStatus(row.id, nextValue)"
             @success="loadData"
@@ -242,7 +242,7 @@ const fetchSpaces = async (params: { key?: string; value?: number }): Promise<Re
   // 按 ID 回显
   if (params.value !== undefined && params.value !== null) {
     try {
-      const item = await SpaceApi.getById(params.value);
+      const [item] = await SpaceApi.list({ id: params.value });
       return item ? ([item] as unknown as RemoteSelectOption[]) : [];
     } catch {
       return [];

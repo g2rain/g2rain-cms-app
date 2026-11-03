@@ -399,7 +399,7 @@ const tableData = ref<Article[]>([]);
 const fetchSpaces = async (params: { key?: string; value?: number }): Promise<RemoteSelectOption[]> => {
   if (params.value !== undefined && params.value !== null) {
     try {
-      const item = await SpaceApi.getById(params.value);
+      const [item] = await SpaceApi.list({ id: params.value });
       return item ? ([item] as unknown as RemoteSelectOption[]) : [];
     } catch {
       return [];
@@ -416,7 +416,7 @@ const fetchSpaces = async (params: { key?: string; value?: number }): Promise<Re
 const fetchCategories = async (params: { key?: string; value?: number }): Promise<RemoteSelectOption[]> => {
   if (params.value !== undefined && params.value !== null) {
     try {
-      const item = await ArticleCategoryApi.getById(params.value);
+      const [item] = await ArticleCategoryApi.list({ id: params.value });
       return item ? ([item] as unknown as RemoteSelectOption[]) : [];
     } catch {
       return [];
@@ -579,7 +579,8 @@ const handleView = (row: Article) => {
 
 const handleEditContent = async (row: Article) => {
   contentEditorReady.value = false;
-  const detail = await ArticleApi.getById(row.id);
+  const [detail] = await ArticleApi.list({ id: row.id });
+  if (!detail) return;
   contentTargetArticle.value = detail;
   contentDraft.value = detail.content ?? '';
   contentEditorKey.value += 1;

@@ -83,8 +83,8 @@
           <StatusSwitch
             v-model="row.status"
             permission="web_site:status_update"
-            :active-value="'ACTIVE'"
-            :inactive-value="'INACTIVE'"
+            :active-value="'ENABLED'"
+            :inactive-value="'DISABLED'"
             usage-code="ENABLE_STATUS"
             :api-method="({ nextValue }) => updateWebSiteStatus(row, nextValue)"
             @success="loadData"

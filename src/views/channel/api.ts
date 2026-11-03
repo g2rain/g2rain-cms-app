@@ -37,17 +37,6 @@ export class ChannelApi {
   }
 
   /**
-   * 按 ID 查询单条明细
-   * @param id channel ID
-   * @returns channel详情
-   */
-  static async getById(id: number): Promise<Channel> {
-    const http = getHttpClient('default');
-    const res = await http.get<Channel>(`/cms/channel/${id}`);
-    return res.data;
-  }
-
-  /**
    * 保存channel（新增或更新）
    * 如果 payload 中包含 id，则为更新；否则为新增
    * @param payload channel数据（包含 id 时为更新，不包含时为新增）

@@ -89,8 +89,8 @@
           <StatusSwitch
             v-model="row.status"
             permission="space:status_update"
-            :active-value="'ACTIVE'"
-            :inactive-value="'INACTIVE'"
+            :active-value="'ENABLED'"
+            :inactive-value="'DISABLED'"
             usage-code="ENABLE_STATUS"
             :api-method="({ nextValue }) => updateSpaceStatus(row.id, nextValue)"
             @success="loadData"

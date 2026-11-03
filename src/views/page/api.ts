@@ -37,17 +37,6 @@ export class PageApi {
   }
 
   /**
-   * 按 ID 查询单条明细
-   * @param id page ID
-   * @returns page详情
-   */
-  static async getById(id: number): Promise<Page> {
-    const http = getHttpClient('default');
-    const res = await http.get<Page>(`/cms/page/${id}`);
-    return res.data;
-  }
-
-  /**
    * 保存page（新增或更新）
    * 如果 payload 中包含 id，则为更新；否则为新增
    * @param payload page数据（包含 id 时为更新，不包含时为新增）

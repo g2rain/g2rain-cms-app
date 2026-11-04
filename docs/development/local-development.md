@@ -11,6 +11,8 @@ npm ci --legacy-peer-deps
 npm run dev
 ```
 
+`create-g2rain-app` 以 `file:../g2rain-app-cli` 声明。本地 `npm install` / `npm run build:generate` / `npm run build:config` 需要同级检出 [`g2rain-app-cli`](https://github.com/g2rain/g2rain-app-cli)。Docker 构建使用最小 stub，不依赖真实 CLI；资源 JSON 已跟踪进仓，改路由/权限后需本地跑 `build:config` 再提交。
+
 默认 `.env` 使用应用编码 `g2rain-cms-app`、Context Path `/cms`、端口 `3001` 和独立模式。环境文件可能包含环境地址，提交前必须检查，禁止写入 Token 与私钥。
 
 ## 联调

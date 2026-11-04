@@ -2,6 +2,8 @@
 
 本目录记录 CMS 前端的项目事实、架构、开发、运行和安全边界。中央 `frontend-app 1.0.0` 定义目标规则；当前源码和 `docs/project.yaml` 描述本项目落地。
 
+稳定版本说明见[发布记录](releases/README.md)，GHCR 镜像与发布操作见[部署](operations/deployment.md#github-container-registry-ghcr)。
+
 ## 架构
 
 - [架构总览](architecture/overview.md)

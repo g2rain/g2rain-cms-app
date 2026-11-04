@@ -3,7 +3,7 @@
  * 提供tag数据的 CRUD 操作接口
  */
 
-import { getHttpClient } from '@/components/http';
+import { getHttpClient } from '@runtime/http';
 import type { Tag, TagPayload, TagQuery } from './type';
 import type { PageData, PageSelectListDto } from '@platform/types/api.type';
 
@@ -33,17 +33,6 @@ export class TagApi {
   static async page(params: TagQuery & PageSelectListDto): Promise<PageData<Tag>> {
     const http = getHttpClient('default');
     const res = await http.get<PageData<Tag>>('/cms/tag/page', params);
-    return res.data;
-  }
-
-  /**
-   * 按 ID 查询单条明细
-   * @param id tag ID
-   * @returns tag详情
-   */
-  static async getById(id: number): Promise<Tag> {
-    const http = getHttpClient('default');
-    const res = await http.get<Tag>(`/cms/tag/${id}`);
     return res.data;
   }
 

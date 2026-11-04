@@ -27,6 +27,7 @@ coverage
 .env
 .env.local
 .env.*.local
+!.env.production
 
 # 日志文件
 logs
@@ -41,6 +42,9 @@ temp
 Dockerfile
 .dockerignore
 docker-compose.yml
+
+# 运行时密钥必须由部署系统挂载；Docker 忽略规则不改变 Git 中已跟踪文件的可见性。
+lua/keys/
 
 # 其他
 .DS_Store

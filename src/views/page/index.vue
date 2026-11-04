@@ -9,17 +9,23 @@
         @search="handleSearch"
       >
         <!-- 业务特定查询字段 -->
-        <el-form-item :label="$t('CMS_PAGE_FIELD_ORGAN_ID', '机构ID')">
-          <el-input v-model="queryForm.organId" :placeholder="$t('CMS_PAGE_PH_ORGAN_ID', '请输入机构ID')" clearable style="width: 200px" />
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
+          <OrganSelect
+            v-model="queryForm.organId"
+            :api-method="OrganApi.searchOrgans"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
+            width="200px"
+            clearable
+          />
         </el-form-item>
-        <el-form-item :label="$t('CMS_PAGE_FIELD_SPACE_ID', '空间ID')">
-          <el-input v-model="queryForm.spaceId" :placeholder="$t('CMS_PAGE_PH_SPACE_ID', '请输入空间ID')" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_PAGE_FIELD_SPACE_ID', '空间')">
+          <el-input v-model="queryForm.spaceId" :placeholder="$t('CMS_PAGE_PH_SPACE_ID', '请输入空间')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_PAGE_FIELD_PAGE_NAME', '页面名称')">
-          <el-input v-model="queryForm.pageName" :placeholder="$t('CMS_PAGE_PH_PAGE_NAME', '请输入页面名称')" clearable style="width: 200px" />
+        <el-form-item :label="$t('G2_FIELD_PAGE_NAME', '页面名称')">
+          <el-input v-model="queryForm.pageName" :placeholder="$t('G2_PH_PAGE_NAME', '请输入页面名称')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_PAGE_FIELD_PAGE_CODE', '页面编码')">
-          <el-input v-model="queryForm.pageCode" :placeholder="$t('CMS_PAGE_PH_PAGE_CODE', '请输入页面编码')" clearable style="width: 200px" />
+        <el-form-item :label="$t('G2_FIELD_PAGE_CODE', '页面编码')">
+          <el-input v-model="queryForm.pageCode" :placeholder="$t('G2_PH_PAGE_CODE', '请输入页面编码')" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item :label="$t('CMS_PAGE_FIELD_PATH', '访问路径')">
           <el-input v-model="queryForm.path" :placeholder="$t('CMS_PAGE_PH_PATH', '请输入访问路径')" clearable style="width: 200px" />
@@ -28,7 +34,14 @@
           <el-input v-model="queryForm.content" :placeholder="$t('CMS_PAGE_PH_CONTENT', '请输入页面内容')" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item :label="$t('G2_FIELD_STATUS', '状态')">
-          <el-input v-model="queryForm.status" :placeholder="$t('CMS_PAGE_PH_STATUS', '请输入状态')" clearable style="width: 200px" />
+          <DictSelect
+            v-model="queryForm.status"
+            :api-method="DictItemApi.select"
+            usage-code="ENABLE_STATUS"
+            :placeholder="$t('G2_PH_STATUS', '请选择状态')"
+            clearable
+            width="200px"
+          />
         </el-form-item>
 
         <!-- 操作按钮 -->
@@ -44,9 +57,9 @@
     <!-- 标题和操作按钮 -->
     <div class="page-page__header">
       <div class="page-page__title-group">
-        <h2>{{ $t('CMS_PAGE_TITLE', '管理各类page数据') }}</h2>
+        <h2>{{ $t('G2_FIELD_PAGE', '页面') }}</h2>
       </div>
-      <el-button type="primary" v-permission="'page:add'" @click="handleCreate">{{ $t('CMS_PAGE_BTN_ADD', '新增page') }}</el-button>
+      <el-button type="primary" v-permission="'page:add'" @click="handleCreate">{{ $t('G2_BTN_ADD_PAGE', '新增页面') }}</el-button>
     </div>
 
     <SortableTable
@@ -58,13 +71,21 @@
       @sort-change="handleSortChange"
     >
       <el-table-column prop="id" :label="$t('G2_FIELD_ID', 'ID')" width="120" />
-      <el-table-column prop="organId" :label="$t('CMS_PAGE_FIELD_ORGAN_ID', '机构ID')" width="140" />
-      <el-table-column prop="spaceId" :label="$t('CMS_PAGE_FIELD_SPACE_ID', '空间ID')" width="140" />
-      <el-table-column prop="pageName" :label="$t('CMS_PAGE_FIELD_PAGE_NAME', '页面名称')" width="180" />
-      <el-table-column prop="pageCode" :label="$t('CMS_PAGE_FIELD_PAGE_CODE', '页面编码')" width="180" />
+      <el-table-column :label="$t('G2_FIELD_ORGAN', '所属机构')" width="140">
+        <template #default="{ row }">
+          {{ row.organName || row.organId }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="spaceId" :label="$t('CMS_PAGE_FIELD_SPACE_ID', '空间')" width="140" />
+      <el-table-column prop="pageName" :label="$t('G2_FIELD_PAGE_NAME', '页面名称')" width="180" />
+      <el-table-column prop="pageCode" :label="$t('G2_FIELD_PAGE_CODE', '页面编码')" width="180" />
       <el-table-column prop="path" :label="$t('CMS_PAGE_FIELD_PATH', '访问路径')" width="180" />
       <el-table-column prop="content" :label="$t('CMS_PAGE_FIELD_CONTENT', '页面内容')" width="180" />
-      <el-table-column prop="status" :label="$t('G2_FIELD_STATUS', '状态')" width="180" />
+      <el-table-column :label="$t('G2_FIELD_STATUS', '状态')" width="180">
+        <template #default="{ row }">
+          <DictText :value="row.status" usage-code="ENABLE_STATUS" :api-method="DictItemApi.select" />
+        </template>
+      </el-table-column>
       <TableColumn prop="createTime" :label="$t('G2_FIELD_CREATE_TIME', '创建时间')" width="180" :sortable="true" />
       <TableColumn prop="updateTime" :label="$t('G2_FIELD_UPDATE_TIME', '更新时间')" width="180" :sortable="true" />
       <el-table-column :label="$t('G2_FIELD_ACTION', '操作')" fixed="right" width="280">
@@ -98,26 +119,32 @@
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog
       v-model="editDialogVisible"
-      :title="isEdit ? $t('CMS_PAGE_DLG_EDIT', '编辑page') : $t('CMS_PAGE_DLG_ADD', '新增page')"
+      :title="isEdit ? $t('G2_BTN_EDIT_PAGE', '编辑页面') : $t('G2_BTN_ADD_PAGE', '新增页面')"
       width="520px"
     >
       <el-form
         ref="editFormRef"
         :model="editForm"
         :rules="editRules"
-        label-width="100px"
+        label-width="120px"
       >
-        <el-form-item :label="$t('CMS_PAGE_FIELD_ORGAN_ID', '机构ID')" prop="organId">
-          <el-input v-model="editForm.organId" :placeholder="$t('CMS_PAGE_PH_ORGAN_ID', '请输入机构ID')" />
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')" prop="organId">
+          <OrganSelect
+            v-model="editForm.organId"
+            :api-method="OrganApi.searchOrgans"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
+            width="100%"
+            clearable
+          />
         </el-form-item>
-        <el-form-item :label="$t('CMS_PAGE_FIELD_SPACE_ID', '空间ID')" prop="spaceId">
-          <el-input v-model="editForm.spaceId" :placeholder="$t('CMS_PAGE_PH_SPACE_ID', '请输入空间ID')" />
+        <el-form-item :label="$t('CMS_PAGE_FIELD_SPACE_ID', '空间')" prop="spaceId">
+          <el-input v-model="editForm.spaceId" :placeholder="$t('CMS_PAGE_PH_SPACE_ID', '请输入空间')" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_PAGE_FIELD_PAGE_NAME', '页面名称')" prop="pageName">
-          <el-input v-model="editForm.pageName" :placeholder="$t('CMS_PAGE_PH_PAGE_NAME', '请输入页面名称')" />
+        <el-form-item :label="$t('G2_FIELD_PAGE_NAME', '页面名称')" prop="pageName">
+          <el-input v-model="editForm.pageName" :placeholder="$t('G2_PH_PAGE_NAME', '请输入页面名称')" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_PAGE_FIELD_PAGE_CODE', '页面编码')" prop="pageCode">
-          <el-input v-model="editForm.pageCode" :placeholder="$t('CMS_PAGE_PH_PAGE_CODE', '请输入页面编码')" />
+        <el-form-item :label="$t('G2_FIELD_PAGE_CODE', '页面编码')" prop="pageCode">
+          <el-input v-model="editForm.pageCode" :placeholder="$t('G2_PH_PAGE_CODE', '请输入页面编码')" />
         </el-form-item>
         <el-form-item :label="$t('CMS_PAGE_FIELD_PATH', '访问路径')" prop="path">
           <el-input v-model="editForm.path" :placeholder="$t('CMS_PAGE_PH_PATH', '请输入访问路径')" />
@@ -126,7 +153,14 @@
           <el-input v-model="editForm.content" :placeholder="$t('CMS_PAGE_PH_CONTENT', '请输入页面内容')" />
         </el-form-item>
         <el-form-item :label="$t('G2_FIELD_STATUS', '状态')" prop="status">
-          <el-input v-model="editForm.status" :placeholder="$t('CMS_PAGE_PH_STATUS', '请输入状态')" />
+          <DictSelect
+            v-model="editForm.status"
+            :api-method="DictItemApi.select"
+            usage-code="ENABLE_STATUS"
+            :placeholder="$t('G2_PH_STATUS', '请选择状态')"
+            width="100%"
+            clearable
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -138,19 +172,19 @@
     </el-dialog>
 
     <!-- 明细弹窗 -->
-    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_PAGE_DETAIL', 'page明细')" width="520px">
+    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_PAGE_DETAIL', '页面明细')" width="520px">
       <el-descriptions :column="1" border>
         <el-descriptions-item :label="$t('G2_FIELD_ID', 'ID')">{{ currentRow?.id }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_PAGE_FIELD_ORGAN_ID', '机构ID')">
-          {{ currentRow?.organId }}
+        <el-descriptions-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
+          {{ currentRow?.organName || currentRow?.organId }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_PAGE_FIELD_SPACE_ID', '空间ID')">
+        <el-descriptions-item :label="$t('CMS_PAGE_FIELD_SPACE_ID', '空间')">
           {{ currentRow?.spaceId }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_PAGE_FIELD_PAGE_NAME', '页面名称')">
+        <el-descriptions-item :label="$t('G2_FIELD_PAGE_NAME', '页面名称')">
           {{ currentRow?.pageName }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_PAGE_FIELD_PAGE_CODE', '页面编码')">
+        <el-descriptions-item :label="$t('G2_FIELD_PAGE_CODE', '页面编码')">
           {{ currentRow?.pageCode }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('CMS_PAGE_FIELD_PATH', '访问路径')">
@@ -160,7 +194,7 @@
           {{ currentRow?.content }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('G2_FIELD_STATUS', '状态')">
-          {{ currentRow?.status }}
+          <DictText :value="currentRow?.status" usage-code="ENABLE_STATUS" :api-method="DictItemApi.select" />
         </el-descriptions-item>
         <el-descriptions-item :label="$t('G2_FIELD_VERSION', '版本号')">{{ currentRow?.version }}</el-descriptions-item>
         <el-descriptions-item :label="$t('G2_FIELD_CREATE_TIME', '创建时间')">{{ currentRow?.createTime }}</el-descriptions-item>
@@ -181,15 +215,18 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { t } from '@platform/i18n';
 import { PageApi } from './api';
+import { OrganApi } from '../organ/api';
+import { DictItemApi } from '../dict/api';
 import type { Page, PagePayload, PageQuery } from './type';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
 
-import { SortableTable, TableColumn, SortManagerButton, QueryForm, showErrorMessage } from '@/components';
+import { SortableTable, TableColumn, SortManagerButton, QueryForm } from '@g2rain/ui';
+import { OrganSelect, DictSelect, DictText } from '@g2rain/ui/platform';
 
 const tableData = ref<Page[]>([]);
 
 // 基础查询表单（BaseSelectListDto）
-let baseQueryForm = reactive<BaseSelectListDto>({
+const baseQueryForm = ref<BaseSelectListDto>({
   id: undefined,
   createTime: undefined,
   updateTime: undefined,
@@ -198,13 +235,13 @@ let baseQueryForm = reactive<BaseSelectListDto>({
 
 // 业务特定查询表单
 const queryForm = reactive({
-  organId: '',
+  organId: null as number | null,
   spaceId: '',
   pageName: '',
   pageCode: '',
   path: '',
   content: '',
-  status: '',
+  status: null as string | null,
 });
 
 // 组件引用
@@ -226,39 +263,39 @@ const editFormRef = ref<FormInstance | null>(null);
 
 const editForm = reactive({
   id: 0,
-  organId: '',
+  organId: null as number | null,
   spaceId: '',
   pageName: '',
   pageCode: '',
   path: '',
   content: '',
-  status: '',
+  status: null as string | null,
 });
 
 const editRules = computed<FormRules>(() => ({
-  organId: [{ required: true, message: t('CMS_PAGE_VLD_ORGAN_ID', '请输入机构ID'), trigger: 'blur' }],
-  spaceId: [{ required: true, message: t('CMS_PAGE_VLD_SPACE_ID', '请输入空间ID'), trigger: 'blur' }],
-  pageName: [{ required: true, message: t('CMS_PAGE_VLD_PAGE_NAME', '请输入页面名称'), trigger: 'blur' }],
+  organId: [{ required: true, message: t('G2_PH_ORGAN', '请选择所属机构'), trigger: 'change' }],
+  spaceId: [{ required: true, message: t('CMS_PAGE_VLD_SPACE_ID', '请输入空间'), trigger: 'blur' }],
+  pageName: [{ required: true, message: t('G2_PH_PAGE_NAME', '请输入页面名称'), trigger: 'blur' }],
   content: [{ required: true, message: t('CMS_PAGE_VLD_CONTENT', '请输入页面内容'), trigger: 'blur' }],
-  status: [{ required: true, message: t('CMS_PAGE_VLD_STATUS', '请输入状态'), trigger: 'blur' }],
+  status: [{ required: true, message: t('G2_PH_STATUS', '请选择状态'), trigger: 'change' }],
 }));
 
 const handleCreate = () => {
   isEdit.value = false;
-  editForm.organId = '';
+  editForm.organId = null;
   editForm.spaceId = '';
   editForm.pageName = '';
   editForm.pageCode = '';
   editForm.path = '';
   editForm.content = '';
-  editForm.status = '';
+  editForm.status = null;
   editDialogVisible.value = true;
 };
 
 const handleEdit = (row: Page) => {
   isEdit.value = true;
   editForm.id = row.id;
-  editForm.organId = String(row.organId);
+  editForm.organId = row.organId;
   editForm.spaceId = String(row.spaceId);
   editForm.pageName = row.pageName;
   editForm.pageCode = row.pageCode ?? '';
@@ -275,22 +312,18 @@ const handleView = (row: Page) => {
 
 const handleDelete = (row: Page) => {
   ElMessageBox.confirm(
-    t('CMS_PAGE_DEL_CONFIRM', `确认删除page「${row.id}」吗？`),
+    t('G2_MSG_DEL_PAGE_CONFIRM', { id: row.id }, '确认删除页面「{id}」吗？'),
     t('G2_LBL_TIP', '提示'),
     { type: 'warning' },
   )
     .then(async () => {
-      try {
-        await PageApi.remove(row.id);
-        // 如果当前页只有一条数据，删除后应该跳转到上一页
-        if (tableData.value.length === 1 && pagination.pageNum > 1) {
-          pagination.pageNum--;
-        }
-        await loadData();
-        ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
-      } catch (error: any) {
-        showErrorMessage(error || t('G2_MSG_DELETE_FAIL', '删除失败'));
+      await PageApi.remove(row.id);
+      // 如果当前页只有一条数据，删除后应该跳转到上一页
+      if (tableData.value.length === 1 && pagination.pageNum > 1) {
+        pagination.pageNum--;
       }
+      await loadData();
+      ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
     })
     .catch(() => {});
 };
@@ -301,27 +334,23 @@ const submitEdit = async () => {
   if (!valid) return;
 
   const payload: PagePayload = {
-    organId: editForm.organId !== '' ? Number(editForm.organId) : undefined,
+    organId: editForm.organId ?? undefined,
     spaceId: editForm.spaceId !== '' ? Number(editForm.spaceId) : undefined,
     pageName: editForm.pageName,
     pageCode: editForm.pageCode || null,
     path: editForm.path || null,
     content: editForm.content,
-    status: editForm.status,
+    status: editForm.status ?? undefined,
   };
 
-  try {
-    // 编辑模式下，将 id 添加到 payload 中
-    if (isEdit.value) {
-      payload.id = editForm.id;
-    }
-    await PageApi.save(payload);
-    ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
-    await loadData();
-    editDialogVisible.value = false;
-  } catch (error: any) {
-    showErrorMessage(error || t('G2_MSG_SAVE_FAIL', '保存失败'));
+  // 编辑模式下，将 id 添加到 payload 中
+  if (isEdit.value) {
+    payload.id = editForm.id;
   }
+  await PageApi.save(payload);
+  ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
+  await loadData();
+  editDialogVisible.value = false;
 };
 
 // 处理排序变化
@@ -334,14 +363,14 @@ const handleSortChange = (params: Record<string, string>) => {
 
 const loadData = async () => {
   try {
-    const organId = queryForm.organId ? Number(queryForm.organId) : undefined;
+    const organId = queryForm.organId ?? undefined;
     const spaceId = queryForm.spaceId ? Number(queryForm.spaceId) : undefined;
 
     // 构建查询条件（query 对象），包含基础查询参数和业务查询参数
     const query: PageQuery = {
       // 基础查询参数（BaseSelectListDto）- 使用 Object.fromEntries 过滤无效值
       ...Object.fromEntries(
-        Object.entries(baseQueryForm).filter(
+        Object.entries(baseQueryForm.value).filter(
           ([_, v]) => v != null && (!Array.isArray(v) || v.length > 0)
         )
       ),
@@ -376,8 +405,8 @@ const loadData = async () => {
     
     tableData.value = pageData.records;
     pagination.total = pageData.total;
-  } catch (error: any) {
-    showErrorMessage(error || t('G2_MSG_LOAD_FAIL', '加载列表失败'));
+  } catch {
+    // 请求失败已由 http 层统一提示
   }
 };
 
@@ -390,19 +419,18 @@ const handleSearch = () => {
 // 重置查询条件
 const handleReset = () => {
   // 重置基础查询表单
-  baseQueryForm.id = undefined;
-  baseQueryForm.createTime = undefined;
-  baseQueryForm.updateTime = undefined;
-  baseQueryForm.sorts = undefined;
+  baseQueryForm.value.id = undefined;
+  baseQueryForm.value.createTime = undefined;
+  baseQueryForm.value.updateTime = undefined;
   
   // 重置业务特定查询表单
-  queryForm.organId = '';
+  queryForm.organId = null;
   queryForm.spaceId = '';
   queryForm.pageName = '';
   queryForm.pageCode = '';
   queryForm.path = '';
   queryForm.content = '';
-  queryForm.status = '';
+  queryForm.status = null;
   
   pagination.pageNum = 1; // 重置到第一页
   loadData();
@@ -429,7 +457,7 @@ onMounted(() => {
 <style scoped>
 .page-page {
   padding: 20px;
-  background-color: #f5f7fa;
+  background-color: var(--g2-bg-page);
   min-height: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -442,7 +470,7 @@ onMounted(() => {
   margin-bottom: 12px;
   margin-top: 0;
   padding: 16px 20px;
-  background-color: #fff;
+  background-color: var(--g2-bg-container);
   border-radius: 4px;
 }
 
@@ -467,7 +495,7 @@ onMounted(() => {
 
 .page-page__search {
   margin-bottom: 12px;
-  background-color: #fff;
+  background-color: var(--g2-bg-container);
 }
 
 .page-page__pagination {

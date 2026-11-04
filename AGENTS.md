@@ -26,7 +26,7 @@
 - 前端权限不能替代服务端授权；当前 `hasApiPermission` 直接返回 `true`，不可声称已实施 API 授权。
 - 不提交 Token、私钥、真实凭据或生产敏感地址；生产环境禁用 Mock。
 - `build:generate` 会覆盖文件。执行前确认工作区安全，执行后审查 view、API、type、mock 和 route-map。
-- `build:config` 当前仅生成 pages 与 page-elements，API parser 未接入主流程。
+- `build:config` 会覆盖已跟踪的资源 JSON；当前 API parser 未接入主流程，`apiEndpoints` 为空。
 
 ## 完成前
 

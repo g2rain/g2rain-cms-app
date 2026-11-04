@@ -3,7 +3,7 @@
  * 提供space数据的 CRUD 操作接口
  */
 
-import { getHttpClient } from '@/components/http';
+import { getHttpClient } from '@runtime/http';
 import type { Space, SpacePayload, SpaceQuery } from './type';
 import type { PageData, PageSelectListDto } from '@platform/types/api.type';
 
@@ -33,17 +33,6 @@ export class SpaceApi {
   static async page(params: SpaceQuery & PageSelectListDto): Promise<PageData<Space>> {
     const http = getHttpClient('default');
     const res = await http.get<PageData<Space>>('/cms/space/page', params);
-    return res.data;
-  }
-
-  /**
-   * 按 ID 查询单条明细
-   * @param id space ID
-   * @returns space详情
-   */
-  static async getById(id: number): Promise<Space> {
-    const http = getHttpClient('default');
-    const res = await http.get<Space>(`/cms/space/${id}`);
     return res.data;
   }
 

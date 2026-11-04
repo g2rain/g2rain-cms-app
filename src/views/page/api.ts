@@ -3,7 +3,7 @@
  * 提供page数据的 CRUD 操作接口
  */
 
-import { getHttpClient } from '@/components/http';
+import { getHttpClient } from '@runtime/http';
 import type { Page, PagePayload, PageQuery } from './type';
 import type { PageData, PageSelectListDto } from '@platform/types/api.type';
 
@@ -33,17 +33,6 @@ export class PageApi {
   static async page(params: PageQuery & PageSelectListDto): Promise<PageData<Page>> {
     const http = getHttpClient('default');
     const res = await http.get<PageData<Page>>('/cms/page/page', params);
-    return res.data;
-  }
-
-  /**
-   * 按 ID 查询单条明细
-   * @param id page ID
-   * @returns page详情
-   */
-  static async getById(id: number): Promise<Page> {
-    const http = getHttpClient('default');
-    const res = await http.get<Page>(`/cms/page/${id}`);
     return res.data;
   }
 

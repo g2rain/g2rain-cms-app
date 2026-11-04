@@ -1,0 +1,218 @@
+[
+  {
+    "parentId": null,
+    "pageElementName": "新增",
+    "pageElementCode": "article_category:add",
+    "pageElementType": "button",
+    "pageCode": "article_category",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "删除",
+    "pageElementCode": "article_category:delete",
+    "pageElementType": "button",
+    "pageCode": "article_category",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "编辑",
+    "pageElementCode": "article_category:edit",
+    "pageElementType": "button",
+    "pageCode": "article_category",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "状态变更",
+    "pageElementCode": "article_category:status_update",
+    "pageElementType": "switch",
+    "pageCode": "article_category",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "新增",
+    "pageElementCode": "article_tag_relation:add",
+    "pageElementType": "button",
+    "pageCode": "article_tag_relation",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "删除",
+    "pageElementCode": "article_tag_relation:delete",
+    "pageElementType": "button",
+    "pageCode": "article_tag_relation",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "编辑",
+    "pageElementCode": "article_tag_relation:edit",
+    "pageElementType": "button",
+    "pageCode": "article_tag_relation",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "新增",
+    "pageElementCode": "article:add",
+    "pageElementType": "button",
+    "pageCode": "article",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "删除",
+    "pageElementCode": "article:delete",
+    "pageElementType": "button",
+    "pageCode": "article",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "编辑",
+    "pageElementCode": "article:edit",
+    "pageElementType": "button",
+    "pageCode": "article",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "新增",
+    "pageElementCode": "channel:add",
+    "pageElementType": "button",
+    "pageCode": "channel",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "删除",
+    "pageElementCode": "channel:delete",
+    "pageElementType": "button",
+    "pageCode": "channel",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "编辑",
+    "pageElementCode": "channel:edit",
+    "pageElementType": "button",
+    "pageCode": "channel",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "新增",
+    "pageElementCode": "page:add",
+    "pageElementType": "button",
+    "pageCode": "page",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "删除",
+    "pageElementCode": "page:delete",
+    "pageElementType": "button",
+    "pageCode": "page",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "编辑",
+    "pageElementCode": "page:edit",
+    "pageElementType": "button",
+    "pageCode": "page",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "新增",
+    "pageElementCode": "space:add",
+    "pageElementType": "button",
+    "pageCode": "space",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "删除",
+    "pageElementCode": "space:delete",
+    "pageElementType": "button",
+    "pageCode": "space",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "编辑",
+    "pageElementCode": "space:edit",
+    "pageElementType": "button",
+    "pageCode": "space",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "状态变更",
+    "pageElementCode": "space:status_update",
+    "pageElementType": "switch",
+    "pageCode": "space",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "新增",
+    "pageElementCode": "tag:add",
+    "pageElementType": "button",
+    "pageCode": "tag",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "删除",
+    "pageElementCode": "tag:delete",
+    "pageElementType": "button",
+    "pageCode": "tag",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "编辑",
+    "pageElementCode": "tag:edit",
+    "pageElementType": "button",
+    "pageCode": "tag",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "新增",
+    "pageElementCode": "web_site:add",
+    "pageElementType": "button",
+    "pageCode": "web_site",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "删除",
+    "pageElementCode": "web_site:delete",
+    "pageElementType": "button",
+    "pageCode": "web_site",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "编辑",
+    "pageElementCode": "web_site:edit",
+    "pageElementType": "button",
+    "pageCode": "web_site",
+    "status": "ENABLED"
+  },
+  {
+    "parentId": null,
+    "pageElementName": "状态变更",
+    "pageElementCode": "web_site:status_update",
+    "pageElementType": "switch",
+    "pageCode": "web_site",
+    "status": "ENABLED"
+  }
+]

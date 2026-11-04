@@ -9,11 +9,11 @@
         @search="handleSearch"
       >
         <!-- 业务特定查询字段 -->
-        <el-form-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_ARTICLE_ID', '文章ID')">
-          <el-input v-model="queryForm.articleId" :placeholder="$t('CMS_ARTICLE_TAG_RELATION_PH_ARTICLE_ID', '请输入文章ID')" clearable style="width: 200px" />
+        <el-form-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_ARTICLE_ID', '文章')">
+          <el-input v-model="queryForm.articleId" :placeholder="$t('CMS_ARTICLE_TAG_RELATION_PH_ARTICLE_ID', '请输入文章')" clearable style="width: 200px" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_TAG_ID', '标签ID')">
-          <el-input v-model="queryForm.tagId" :placeholder="$t('CMS_ARTICLE_TAG_RELATION_PH_TAG_ID', '请输入标签ID')" clearable style="width: 200px" />
+        <el-form-item :label="$t('G2_FIELD_TAG', '标签')">
+          <el-input v-model="queryForm.tagId" :placeholder="$t('CMS_ARTICLE_TAG_RELATION_PH_TAG_ID', '请输入标签')" clearable style="width: 200px" />
         </el-form-item>
 
         <!-- 操作按钮 -->
@@ -29,9 +29,9 @@
     <!-- 标题和操作按钮 -->
     <div class="article_tag_relation-page__header">
       <div class="article_tag_relation-page__title-group">
-        <h2>{{ $t('CMS_ARTICLE_TAG_RELATION_TITLE', '管理各类article_tag_relation数据') }}</h2>
+        <h2>{{ $t('CMS_ARTICLE_TAG_RELATION_TITLE', '文章标签') }}</h2>
       </div>
-      <el-button type="primary" v-permission="'article_tag_relation:add'" @click="handleCreate">{{ $t('CMS_ARTICLE_TAG_RELATION_BTN_ADD', '新增article_tag_relation') }}</el-button>
+      <el-button type="primary" v-permission="'article_tag_relation:add'" @click="handleCreate">{{ $t('CMS_ARTICLE_TAG_RELATION_BTN_ADD', '新增关联') }}</el-button>
     </div>
 
     <SortableTable
@@ -43,8 +43,8 @@
       @sort-change="handleSortChange"
     >
       <el-table-column prop="id" :label="$t('G2_FIELD_ID', 'ID')" width="120" />
-      <el-table-column prop="articleId" :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_ARTICLE_ID', '文章ID')" width="140" />
-      <el-table-column prop="tagId" :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_TAG_ID', '标签ID')" width="140" />
+      <el-table-column prop="articleId" :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_ARTICLE_ID', '文章')" width="140" />
+      <el-table-column prop="tagId" :label="$t('G2_FIELD_TAG', '标签')" width="140" />
       <TableColumn prop="createTime" :label="$t('G2_FIELD_CREATE_TIME', '创建时间')" width="180" :sortable="true" />
       <TableColumn prop="updateTime" :label="$t('G2_FIELD_UPDATE_TIME', '更新时间')" width="180" :sortable="true" />
       <el-table-column :label="$t('G2_FIELD_ACTION', '操作')" fixed="right" width="280">
@@ -78,7 +78,7 @@
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog
       v-model="editDialogVisible"
-      :title="isEdit ? $t('CMS_ARTICLE_TAG_RELATION_DLG_EDIT', '编辑article_tag_relation') : $t('CMS_ARTICLE_TAG_RELATION_DLG_ADD', '新增article_tag_relation')"
+      :title="isEdit ? $t('CMS_ARTICLE_TAG_RELATION_DLG_EDIT', '编辑关联') : $t('CMS_ARTICLE_TAG_RELATION_DLG_ADD', '新增关联')"
       width="520px"
     >
       <el-form
@@ -87,11 +87,11 @@
         :rules="editRules"
         label-width="100px"
       >
-        <el-form-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_ARTICLE_ID', '文章ID')" prop="articleId">
-          <el-input v-model="editForm.articleId" :placeholder="$t('CMS_ARTICLE_TAG_RELATION_PH_ARTICLE_ID', '请输入文章ID')" />
+        <el-form-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_ARTICLE_ID', '文章')" prop="articleId">
+          <el-input v-model="editForm.articleId" :placeholder="$t('CMS_ARTICLE_TAG_RELATION_PH_ARTICLE_ID', '请输入文章')" />
         </el-form-item>
-        <el-form-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_TAG_ID', '标签ID')" prop="tagId">
-          <el-input v-model="editForm.tagId" :placeholder="$t('CMS_ARTICLE_TAG_RELATION_PH_TAG_ID', '请输入标签ID')" />
+        <el-form-item :label="$t('G2_FIELD_TAG', '标签')" prop="tagId">
+          <el-input v-model="editForm.tagId" :placeholder="$t('CMS_ARTICLE_TAG_RELATION_PH_TAG_ID', '请输入标签')" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -103,13 +103,13 @@
     </el-dialog>
 
     <!-- 明细弹窗 -->
-    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_ARTICLE_TAG_RELATION_DETAIL', 'article_tag_relation明细')" width="520px">
+    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_ARTICLE_TAG_RELATION_DETAIL', '关联明细')" width="520px">
       <el-descriptions :column="1" border>
         <el-descriptions-item :label="$t('G2_FIELD_ID', 'ID')">{{ currentRow?.id }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_ARTICLE_ID', '文章ID')">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_ARTICLE_ID', '文章')">
           {{ currentRow?.articleId }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_ARTICLE_TAG_RELATION_FIELD_TAG_ID', '标签ID')">
+        <el-descriptions-item :label="$t('G2_FIELD_TAG', '标签')">
           {{ currentRow?.tagId }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('G2_FIELD_VERSION', '版本号')">{{ currentRow?.version }}</el-descriptions-item>
@@ -134,12 +134,12 @@ import { ArticleTagRelationApi } from './api';
 import type { ArticleTagRelation, ArticleTagRelationPayload, ArticleTagRelationQuery } from './type';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
 
-import { SortableTable, TableColumn, SortManagerButton, QueryForm, showErrorMessage } from '@/components';
+import { SortableTable, TableColumn, SortManagerButton, QueryForm } from '@g2rain/ui';
 
 const tableData = ref<ArticleTagRelation[]>([]);
 
 // 基础查询表单（BaseSelectListDto）
-let baseQueryForm = reactive<BaseSelectListDto>({
+const baseQueryForm = ref<BaseSelectListDto>({
   id: undefined,
   createTime: undefined,
   updateTime: undefined,
@@ -202,22 +202,18 @@ const handleView = (row: ArticleTagRelation) => {
 
 const handleDelete = (row: ArticleTagRelation) => {
   ElMessageBox.confirm(
-    t('CMS_ARTICLE_TAG_RELATION_DEL_CONFIRM', `确认删除article_tag_relation「${row.id}」吗？`),
+    t('CMS_ARTICLE_TAG_RELATION_DEL_CONFIRM', { id: row.id }, '确认删除关联「{id}」吗？'),
     t('G2_LBL_TIP', '提示'),
     { type: 'warning' },
   )
     .then(async () => {
-      try {
-        await ArticleTagRelationApi.remove(row.id);
-        // 如果当前页只有一条数据，删除后应该跳转到上一页
-        if (tableData.value.length === 1 && pagination.pageNum > 1) {
-          pagination.pageNum--;
-        }
-        await loadData();
-        ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
-      } catch (error: any) {
-        showErrorMessage(error || t('G2_MSG_DELETE_FAIL', '删除失败'));
+      await ArticleTagRelationApi.remove(row.id);
+      // 如果当前页只有一条数据，删除后应该跳转到上一页
+      if (tableData.value.length === 1 && pagination.pageNum > 1) {
+        pagination.pageNum--;
       }
+      await loadData();
+      ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
     })
     .catch(() => {});
 };
@@ -232,18 +228,14 @@ const submitEdit = async () => {
     tagId: editForm.tagId !== '' ? Number(editForm.tagId) : undefined,
   };
 
-  try {
-    // 编辑模式下，将 id 添加到 payload 中
-    if (isEdit.value) {
-      payload.id = editForm.id;
-    }
-    await ArticleTagRelationApi.save(payload);
-    ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
-    await loadData();
-    editDialogVisible.value = false;
-  } catch (error: any) {
-    showErrorMessage(error || t('G2_MSG_SAVE_FAIL', '保存失败'));
+  // 编辑模式下，将 id 添加到 payload 中
+  if (isEdit.value) {
+    payload.id = editForm.id;
   }
+  await ArticleTagRelationApi.save(payload);
+  ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
+  await loadData();
+  editDialogVisible.value = false;
 };
 
 // 处理排序变化
@@ -263,7 +255,7 @@ const loadData = async () => {
     const query: ArticleTagRelationQuery = {
       // 基础查询参数（BaseSelectListDto）- 使用 Object.fromEntries 过滤无效值
       ...Object.fromEntries(
-        Object.entries(baseQueryForm).filter(
+        Object.entries(baseQueryForm.value).filter(
           ([_, v]) => v != null && (!Array.isArray(v) || v.length > 0)
         )
       ),
@@ -293,8 +285,8 @@ const loadData = async () => {
     
     tableData.value = pageData.records;
     pagination.total = pageData.total;
-  } catch (error: any) {
-    showErrorMessage(error || t('G2_MSG_LOAD_FAIL', '加载列表失败'));
+  } catch {
+    // 请求失败已由 http 层统一提示
   }
 };
 
@@ -307,10 +299,9 @@ const handleSearch = () => {
 // 重置查询条件
 const handleReset = () => {
   // 重置基础查询表单
-  baseQueryForm.id = undefined;
-  baseQueryForm.createTime = undefined;
-  baseQueryForm.updateTime = undefined;
-  baseQueryForm.sorts = undefined;
+  baseQueryForm.value.id = undefined;
+  baseQueryForm.value.createTime = undefined;
+  baseQueryForm.value.updateTime = undefined;
   
   // 重置业务特定查询表单
   queryForm.articleId = '';
@@ -341,7 +332,7 @@ onMounted(() => {
 <style scoped>
 .article_tag_relation-page {
   padding: 20px;
-  background-color: #f5f7fa;
+  background-color: var(--g2-bg-page);
   min-height: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -354,7 +345,7 @@ onMounted(() => {
   margin-bottom: 12px;
   margin-top: 0;
   padding: 16px 20px;
-  background-color: #fff;
+  background-color: var(--g2-bg-container);
   border-radius: 4px;
 }
 
@@ -379,7 +370,7 @@ onMounted(() => {
 
 .article_tag_relation-page__search {
   margin-bottom: 12px;
-  background-color: #fff;
+  background-color: var(--g2-bg-container);
 }
 
 .article_tag_relation-page__pagination {

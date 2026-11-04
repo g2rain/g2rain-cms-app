@@ -20,6 +20,7 @@ import zh from 'bytemd/locales/zh_Hans.json';
 // 引入基础样式
 import 'bytemd/dist/index.css';
 import 'highlight.js/styles/vs2015.css'; // 代码高亮主题
+import './bytemd-theme.css';
 
 const props = defineProps({
   value: {
@@ -52,7 +53,7 @@ const handleChange = (v) => {
 
 <style scoped>
 .markdown-editor-wrapper {
-  border: 1px solid #e1e4e8;
+  border: 1px solid var(--g2-border-color-light);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -70,14 +71,14 @@ const handleChange = (v) => {
     width: 6px;
   }
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--g2-fill-light);
   }
   &::-webkit-scrollbar-thumb {
-    background: #ccc;
+    background: var(--g2-border-color);
     border-radius: 3px;
   }
   &::-webkit-scrollbar-thumb:hover {
-    background: #bbb;
+    background: var(--g2-text-placeholder);
   }
 }
 </style>

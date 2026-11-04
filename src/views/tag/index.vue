@@ -9,11 +9,11 @@
         @search="handleSearch"
       >
         <!-- 业务特定查询字段 -->
-        <el-form-item :label="$t('CMS_TAG_FIELD_ORGAN_ID', '机构ID')">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
           <OrganSelect
             v-model="queryForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_TAG_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="200px"
             clearable
           />
@@ -38,9 +38,9 @@
     <!-- 标题和操作按钮 -->
     <div class="tag-page__header">
       <div class="tag-page__title-group">
-        <h2>{{ $t('CMS_TAG_TITLE', '管理各类tag数据') }}</h2>
+        <h2>{{ $t('G2_FIELD_TAG', '标签') }}</h2>
       </div>
-      <el-button type="primary" v-permission="'tag:add'" @click="handleCreate">{{ $t('CMS_TAG_BTN_ADD', '新增tag') }}</el-button>
+      <el-button type="primary" v-permission="'tag:add'" @click="handleCreate">{{ $t('G2_BTN_ADD_TAG', '新增标签') }}</el-button>
     </div>
 
     <SortableTable
@@ -52,7 +52,11 @@
       @sort-change="handleSortChange"
     >
       <el-table-column prop="id" :label="$t('G2_FIELD_ID', 'ID')" width="120" />
-      <el-table-column prop="organId" :label="$t('CMS_TAG_FIELD_ORGAN_ID', '机构ID')" width="140" />
+      <el-table-column :label="$t('G2_FIELD_ORGAN', '所属机构')" width="140">
+        <template #default="{ row }">
+          {{ row.organName || row.organId }}
+        </template>
+      </el-table-column>
       <el-table-column prop="tagCode" :label="$t('CMS_TAG_FIELD_TAG_CODE', '标签编码')" width="180" />
       <el-table-column prop="tagName" :label="$t('CMS_TAG_FIELD_TAG_NAME', '标签名称')" width="180" />
       <TableColumn prop="createTime" :label="$t('G2_FIELD_CREATE_TIME', '创建时间')" width="180" :sortable="true" />
@@ -88,7 +92,7 @@
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog
       v-model="editDialogVisible"
-      :title="isEdit ? $t('CMS_TAG_DLG_EDIT', '编辑tag') : $t('CMS_TAG_DLG_ADD', '新增tag')"
+      :title="isEdit ? $t('G2_BTN_EDIT_TAG', '编辑标签') : $t('G2_BTN_ADD_TAG', '新增标签')"
       width="520px"
     >
       <el-form
@@ -97,11 +101,11 @@
         :rules="editRules"
         label-width="100px"
       >
-        <el-form-item :label="$t('CMS_TAG_FIELD_ORGAN_ID', '机构ID')" prop="organId">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')" prop="organId">
           <OrganSelect
             v-model="editForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_TAG_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="100%"
             clearable
           />
@@ -122,11 +126,11 @@
     </el-dialog>
 
     <!-- 明细弹窗 -->
-    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_TAG_DETAIL', 'tag明细')" width="520px">
+    <el-dialog v-model="detailDialogVisible" :title="$t('G2_DETAIL_TAG', '标签明细')" width="520px">
       <el-descriptions :column="1" border>
         <el-descriptions-item :label="$t('G2_FIELD_ID', 'ID')">{{ currentRow?.id }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_TAG_FIELD_ORGAN_ID', '机构ID')">
-          {{ currentRow?.organId }}
+        <el-descriptions-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
+          {{ currentRow?.organName || currentRow?.organId }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('CMS_TAG_FIELD_TAG_NAME', '标签名称')">
           {{ currentRow?.tagName }}
@@ -157,12 +161,13 @@ import type { Tag, TagPayload, TagQuery } from './type';
 import { OrganApi } from '@/views/organ/api';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
 
-import { SortableTable, TableColumn, SortManagerButton, QueryForm, type QueryFormData, OrganSelect, showErrorMessage } from '@/components';
+import { SortableTable, TableColumn, SortManagerButton, QueryForm, type QueryFormData } from '@g2rain/ui';
+import { OrganSelect } from '@g2rain/ui/platform';
 
 const tableData = ref<Tag[]>([]);
 
 // 基础查询表单（BaseSelectListDto）
-let baseQueryForm = reactive<QueryFormData>({
+const baseQueryForm = ref<QueryFormData>({
   id: undefined,
   createTime: undefined,
   updateTime: undefined,
@@ -201,7 +206,7 @@ const editForm = reactive({
 });
 
 const editRules: FormRules = {
-  organId: [{ required: true, message: t('CMS_TAG_VLD_ORGAN_ID', '请输入机构ID'), trigger: 'blur' }],
+  organId: [{ required: true, message: t('G2_PH_ORGAN', '请选择所属机构'), trigger: 'blur' }],
   tagCode: [{ required: true, message: t('CMS_TAG_VLD_TAG_CODE', '请输入标签编码'), trigger: 'blur' }],
   tagName: [{ required: true, message: t('CMS_TAG_VLD_TAG_NAME', '请输入标签名称'), trigger: 'blur' }],
 };
@@ -230,22 +235,18 @@ const handleView = (row: Tag) => {
 
 const handleDelete = (row: Tag) => {
   ElMessageBox.confirm(
-    t('CMS_TAG_DEL_CONFIRM', `确认删除tag「${row.id}」吗？`),
+    t('CMS_TAG_DEL_CONFIRM', { id: row.id }, '确认删除标签「{id}」吗？'),
     t('G2_LBL_TIP', '提示'),
     { type: 'warning' },
   )
     .then(async () => {
-      try {
-        await TagApi.remove(row.id);
-        // 如果当前页只有一条数据，删除后应该跳转到上一页
-        if (tableData.value.length === 1 && pagination.pageNum > 1) {
-          pagination.pageNum--;
-        }
-        await loadData();
-        ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
-      } catch (error: any) {
-        showErrorMessage(error || t('G2_MSG_DELETE_FAIL', '删除失败'));
+      await TagApi.remove(row.id);
+      // 如果当前页只有一条数据，删除后应该跳转到上一页
+      if (tableData.value.length === 1 && pagination.pageNum > 1) {
+        pagination.pageNum--;
       }
+      await loadData();
+      ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
     })
     .catch(() => {});
 };
@@ -261,18 +262,14 @@ const submitEdit = async () => {
     tagName: editForm.tagName,
   };
 
-  try {
-    // 编辑模式下，将 id 添加到 payload 中
-    if (isEdit.value) {
-      payload.id = editForm.id;
-    }
-    await TagApi.save(payload);
-    ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
-    await loadData();
-    editDialogVisible.value = false;
-  } catch (error: any) {
-    showErrorMessage(error || t('G2_MSG_SAVE_FAIL', '保存失败'));
+  // 编辑模式下，将 id 添加到 payload 中
+  if (isEdit.value) {
+    payload.id = editForm.id;
   }
+  await TagApi.save(payload);
+  ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
+  await loadData();
+  editDialogVisible.value = false;
 };
 
 // 处理排序变化
@@ -289,7 +286,7 @@ const loadData = async () => {
     const query: TagQuery = {
       // 基础查询参数（BaseSelectListDto）- 使用 Object.fromEntries 过滤无效值
       ...Object.fromEntries(
-        Object.entries(baseQueryForm).filter(
+        Object.entries(baseQueryForm.value).filter(
           ([_, v]) => v != null && (!Array.isArray(v) || v.length > 0)
         )
       ),
@@ -320,8 +317,8 @@ const loadData = async () => {
     
     tableData.value = pageData.records;
     pagination.total = pageData.total;
-  } catch (error: any) {
-    showErrorMessage(error || t('G2_MSG_LOAD_FAIL', '加载列表失败'));
+  } catch {
+    // 请求失败已由 http 层统一提示
   }
 };
 
@@ -334,10 +331,9 @@ const handleSearch = () => {
 // 重置查询条件
 const handleReset = () => {
   // 重置基础查询表单
-  baseQueryForm.id = undefined;
-  baseQueryForm.createTime = undefined;
-  baseQueryForm.updateTime = undefined;
-  baseQueryForm.sorts = undefined;
+  baseQueryForm.value.id = undefined;
+  baseQueryForm.value.createTime = undefined;
+  baseQueryForm.value.updateTime = undefined;
   
   // 重置业务特定查询表单
   queryForm.organId = null;
@@ -369,7 +365,7 @@ onMounted(() => {
 <style scoped>
 .tag-page {
   padding: 20px;
-  background-color: #f5f7fa;
+  background-color: var(--g2-bg-page);
   min-height: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -382,7 +378,7 @@ onMounted(() => {
   margin-bottom: 12px;
   margin-top: 0;
   padding: 16px 20px;
-  background-color: #fff;
+  background-color: var(--g2-bg-container);
   border-radius: 4px;
 }
 
@@ -407,7 +403,7 @@ onMounted(() => {
 
 .tag-page__search {
   margin-bottom: 12px;
-  background-color: #fff;
+  background-color: var(--g2-bg-container);
 }
 
 .tag-page__pagination {

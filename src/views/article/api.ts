@@ -3,7 +3,7 @@
  * 提供article数据的 CRUD 操作接口
  */
 
-import { getHttpClient } from '@/components/http';
+import { getHttpClient } from '@runtime/http';
 import type { Article, ArticlePayload, ArticleQuery } from './type';
 import type { PageData, PageSelectListDto } from '@platform/types/api.type';
 
@@ -33,17 +33,6 @@ export class ArticleApi {
   static async page(params: ArticleQuery & PageSelectListDto): Promise<PageData<Article>> {
     const http = getHttpClient('default');
     const res = await http.get<PageData<Article>>('/cms/article/page', params);
-    return res.data;
-  }
-
-  /**
-   * 按 ID 查询单条明细
-   * @param id article ID
-   * @returns article详情
-   */
-  static async getById(id: number): Promise<Article> {
-    const http = getHttpClient('default');
-    const res = await http.get<Article>(`/cms/article/${id}`);
     return res.data;
   }
 

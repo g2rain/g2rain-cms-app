@@ -10,9 +10,9 @@
 [![Vite](https://img.shields.io/badge/Vite-7.3.0-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
 [![Qiankun](https://img.shields.io/badge/micro--frontend-Qiankun-1677FF)](https://qiankun.umijs.org/)
 
-下一代AI软件开发范式，AI原生Agent平台，开源的企业级SaaS底座。
+G2rain（谷雨）是面向企业的开源智能体平台，连接模型、知识与业务工具，以 SaaS 基座和应用开发工具链支撑智能应用落地。平台当前已具备应用开发、部署和使用基础；SaaS 基座现有能力与知识库可用，智能体平台和智能客服已开发完成并开源；交易、订阅和计量计费等商业化能力仍处于规划设计。具体能力与状态以 [G2rain 中央仓库](https://github.com/g2rain/g2rain) 为准。
 
-CMS 内容管理微前端子应用，提供文章、分类、标签、栏目、页面、空间与站点的管理界面；作为 qiankun 子应用接入 g2rain-main-shell，并调用 g2rain-cms 业务 API
+`g2rain-cms-app` 只是其中的 CMS 内容管理微前端子应用：提供文章、分类、标签、栏目、页面、空间与站点的管理界面；作为 qiankun 子应用接入 `g2rain-main-shell`，并调用 `g2rain-cms` 业务 API。它不拥有 CMS 的领域数据或服务端规则，也不代表或替代整个平台能力。
 
 [官网](https://www.g2rain.com) · [完整文档](docs/index.md) · [架构说明](docs/architecture/overview.md) · [本地开发](docs/development/local-development.md) · [Issues](https://github.com/g2rain/g2rain/issues) · [Discussions](https://github.com/g2rain/g2rain/discussions)
 
@@ -114,9 +114,9 @@ flowchart TD
 | 本地开发 | `npm run dev` | 启动本地开发服务。 |
 | 构建产物 | `npm run build` | 执行类型检查与前端构建，生成可发布产物。 |
 | 预览产物 | `npm run preview` | 在本地预览构建后的前端产物。 |
-| 容器化 | `docker build .` | 仓库提供 Dockerfile，可按组织镜像规范封装前端运行镜像。 |
+| 容器化 | `./build.sh --image ghcr.io/g2rain/g2rain-cms-app --tag 1.0.0 --build-mode production` | 仓库提供 Dockerfile 与统一脚本，封装 OpenResty 前端运行镜像。 |
 
-版本号以项目构建配置为准，当前识别为 `0.1.0`。
+版本事实源为根目录 `package.json` 与 `package-lock.json`，当前均为 `1.0.0`。
 
 ## 配置说明
 
@@ -153,8 +153,16 @@ flowchart TD
 | 产物预览 | `npm run preview` | 本地预览服务 | 在本地预览构建后的前端静态产物。 |
 | 页面代码 | `npm run build:generate -- --tables=<table>` | `src/views/<table>`、`route-map.ts` | 从项目 SQL 生成并直接覆盖 view、API、type、mock 与路由；执行前必须保存工作。 |
 | 资源配置 | `npm run build:config` | `src/shared/config-util/config` | 覆盖页面、页面元素与聚合 JSON；当前不生成 API 端点。 |
-| 容器镜像 | `docker build .` | 前端运行镜像 | 基于 Dockerfile 封装静态前端运行镜像。 |
-| 构建脚本 | `./build.sh --tag <tag>` | `g2rain/g2rain-cms-app:<tag>` | 支持 `--image`、`--tag`、`--build-mode`；默认 production。 |
+| 容器镜像 | `./build.sh --image ghcr.io/g2rain/g2rain-cms-app --tag <tag> --build-mode production` | OpenResty 运行镜像 | 与 GHCR 工作流复用根目录 Dockerfile、Node 22 构建、OpenResty 运行时、入口和构建参数。 |
+
+## GHCR 镜像
+
+- 镜像地址：`ghcr.io/g2rain/g2rain-cms-app`。
+- 稳定版使用 `1.0.0` 这类版本标签，并同时发布 `sha-<完整提交 SHA>` 可追溯标签；不会更新 `latest`。
+- 包公开后可拉取：`docker pull ghcr.io/g2rain/g2rain-cms-app:1.0.0`。
+- 仅推送精确格式的 `v<major>.<minor>.<patch>` Git tag 才会触发发布；tag 提交必须在 `main` 历史中，并含同名发布说明。
+
+完整的 GHCR 权限、首次公开、发布顺序、容器内容和部署说明见[构建与部署](docs/operations/deployment.md#github-container-registry-ghcr)。
 
 代码生成器默认开启 view、API、Mock 和 route 输出，可用 `--no-view`、`--no-api`、`--no-mock`、`--no-route` 分别关闭。详见[代码生成](docs/development/code-generation.md)和[资源配置生成](docs/development/resource-generation.md)。
 

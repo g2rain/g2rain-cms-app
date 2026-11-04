@@ -9,6 +9,7 @@ import type { BaseSelectListDto, BaseVo } from '@platform/types/api.type';
  */
 export interface Space extends BaseVo {
   organId: number;
+  organName?: string;
   spaceName: string;
   spaceCode: string;
   spaceType: string;

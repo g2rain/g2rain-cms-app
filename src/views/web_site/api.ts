@@ -3,7 +3,7 @@
  * 提供web_site数据的 CRUD 操作接口
  */
 
-import { getHttpClient } from '@/components/http';
+import { getHttpClient } from '@runtime/http';
 import type { WebSite, WebSitePayload, WebSiteQuery } from './type';
 import type { PageData, PageSelectListDto } from '@platform/types/api.type';
 
@@ -33,17 +33,6 @@ export class WebSiteApi {
   static async page(params: WebSiteQuery & PageSelectListDto): Promise<PageData<WebSite>> {
     const http = getHttpClient('default');
     const res = await http.get<PageData<WebSite>>('/cms/web_site/page', params);
-    return res.data;
-  }
-
-  /**
-   * 按 ID 查询单条明细
-   * @param id web_site ID
-   * @returns web_site详情
-   */
-  static async getById(id: number): Promise<WebSite> {
-    const http = getHttpClient('default');
-    const res = await http.get<WebSite>(`/cms/web_site/${id}`);
     return res.data;
   }
 

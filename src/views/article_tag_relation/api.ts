@@ -3,7 +3,7 @@
  * 提供article_tag_relation数据的 CRUD 操作接口
  */
 
-import { getHttpClient } from '@/components/http';
+import { getHttpClient } from '@runtime/http';
 import type { ArticleTagRelation, ArticleTagRelationPayload, ArticleTagRelationQuery } from './type';
 import type { PageData, PageSelectListDto } from '@platform/types/api.type';
 
@@ -33,17 +33,6 @@ export class ArticleTagRelationApi {
   static async page(params: ArticleTagRelationQuery & PageSelectListDto): Promise<PageData<ArticleTagRelation>> {
     const http = getHttpClient('default');
     const res = await http.get<PageData<ArticleTagRelation>>('/cms/article_tag_relation/page', params);
-    return res.data;
-  }
-
-  /**
-   * 按 ID 查询单条明细
-   * @param id article_tag_relation ID
-   * @returns article_tag_relation详情
-   */
-  static async getById(id: number): Promise<ArticleTagRelation> {
-    const http = getHttpClient('default');
-    const res = await http.get<ArticleTagRelation>(`/cms/article_tag_relation/${id}`);
     return res.data;
   }
 

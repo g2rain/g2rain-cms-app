@@ -3,7 +3,7 @@
  * 提供channel数据的 CRUD 操作接口
  */
 
-import { getHttpClient } from '@/components/http';
+import { getHttpClient } from '@runtime/http';
 import type { Channel, ChannelPayload, ChannelQuery } from './type';
 import type { PageData, PageSelectListDto } from '@platform/types/api.type';
 
@@ -33,17 +33,6 @@ export class ChannelApi {
   static async page(params: ChannelQuery & PageSelectListDto): Promise<PageData<Channel>> {
     const http = getHttpClient('default');
     const res = await http.get<PageData<Channel>>('/cms/channel/page', params);
-    return res.data;
-  }
-
-  /**
-   * 按 ID 查询单条明细
-   * @param id channel ID
-   * @returns channel详情
-   */
-  static async getById(id: number): Promise<Channel> {
-    const http = getHttpClient('default');
-    const res = await http.get<Channel>(`/cms/channel/${id}`);
     return res.data;
   }
 

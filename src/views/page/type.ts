@@ -9,6 +9,7 @@ import type { BaseSelectListDto, BaseVo } from '@platform/types/api.type';
  */
 export interface Page extends BaseVo {
   organId: number;
+  organName?: string;
   spaceId: number;
   pageName: string;
   pageCode: string | null;

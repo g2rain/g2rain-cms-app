@@ -10,16 +10,16 @@
         @search="handleSearch"
       >
         <!-- 业务特定查询字段 -->
-        <el-form-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_ORGAN_ID', '机构ID')">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
           <OrganSelect
             v-model="queryForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_ARTICLE_CATEGORY_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="200px"
             clearable
           />
         </el-form-item>
-        <el-form-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间ID')">
+        <el-form-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间')">
           <ApiSelect
             v-model="queryForm.spaceId"
             :api-method="fetchSpaces"
@@ -42,7 +42,7 @@
           <DictSelect
             v-model="queryForm.status"
             :api-method="DictItemApi.select"
-            usage-code="STATUS"
+            usage-code="ENABLE_STATUS"
             :placeholder="$t('G2_PH_SELECT', '请选择')"
             clearable
             width="200px"
@@ -62,9 +62,9 @@
     <!-- 标题和操作按钮 -->
     <div class="article_category-page__header">
       <div class="article_category-page__title-group">
-        <h2>{{ $t('CMS_ARTICLE_CATEGORY_TITLE', '管理各类article_category数据') }}</h2>
+        <h2>{{ $t('CMS_ARTICLE_CATEGORY_TITLE', '文章分类') }}</h2>
       </div>
-      <el-button type="primary" v-permission="'article_category:add'" @click="handleCreate">{{ $t('CMS_ARTICLE_CATEGORY_BTN_ADD', '新增article_category') }}</el-button>
+      <el-button type="primary" v-permission="'article_category:add'" @click="handleCreate">{{ $t('G2_BTN_ADD_CATEGORY', '新增分类') }}</el-button>
     </div>
 
     <SortableTable
@@ -76,19 +76,24 @@
       @sort-change="handleSortChange"
     >
       <el-table-column prop="id" :label="$t('G2_FIELD_ID', 'ID')" width="120" />
-      <el-table-column prop="organId" :label="$t('CMS_ARTICLE_CATEGORY_FIELD_ORGAN_ID', '机构ID')" width="140" />
-      <el-table-column prop="spaceId" :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间ID')" width="140" />
+      <el-table-column :label="$t('G2_FIELD_ORGAN', '所属机构')" width="140">
+        <template #default="{ row }">
+          {{ row.organName || row.organId }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="spaceId" :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间')" width="140" />
       <el-table-column prop="categoryName" :label="$t('CMS_ARTICLE_CATEGORY_FIELD_CATEGORY_NAME', '分类名称')" width="180" />
       <el-table-column prop="categoryCode" :label="$t('CMS_ARTICLE_CATEGORY_FIELD_CATEGORY_CODE', '分类编码')" width="180" />
       <el-table-column :label="$t('G2_FIELD_STATUS', '状态')" width="180">
         <template #default="{ row }">
           <StatusSwitch
             v-model="row.status"
-            v-permission="'article_category:status_update'"
-            :active-value="'ACTIVE'"
-            :inactive-value="'INACTIVE'"
-            usage-code="STATUS"
-            :api-method="({ nextValue }) => ArticleCategoryApi.save({ id: row.id, status: String(nextValue) }).then(() => undefined)"
+            permission="article_category:status_update"
+            :active-value="'ENABLED'"
+            :inactive-value="'DISABLED'"
+            usage-code="ENABLE_STATUS"
+            :api-method="({ nextValue }) => updateArticleCategoryStatus(row.id, nextValue)"
+            @success="loadData"
           />
         </template>
       </el-table-column>
@@ -125,7 +130,7 @@
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog
       v-model="editDialogVisible"
-      :title="isEdit ? $t('CMS_ARTICLE_CATEGORY_DLG_EDIT', '编辑article_category') : $t('CMS_ARTICLE_CATEGORY_DLG_ADD', '新增article_category')"
+      :title="isEdit ? $t('G2_BTN_EDIT_CATEGORY', '编辑分类') : $t('G2_BTN_ADD_CATEGORY', '新增分类')"
       width="520px"
     >
       <el-form
@@ -134,16 +139,16 @@
         :rules="editRules"
         label-width="100px"
       >
-        <el-form-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_ORGAN_ID', '机构ID')" prop="organId">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')" prop="organId">
           <OrganSelect
             v-model="editForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_ARTICLE_CATEGORY_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="100%"
             clearable
           />
         </el-form-item>
-        <el-form-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间ID')" prop="spaceId">
+        <el-form-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间')" prop="spaceId">
           <ApiSelect
             v-model="editForm.spaceId"
             :api-method="fetchSpaces"
@@ -166,7 +171,7 @@
           <DictSelect
             v-model="editForm.status"
             :api-method="DictItemApi.select"
-            usage-code="STATUS"
+            usage-code="ENABLE_STATUS"
             :placeholder="$t('G2_PH_SELECT', '请选择')"
             width="100%"
             clearable
@@ -182,13 +187,13 @@
     </el-dialog>
 
     <!-- 明细弹窗 -->
-    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_ARTICLE_CATEGORY_DETAIL', 'article_category明细')" width="520px">
+    <el-dialog v-model="detailDialogVisible" :title="$t('G2_DETAIL_CATEGORY', '分类明细')" width="520px">
       <el-descriptions :column="1" border>
         <el-descriptions-item :label="$t('G2_FIELD_ID', 'ID')">{{ currentRow?.id }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_ORGAN_ID', '机构ID')">
-          {{ currentRow?.organId }}
+        <el-descriptions-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
+          {{ currentRow?.organName || currentRow?.organId }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间ID')">
+        <el-descriptions-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_SPACE_ID', '空间')">
           {{ currentRow?.spaceId }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('CMS_ARTICLE_CATEGORY_FIELD_CATEGORY_NAME', '分类名称')">
@@ -225,16 +230,20 @@ import { OrganApi } from '@/views/organ/api';
 import { DictItemApi } from '@/views/dict/api';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
 
-import { SortableTable, TableColumn, SortManagerButton, QueryForm, showErrorMessage, OrganSelect, ApiSelect, DictSelect, StatusSwitch } from '@/components';
+import { SortableTable, TableColumn, SortManagerButton, QueryForm, ApiSelect, type RemoteSelectOption } from '@g2rain/ui';
+import { OrganSelect, DictSelect, StatusSwitch } from '@g2rain/ui/platform';
+
+const updateArticleCategoryStatus = (id: number, nextValue: string | number | boolean) =>
+  ArticleCategoryApi.save({ id, status: String(nextValue) }).then(() => undefined);
 
 const tableData = ref<ArticleCategory[]>([]);
 
-const fetchSpaces = async (params: { key?: string; value?: number }) => {
+const fetchSpaces = async (params: { key?: string; value?: number }): Promise<RemoteSelectOption[]> => {
   // 按 ID 回显
   if (params.value !== undefined && params.value !== null) {
     try {
-      const item = await SpaceApi.getById(params.value);
-      return item ? [item] : [];
+      const [item] = await SpaceApi.list({ id: params.value });
+      return item ? ([item] as unknown as RemoteSelectOption[]) : [];
     } catch {
       return [];
     }
@@ -246,11 +255,11 @@ const fetchSpaces = async (params: { key?: string; value?: number }) => {
     pageSize: 10,
     ...(params.key ? { spaceName: params.key } : {}),
   } as any);
-  return page.records || [];
+  return (page.records || []) as unknown as RemoteSelectOption[];
 };
 
 // 基础查询表单（BaseSelectListDto）
-let baseQueryForm = reactive<BaseSelectListDto>({
+const baseQueryForm = ref<BaseSelectListDto>({
   id: undefined,
   createTime: undefined,
   updateTime: undefined,
@@ -293,10 +302,10 @@ const editForm = reactive({
 });
 
 const editRules = computed<FormRules>(() => ({
-  organId: [{ required: true, message: t('CMS_ARTICLE_CATEGORY_VLD_ORGAN', '请选择机构'), trigger: 'change' }],
+  organId: [{ required: true, message: t('G2_PH_ORGAN', '请选择所属机构'), trigger: 'change' }],
   spaceId: [{ required: true, message: t('CMS_ARTICLE_CATEGORY_VLD_SPACE', '请选择空间'), trigger: 'change' }],
   categoryName: [{ required: true, message: t('CMS_ARTICLE_CATEGORY_VLD_CATEGORY_NAME', '请输入分类名称'), trigger: 'blur' }],
-  status: [{ required: true, message: t('CMS_ARTICLE_CATEGORY_VLD_STATUS', '请选择状态'), trigger: 'change' }],
+  status: [{ required: true, message: t('G2_PH_STATUS', '请选择状态'), trigger: 'change' }],
 }));
 
 const handleCreate = () => {
@@ -327,22 +336,18 @@ const handleView = (row: ArticleCategory) => {
 
 const handleDelete = (row: ArticleCategory) => {
   ElMessageBox.confirm(
-    t('CMS_ARTICLE_CATEGORY_DEL_CONFIRM', `确认删除article_category「${row.id}」吗？`),
+    t('CMS_ARTICLE_CATEGORY_DEL_CONFIRM', { id: row.id }, '确认删除分类「{id}」吗？'),
     t('G2_LBL_TIP', '提示'),
     { type: 'warning' },
   )
     .then(async () => {
-      try {
-        await ArticleCategoryApi.remove(row.id);
-        // 如果当前页只有一条数据，删除后应该跳转到上一页
-        if (tableData.value.length === 1 && pagination.pageNum > 1) {
-          pagination.pageNum--;
-        }
-        await loadData();
-        ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
-      } catch (error: any) {
-        showErrorMessage(error || t('G2_MSG_DELETE_FAIL', '删除失败'));
+      await ArticleCategoryApi.remove(row.id);
+      // 如果当前页只有一条数据，删除后应该跳转到上一页
+      if (tableData.value.length === 1 && pagination.pageNum > 1) {
+        pagination.pageNum--;
       }
+      await loadData();
+      ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
     })
     .catch(() => {});
 };
@@ -360,18 +365,14 @@ const submitEdit = async () => {
     status: editForm.status,
   };
 
-  try {
-    // 编辑模式下，将 id 添加到 payload 中
-    if (isEdit.value) {
-      payload.id = editForm.id;
-    }
-    await ArticleCategoryApi.save(payload);
-    ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
-    await loadData();
-    editDialogVisible.value = false;
-  } catch (error: any) {
-    showErrorMessage(error || t('G2_MSG_SAVE_FAIL', '保存失败'));
+  // 编辑模式下，将 id 添加到 payload 中
+  if (isEdit.value) {
+    payload.id = editForm.id;
   }
+  await ArticleCategoryApi.save(payload);
+  ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
+  await loadData();
+  editDialogVisible.value = false;
 };
 
 // 处理排序变化
@@ -391,7 +392,7 @@ const loadData = async () => {
     const query: ArticleCategoryQuery = {
       // 基础查询参数（BaseSelectListDto）- 使用 Object.fromEntries 过滤无效值
       ...Object.fromEntries(
-        Object.entries(baseQueryForm).filter(
+        Object.entries(baseQueryForm.value).filter(
           ([_, v]) => v != null && (!Array.isArray(v) || v.length > 0)
         )
       ),
@@ -424,8 +425,8 @@ const loadData = async () => {
     
     tableData.value = pageData.records;
     pagination.total = pageData.total;
-  } catch (error: any) {
-    showErrorMessage(error || t('G2_MSG_LOAD_FAIL', '加载列表失败'));
+  } catch {
+    // 请求失败已由 http 层统一提示
   }
 };
 
@@ -438,10 +439,9 @@ const handleSearch = () => {
 // 重置查询条件
 const handleReset = () => {
   // 重置基础查询表单
-  baseQueryForm.id = undefined;
-  baseQueryForm.createTime = undefined;
-  baseQueryForm.updateTime = undefined;
-  baseQueryForm.sorts = undefined;
+  baseQueryForm.value.id = undefined;
+  baseQueryForm.value.createTime = undefined;
+  baseQueryForm.value.updateTime = undefined;
   
   // 重置业务特定查询表单
   queryForm.organId = null;
@@ -475,7 +475,7 @@ onMounted(() => {
 <style scoped>
 .article_category-page {
   padding: 20px;
-  background-color: #f5f7fa;
+  background-color: var(--g2-bg-page);
   min-height: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -488,7 +488,7 @@ onMounted(() => {
   margin-bottom: 12px;
   margin-top: 0;
   padding: 16px 20px;
-  background-color: #fff;
+  background-color: var(--g2-bg-container);
   border-radius: 4px;
 }
 
@@ -513,7 +513,7 @@ onMounted(() => {
 
 .article_category-page__search {
   margin-bottom: 12px;
-  background-color: #fff;
+  background-color: var(--g2-bg-container);
 }
 
 .article_category-page__pagination {

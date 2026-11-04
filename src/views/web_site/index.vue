@@ -10,11 +10,11 @@
         @search="handleSearch"
       >
         <!-- 业务特定查询字段 -->
-        <el-form-item :label="$t('CMS_WEB_SITE_FIELD_ORGAN_ID', '机构ID')">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
           <OrganSelect
             v-model="queryForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_WEB_SITE_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="200px"
             clearable
           />
@@ -35,8 +35,8 @@
           <DictSelect
             v-model="queryForm.status"
             :api-method="DictItemApi.select"
-            usage-code="STATUS"
-            :placeholder="$t('CMS_WEB_SITE_PH_STATUS', '请选择状态')"
+            usage-code="ENABLE_STATUS"
+            :placeholder="$t('G2_PH_STATUS', '请选择状态')"
             clearable
             width="200px"
           />
@@ -55,9 +55,9 @@
     <!-- 标题和操作按钮 -->
     <div class="web_site-page__header">
       <div class="web_site-page__title-group">
-        <h2>{{ $t('CMS_WEB_SITE_TITLE', '管理各类web_site数据') }}</h2>
+        <h2>{{ $t('CMS_WEB_SITE_TITLE', '站点') }}</h2>
       </div>
-      <el-button type="primary" v-permission="'web_site:add'" @click="handleCreate">{{ $t('CMS_WEB_SITE_BTN_ADD', '新增web_site') }}</el-button>
+      <el-button type="primary" v-permission="'web_site:add'" @click="handleCreate">{{ $t('CMS_WEB_SITE_BTN_ADD', '新增站点') }}</el-button>
     </div>
 
     <SortableTable
@@ -69,7 +69,11 @@
       @sort-change="handleSortChange"
     >
       <el-table-column prop="id" :label="$t('G2_FIELD_ID', 'ID')" width="120" />
-      <el-table-column prop="organId" :label="$t('CMS_WEB_SITE_FIELD_ORGAN_ID', '机构ID')" width="140" />
+      <el-table-column :label="$t('G2_FIELD_ORGAN', '所属机构')" width="140">
+        <template #default="{ row }">
+          {{ row.organName || row.organId }}
+        </template>
+      </el-table-column>
       <el-table-column prop="siteName" :label="$t('CMS_WEB_SITE_FIELD_SITE_NAME', '站点名称')" width="180" />
       <el-table-column prop="siteCode" :label="$t('CMS_WEB_SITE_FIELD_SITE_CODE', '站点编码')" width="180" />
       <el-table-column prop="domain" :label="$t('CMS_WEB_SITE_FIELD_DOMAIN', '站点域名')" width="180" />
@@ -78,22 +82,12 @@
         <template #default="{ row }">
           <StatusSwitch
             v-model="row.status"
-            v-permission="'web_site:status_update'"
-            :active-value="'ACTIVE'"
-            :inactive-value="'INACTIVE'"
-            usage-code="STATUS"
-            :api-method="
-              ({ nextValue }) =>
-                WebSiteApi.save({
-                  id: row.id,
-                  organId: row.organId,
-                  siteName: row.siteName,
-                  siteCode: row.siteCode,
-                  domain: row.domain ?? null,
-                  description: row.description ?? null,
-                  status: String(nextValue),
-                }).then(() => undefined)
-            "
+            permission="web_site:status_update"
+            :active-value="'ENABLED'"
+            :inactive-value="'DISABLED'"
+            usage-code="ENABLE_STATUS"
+            :api-method="({ nextValue }) => updateWebSiteStatus(row, nextValue)"
+            @success="loadData"
           />
         </template>
       </el-table-column>
@@ -130,20 +124,20 @@
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog
       v-model="editDialogVisible"
-      :title="isEdit ? $t('CMS_WEB_SITE_DLG_EDIT', '编辑web_site') : $t('CMS_WEB_SITE_DLG_ADD', '新增web_site')"
+      :title="isEdit ? $t('CMS_WEB_SITE_DLG_EDIT', '编辑站点') : $t('CMS_WEB_SITE_DLG_ADD', '新增站点')"
       width="520px"
     >
       <el-form
         ref="editFormRef"
         :model="editForm"
         :rules="editRules"
-        label-width="100px"
+        label-width="130px"
       >
-        <el-form-item :label="$t('CMS_WEB_SITE_FIELD_ORGAN_ID', '机构ID')" prop="organId">
+        <el-form-item :label="$t('G2_FIELD_ORGAN', '所属机构')" prop="organId">
           <OrganSelect
             v-model="editForm.organId"
             :api-method="OrganApi.searchOrgans"
-            :placeholder="$t('CMS_WEB_SITE_PH_ORGAN', '请选择所属机构')"
+            :placeholder="$t('G2_PH_ORGAN', '请选择所属机构')"
             width="100%"
             clearable
           />
@@ -164,8 +158,8 @@
           <DictSelect
             v-model="editForm.status"
             :api-method="DictItemApi.select"
-            usage-code="STATUS"
-            :placeholder="$t('CMS_WEB_SITE_PH_STATUS', '请选择状态')"
+            usage-code="ENABLE_STATUS"
+            :placeholder="$t('G2_PH_STATUS', '请选择状态')"
             clearable
             width="100%"
           />
@@ -180,11 +174,11 @@
     </el-dialog>
 
     <!-- 明细弹窗 -->
-    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_WEB_SITE_DETAIL', 'web_site明细')" width="520px">
+    <el-dialog v-model="detailDialogVisible" :title="$t('CMS_WEB_SITE_DETAIL', '站点明细')" width="520px">
       <el-descriptions :column="1" border>
         <el-descriptions-item :label="$t('G2_FIELD_ID', 'ID')">{{ currentRow?.id }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('CMS_WEB_SITE_FIELD_ORGAN_ID', '机构ID')">
-          {{ currentRow?.organId }}
+        <el-descriptions-item :label="$t('G2_FIELD_ORGAN', '所属机构')">
+          {{ currentRow?.organName || currentRow?.organId }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('CMS_WEB_SITE_FIELD_SITE_NAME', '站点名称')">
           {{ currentRow?.siteName }}
@@ -201,7 +195,7 @@
         <el-descriptions-item :label="$t('G2_FIELD_STATUS', '状态')">
           <DictText
             :value="currentRow?.status"
-            usage-code="STATUS"
+            usage-code="ENABLE_STATUS"
             :api-method="DictItemApi.select"
           />
         </el-descriptions-item>
@@ -227,14 +221,26 @@ import { WebSiteApi } from './api';
 import type { WebSite, WebSitePayload, WebSiteQuery } from './type';
 import type { BaseSelectListDto, PageSelectListDto } from '@platform/types/api.type';
 
-import { SortableTable, TableColumn, SortManagerButton, QueryForm, OrganSelect, DictSelect, DictText, StatusSwitch, showErrorMessage } from '@/components';
+import { SortableTable, TableColumn, SortManagerButton, QueryForm } from '@g2rain/ui';
+import { OrganSelect, DictSelect, DictText, StatusSwitch } from '@g2rain/ui/platform';
 import { OrganApi } from '@/views/organ/api';
 import { DictItemApi } from '@/views/dict/api';
+
+const updateWebSiteStatus = (row: WebSite, nextValue: string | number | boolean) =>
+  WebSiteApi.save({
+    id: row.id,
+    organId: row.organId,
+    siteName: row.siteName,
+    siteCode: row.siteCode,
+    domain: row.domain ?? null,
+    description: row.description ?? null,
+    status: String(nextValue),
+  }).then(() => undefined);
 
 const tableData = ref<WebSite[]>([]);
 
 // 基础查询表单（BaseSelectListDto）
-let baseQueryForm = reactive<BaseSelectListDto>({
+const baseQueryForm = ref<BaseSelectListDto>({
   id: undefined,
   createTime: undefined,
   updateTime: undefined,
@@ -279,10 +285,10 @@ const editForm = reactive({
 });
 
 const editRules: FormRules = {
-  organId: [{ required: true, message: t('CMS_WEB_SITE_VLD_ORGAN', '请选择机构'), trigger: 'change' }],
+  organId: [{ required: true, message: t('G2_PH_ORGAN', '请选择所属机构'), trigger: 'change' }],
   siteName: [{ required: true, message: t('CMS_WEB_SITE_VLD_SITE_NAME', '请输入站点名称'), trigger: 'blur' }],
   siteCode: [{ required: true, message: t('CMS_WEB_SITE_VLD_SITE_CODE', '请输入站点编码'), trigger: 'blur' }],
-  status: [{ required: true, message: t('CMS_WEB_SITE_VLD_STATUS', '请选择状态'), trigger: 'change' }],
+  status: [{ required: true, message: t('G2_PH_STATUS', '请选择状态'), trigger: 'change' }],
 };
 
 const handleCreate = () => {
@@ -315,22 +321,18 @@ const handleView = (row: WebSite) => {
 
 const handleDelete = (row: WebSite) => {
   ElMessageBox.confirm(
-    t('CMS_WEB_SITE_DEL_CONFIRM', `确认删除web_site「${row.id}」吗？`),
+    t('CMS_WEB_SITE_DEL_CONFIRM', { id: row.id }, '确认删除站点「{id}」吗？'),
     t('G2_LBL_TIP', '提示'),
     { type: 'warning' },
   )
     .then(async () => {
-      try {
-        await WebSiteApi.remove(row.id);
-        // 如果当前页只有一条数据，删除后应该跳转到上一页
-        if (tableData.value.length === 1 && pagination.pageNum > 1) {
-          pagination.pageNum--;
-        }
-        await loadData();
-        ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
-      } catch (error: any) {
-        showErrorMessage(error || t('G2_MSG_DELETE_FAIL', '删除失败'));
+      await WebSiteApi.remove(row.id);
+      // 如果当前页只有一条数据，删除后应该跳转到上一页
+      if (tableData.value.length === 1 && pagination.pageNum > 1) {
+        pagination.pageNum--;
       }
+      await loadData();
+      ElMessage.success(t('G2_MSG_DELETE_OK', '删除成功'));
     })
     .catch(() => {});
 };
@@ -349,18 +351,14 @@ const submitEdit = async () => {
     status: editForm.status,
   };
 
-  try {
-    // 编辑模式下，将 id 添加到 payload 中
-    if (isEdit.value) {
-      payload.id = editForm.id;
-    }
-    await WebSiteApi.save(payload);
-    ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
-    await loadData();
-    editDialogVisible.value = false;
-  } catch (error: any) {
-    showErrorMessage(error || t('G2_MSG_SAVE_FAIL', '保存失败'));
+  // 编辑模式下，将 id 添加到 payload 中
+  if (isEdit.value) {
+    payload.id = editForm.id;
   }
+  await WebSiteApi.save(payload);
+  ElMessage.success(isEdit.value ? t('G2_MSG_UPDATE_OK', '更新成功') : t('G2_MSG_ADD_OK', '新增成功'));
+  await loadData();
+  editDialogVisible.value = false;
 };
 
 // 处理排序变化
@@ -379,7 +377,7 @@ const loadData = async () => {
     const query: WebSiteQuery = {
       // 基础查询参数（BaseSelectListDto）- 使用 Object.fromEntries 过滤无效值
       ...Object.fromEntries(
-        Object.entries(baseQueryForm).filter(
+        Object.entries(baseQueryForm.value).filter(
           ([_, v]) => v != null && (!Array.isArray(v) || v.length > 0)
         )
       ),
@@ -413,8 +411,8 @@ const loadData = async () => {
     
     tableData.value = pageData.records;
     pagination.total = pageData.total;
-  } catch (error: any) {
-    showErrorMessage(error || t('G2_MSG_LOAD_FAIL', '加载列表失败'));
+  } catch {
+    // 请求失败已由 http 层统一提示
   }
 };
 
@@ -427,10 +425,9 @@ const handleSearch = () => {
 // 重置查询条件
 const handleReset = () => {
   // 重置基础查询表单
-  baseQueryForm.id = undefined;
-  baseQueryForm.createTime = undefined;
-  baseQueryForm.updateTime = undefined;
-  baseQueryForm.sorts = undefined;
+  baseQueryForm.value.id = undefined;
+  baseQueryForm.value.createTime = undefined;
+  baseQueryForm.value.updateTime = undefined;
   
   // 重置业务特定查询表单
   queryForm.organId = null;
@@ -465,7 +462,7 @@ onMounted(() => {
 <style scoped>
 .web_site-page {
   padding: 20px;
-  background-color: #f5f7fa;
+  background-color: var(--g2-bg-page);
   min-height: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -478,7 +475,7 @@ onMounted(() => {
   margin-bottom: 12px;
   margin-top: 0;
   padding: 16px 20px;
-  background-color: #fff;
+  background-color: var(--g2-bg-container);
   border-radius: 4px;
 }
 
@@ -503,7 +500,7 @@ onMounted(() => {
 
 .web_site-page__search {
   margin-bottom: 12px;
-  background-color: #fff;
+  background-color: var(--g2-bg-container);
 }
 
 .web_site-page__pagination {
